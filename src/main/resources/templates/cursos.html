@@ -1,67 +1,207 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Mini Academia</title>
-
-    <link rel="stylesheet" href="/css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cursos — Mini Academia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/cursos.css}" href="cursos.css" />
 </head>
-
 <body>
 
-<div class="layout">
+  <!-- ═══════════════════════ SIDEBAR ═══════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <span class="sidebar__brand-mark">MA</span>
+      <span class="sidebar__brand-name">Mini Academia</span>
+    </div>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <h2>Mini Academia</h2>
-        <p style="font-size: 0.8rem; color: #64748b;">
-            Gestión de cursos
-        </p>
-    </aside>
+    <nav class="sidebar__nav">
+      <p class="sidebar__nav-section">Principal</p>
 
-    <!-- CONTENIDO -->
-    <main class="content">
+      <a href="#" class="sidebar__nav-item sidebar__nav-item--active">
+        <svg class="sidebar__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2"/>
+          <rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2"/>
+          <rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2"/>
+          <rect x="9" y="9" width="5.5" height="5.5" rx="1.2"/>
+        </svg>
+        Cursos
+      </a>
 
-        <div class="topbar">
-            <h1 style="font-size: 1.3rem;">Cursos</h1>
+      <a href="#" class="sidebar__nav-item">
+        <svg class="sidebar__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="8" cy="5.5" r="3"/>
+          <path d="M1.5 14.5c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke-linecap="round"/>
+        </svg>
+        Alumnos
+      </a>
 
-            <a href="/web/cursos/nuevo" class="btn-main">
-                Crear curso
-            </a>
+      <a href="#" class="sidebar__nav-item">
+        <svg class="sidebar__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M2 4h12M4 4V2.5a.5.5 0 01.5-.5h7a.5.5 0 01.5.5V4M3 4l.8 9.5a.5.5 0 00.5.5h7.4a.5.5 0 00.5-.5L13 4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6.5 7.5v4M9.5 7.5v4" stroke-linecap="round"/>
+        </svg>
+        Categorías
+      </a>
+
+      <p class="sidebar__nav-section">Sistema</p>
+
+      <a href="#" class="sidebar__nav-item">
+        <svg class="sidebar__nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="8" cy="8" r="2.2"/>
+          <path d="M8 1.5v1.8M8 12.7v1.8M1.5 8h1.8M12.7 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M3.4 12.6l1.3-1.3M11.3 4.7l1.3-1.3" stroke-linecap="round"/>
+        </svg>
+        Ajustes
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <div class="sidebar__user">
+        <div class="sidebar__user-avatar">A</div>
+        <div class="sidebar__user-info">
+          <span class="sidebar__user-name">Administrador</span>
+          <span class="sidebar__user-role">Cuenta principal</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════ MAIN ═══════════════════════════════════ -->
+  <main class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <nav class="topbar__breadcrumb">
+        <span>Mini Academia</span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" class="topbar__breadcrumb-chevron">
+          <path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="topbar__breadcrumb-current">Cursos</span>
+      </nav>
+      <div class="topbar__actions">
+        <div class="search-box">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="6.8" cy="6.8" r="4.3"/>
+            <path d="M10.2 10.2l3.5 3.5" stroke-linecap="round"/>
+          </svg>
+          <input type="text" placeholder="Buscar cursos…" />
+        </div>
+        <a th:href="@{/web/cursos/nuevo}" href="#" class="btn btn--primary">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3v10M3 8h10" stroke-linecap="round"/>
+          </svg>
+          Nuevo curso
+        </a>
+      </div>
+    </header>
+
+    <!-- Page header -->
+    <section class="page-header">
+      <div class="page-header__copy">
+        <h1 class="page-header__title">Catálogo de cursos</h1>
+        <p class="page-header__subtitle">Gestiona, edita y organiza toda la oferta formativa de la academia.</p>
+      </div>
+      <div class="page-header__kpis">
+        <div class="kpi">
+          <span class="kpi__value" th:text="${cursos != null ? #lists.size(cursos) : 0}">12</span>
+          <span class="kpi__label">Cursos activos</span>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi">
+          <span class="kpi__value">4</span>
+          <span class="kpi__label">Categorías</span>
+        </div>
+        <div class="kpi-divider"></div>
+        <div class="kpi">
+          <span class="kpi__value">—</span>
+          <span class="kpi__label">Última edición</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="filter-bar__tabs" role="tablist">
+        <button class="filter-tab filter-tab--active" role="tab">Todos</button>
+        <button class="filter-tab" role="tab">Programación</button>
+        <button class="filter-tab" role="tab">Diseño</button>
+        <button class="filter-tab" role="tab">Marketing</button>
+        <button class="filter-tab" role="tab">Datos</button>
+      </div>
+      <div class="filter-bar__right">
+        <label class="filter-sort-label" for="sort-select">Ordenar por</label>
+        <select class="filter-select" id="sort-select">
+          <option>Más recientes</option>
+          <option>Título A–Z</option>
+          <option>Categoría</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ─── Course grid ───────────────────────────────────────── -->
+    <div class="course-grid">
+
+      <!-- th:each iterates the cursos list from the model -->
+      <article class="course-card" th:each="curso : ${cursos}">
+
+        <div class="course-card__top">
+          <span class="badge" th:text="${curso.categoriaNombre}">Programación</span>
+          <span class="course-card__id" th:text="'#' + ${curso.id}">#01</span>
         </div>
 
-        <div class="grid">
-
-            <div class="card" th:each="curso : ${cursos}">
-
-                <h3 th:text="${curso.titulo}"></h3>
-                <p th:text="${curso.descripcion}"></p>
-
-                <span class="tag"
-                      th:text="${curso.categoriaNombre}"></span>
-
-                <div class="actions">
-
-                    <a th:href="@{'/web/cursos/editar/' + ${curso.id}}"
-                       class="btn-edit">
-                        Editar
-                    </a>
-
-                    <form th:action="@{'/web/cursos/eliminar/' + ${curso.id}}" method="post">
-                        <button class="btn-delete">
-                            Eliminar
-                        </button>
-                    </form>
-
-                </div>
-
-            </div>
-
+        <div class="course-card__body">
+          <h2 class="course-card__title" th:text="${curso.titulo}">
+            Desarrollo Web con Spring Boot
+          </h2>
+          <p class="course-card__desc" th:text="${curso.descripcion}">
+            Aprende a construir aplicaciones web robustas y escalables usando el ecosistema Spring Framework, desde la capa de persistencia hasta los controladores REST.
+          </p>
         </div>
 
-    </main>
+        <div class="course-card__footer">
+          <a th:href="@{/web/cursos/editar/{id}(id=${curso.id})}" href="#" class="btn btn--sm btn--outline">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M11 2.5a1.5 1.5 0 012.1 2.1L4.8 12.9H2.1v-2.7L11 2.5z" stroke-linejoin="round"/>
+            </svg>
+            Editar
+          </a>
+          <form th:action="@{/web/cursos/eliminar/{id}(id=${curso.id})}" method="post" style="display:inline-block">
+            <button type="submit"
+                    class="btn btn--sm btn--danger-ghost"
+                    onclick="return confirm('¿Seguro que deseas eliminar este curso? Esta acción no se puede deshacer.')">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M2.5 4.5h11M5.5 4.5V3a.5.5 0 01.5-.5h4a.5.5 0 01.5.5v1.5M4 4.5l.9 8.5a.5.5 0 00.5.5h6.2a.5.5 0 00.5-.5L13 4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 7.5v3.5M9 7.5v3.5" stroke-linecap="round"/>
+              </svg>
+              Eliminar
+            </button>
+          </form>
+        </div>
 
-</div>
+      </article>
+
+      <!-- Empty state — rendered when the list is empty -->
+      <div class="empty-state" th:if="${cursos == null or #lists.isEmpty(cursos)}">
+        <div class="empty-state__glyph">
+          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="10" y="16" width="44" height="36" rx="3.5"/>
+            <path d="M10 24h44"/>
+            <path d="M22 8h20v8H22z"/>
+            <path d="M22 33h20M22 40h12"/>
+          </svg>
+        </div>
+        <h3 class="empty-state__title">No hay cursos todavía</h3>
+        <p class="empty-state__body">Crea tu primer curso para empezar a construir el catálogo de formación de la academia.</p>
+        <a th:href="@{/web/cursos/nuevo}" href="#" class="btn btn--primary">Crear primer curso</a>
+      </div>
+
+    </div>
+    <!-- /course-grid -->
+
+  </main>
 
 </body>
 </html>
