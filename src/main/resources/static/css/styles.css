@@ -1,58 +1,119 @@
 body {
-    background: #f5f7fa;
-    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+/* LAYOUT */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 220px;
+    background: #020617;
+    padding: 20px;
+    border-right: 1px solid #1e293b;
+}
+
+.sidebar h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+/* CONTENIDO */
+.content {
+    flex: 1;
+    padding: 40px;
 }
 
 /* HEADER */
-header {
-    background: linear-gradient(135deg, #1e293b, #0f172a);
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
 }
 
-/* TITULO */
-h1 {
-    font-weight: 700;
-}
-
-/* CARDS */
-.card {
+/* BOTÓN */
+.btn-main {
+    background: #6366f1;
     border: none;
-    border-radius: 12px;
-    transition: all 0.25s ease;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.btn-main:hover {
+    background: #4f46e5;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: #020617;
+    border: 1px solid #1e293b;
+    padding: 16px;
+    border-radius: 10px;
+    transition: 0.2s;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+    border-color: #334155;
 }
 
-/* BADGE */
-.badge {
-    font-size: 0.8rem;
+/* TITULO */
+.card h3 {
+    font-size: 1rem;
+    margin-bottom: 6px;
+}
+
+/* DESCRIPCIÓN */
+.card p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+/* TAG */
+.tag {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 3px 8px;
+    background: #1e293b;
+    font-size: 0.75rem;
+    border-radius: 5px;
 }
 
 /* BOTONES */
-.btn {
-    border-radius: 8px;
+.actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
 }
 
-.btn-success {
-    background-color: #22c55e;
-    border: none;
+.btn-edit {
+    background: transparent;
+    border: 1px solid #334155;
+    color: #e5e7eb;
+    padding: 4px 10px;
+    font-size: 0.75rem;
 }
 
-.btn-warning {
-    background-color: #f59e0b;
-    border: none;
-    color: white;
-}
-
-.btn-danger {
-    background-color: #ef4444;
-    border: none;
-}
-
-/* FOOTER */
-footer {
-    color: #666;
-    font-size: 0.9rem;
+.btn-delete {
+    background: transparent;
+    border: 1px solid #7f1d1d;
+    color: #f87171;
+    padding: 4px 10px;
+    font-size: 0.75rem;
 }

@@ -2,66 +2,66 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mini Academia - Cursos</title>
-    <meta name="description" content="Plataforma de gestión de cursos online">
+    <title>Mini Academia</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 
 <body>
 
-<header class="text-white p-4 mb-4">
-    <div class="container d-flex justify-content-between align-items-center">
-        <h1 class="mb-0">🎓 Mini Academia</h1>
-        <a href="/web/cursos/nuevo" class="btn btn-success shadow-sm">
-            + Nuevo Curso
-        </a>
-    </div>
-</header>
+<div class="layout">
 
-<main class="container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>Mini Academia</h2>
+        <p style="font-size: 0.8rem; color: #64748b;">
+            Gestión de cursos
+        </p>
+    </aside>
 
-    <section>
-        <h2 class="mb-4 fw-semibold">Cursos disponibles</h2>
+    <!-- CONTENIDO -->
+    <main class="content">
 
-        <div class="row g-4">
+        <div class="topbar">
+            <h1 style="font-size: 1.3rem;">Cursos</h1>
 
-            <article class="col-md-4" th:each="curso : ${cursos}">
-                <div class="card h-100 shadow-sm p-3">
+            <a href="/web/cursos/nuevo" class="btn-main">
+                Crear curso
+            </a>
+        </div>
 
-                    <div>
-                        <h5 class="fw-bold mb-2" th:text="${curso.titulo}"></h5>
-                        <p class="text-muted mb-3" th:text="${curso.descripcion}"></p>
+        <div class="grid">
 
-                        <span class="badge bg-primary mb-3"
-                              th:text="${curso.categoriaNombre}"></span>
-                    </div>
+            <div class="card" th:each="curso : ${cursos}">
 
-                    <div class="d-flex gap-2 mt-auto">
+                <h3 th:text="${curso.titulo}"></h3>
+                <p th:text="${curso.descripcion}"></p>
 
-                        <a th:href="@{'/web/cursos/editar/' + ${curso.id}}"
-                           class="btn btn-warning btn-sm">
-                            Editar
-                        </a>
+                <span class="tag"
+                      th:text="${curso.categoriaNombre}"></span>
 
-                        <form th:action="@{'/web/cursos/eliminar/' + ${curso.id}}" method="post">
-                            <button class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
+                <div class="actions">
 
-                    </div>
+                    <a th:href="@{'/web/cursos/editar/' + ${curso.id}}"
+                       class="btn-edit">
+                        Editar
+                    </a>
+
+                    <form th:action="@{'/web/cursos/eliminar/' + ${curso.id}}" method="post">
+                        <button class="btn-delete">
+                            Eliminar
+                        </button>
+                    </form>
 
                 </div>
-            </article>
+
+            </div>
 
         </div>
-    </section>
 
-</main>
+    </main>
 
-<footer class="text-center mt-5 p-4">
-    <p>Proyecto DAW · Mini Academia</p>
-</footer>
+</div>
 
 </body>
 </html>
