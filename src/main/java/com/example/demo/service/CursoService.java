@@ -11,12 +11,14 @@ public interface CursoService {
 
     List<CursoDTO> obtenerPorCategoria(Long id);
 
+    List<CursoDTO> obtenerCursosPorUsuario(Long usuarioId);
+
     Curso crearCurso(Curso curso);
 
     Curso actualizarCurso(Long id, Curso curso);
 
     void eliminarCurso(Long id);
 
-    //  NUEVO
-    List<CursoDTO> obtenerCursosPorUsuario(Long usuarioId);
+    // 🔵 NUEVO (PARA EDITAR)
+    Curso obtenerCursoPorId(Long id);
 }

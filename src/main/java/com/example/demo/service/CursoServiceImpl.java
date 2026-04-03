@@ -38,13 +38,18 @@ public class CursoServiceImpl implements CursoService {
                 .collect(Collectors.toList());
     }
 
-    // 🔥 NUEVO
     @Override
     public List<CursoDTO> obtenerCursosPorUsuario(Long usuarioId) {
         return cursoRepository.findCursosByUsuarioId(usuarioId)
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Curso obtenerCursoPorId(Long id) {
+        return cursoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
     }
 
     @Override
@@ -95,7 +100,7 @@ public class CursoServiceImpl implements CursoService {
         cursoRepository.deleteById(id);
     }
 
-    // mapper
+    // mapper xd
     private CursoDTO mapToDTO(Curso curso) {
         return new CursoDTO(
                 curso.getId(),

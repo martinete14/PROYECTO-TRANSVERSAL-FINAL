@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Curso</title>
+    <meta name="description" content="Crear nuevo curso">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<header class="bg-dark text-white p-3">
+    <div class="container">
+        <h1>Crear Curso</h1>
+    </div>
+</header>
+
+<main class="container mt-4">
+
+    <section>
+        <form action="/web/cursos/crear" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">Título</label>
+                <input type="text" name="titulo" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <input type="text" name="descripcion" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Categoría</label>
+
+                <select name="categoriaId" class="form-control" required>
+                    <option value="">Seleccionar categoría</option>
+
+                    <option th:each="cat : ${categorias}"
+                    th:value="${cat.id}"
+                    th:text="${cat.nombre}">
+                </option>
+
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success">Crear Curso</button>
+
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>
