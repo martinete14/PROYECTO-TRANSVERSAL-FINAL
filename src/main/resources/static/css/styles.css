@@ -6,34 +6,25 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #f5f7fb;
-  color: #111;
+  background: #0f1115;
+  color: white;
 }
 
 /* TOPBAR */
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 25px 40px;
-  background: white;
-  border-bottom: 1px solid #eee;
-}
-
-.topbar h1 {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.topbar-actions {
-  display: flex;
-  gap: 10px;
+  padding: 20px 40px;
+  background: #0f1115;
+  border-bottom: 1px solid #1c1f26;
 }
 
 .topbar input {
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: none;
+  background: #1c1f26;
+  color: white;
 }
 
 /* HERO */
@@ -43,76 +34,98 @@ body {
 
 .hero h2 {
   font-size: 28px;
-  font-weight: 600;
-}
-
-.hero p {
-  color: #666;
-  margin-top: 5px;
 }
 
 /* GRID */
 .container {
-  max-width: 1200px;
+  max-width: 1300px;
   margin: auto;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 25px;
   padding: 20px 40px;
 }
 
 /* CARD */
 .card {
-  background: white;
-  border-radius: 16px;
+  border-radius: 14px;
   overflow: hidden;
-  transition: 0.25s;
-  cursor: pointer;
+  transition: 0.3s;
+  background: #151821;
 }
 
 .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  transform: scale(1.02);
 }
 
-/* IMAGE */
-.card-image {
-  height: 140px;
-  background: linear-gradient(135deg, #4f52e8, #7b7de8);
+/* MEDIA */
+.media {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
 }
 
-/* BODY */
-.card-body {
-  padding: 18px;
+.media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.4s;
+}
+
+.media-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* ZOOM */
+.card:hover .media-img {
+  transform: scale(1.1);
+}
+
+/* OVERLAY */
+.overlay {
+  position: absolute;
+  bottom: 0;
+  padding: 15px;
+  width: 100%;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
 }
 
 .category {
   font-size: 12px;
-  color: #4f52e8;
-  font-weight: 500;
+  color: #7b7de8;
 }
 
-.card h3 {
-  margin: 8px 0;
+.overlay h3 {
   font-size: 18px;
 }
 
-.card p {
-  font-size: 13px;
-  color: #666;
+/* BODY */
+.card-body {
+  padding: 15px;
 }
 
-/* ACTIONS */
+.card-body p {
+  font-size: 13px;
+  color: #aaa;
+}
+
+/* BUTTONS */
 .actions {
-  margin-top: 15px;
+  margin-top: 10px;
   display: flex;
   gap: 10px;
 }
 
-/* BUTTONS */
 .btn-primary {
   background: #4f52e8;
   color: white;
@@ -122,15 +135,16 @@ body {
 }
 
 .btn-outline {
-  border: 1px solid #ddd;
+  border: 1px solid #444;
   padding: 6px 12px;
   border-radius: 8px;
+  color: white;
   text-decoration: none;
 }
 
 .btn-danger {
-  background: #ffe9e6;
-  color: #d94f3d;
+  background: #2a1a1a;
+  color: #ff6b5c;
   border: none;
   padding: 6px 12px;
   border-radius: 8px;
@@ -138,8 +152,7 @@ body {
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .topbar {
-    flex-direction: column;
-    gap: 10px;
+  .grid {
+    padding: 10px;
   }
 }

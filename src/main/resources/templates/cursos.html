@@ -23,23 +23,40 @@
 <main class="container">
 
   <section class="hero">
-    <h2>Explora tus cursos</h2>
-    <p>Una forma simple de gestionar contenido formativo.</p>
+    <h2>Explora los cursos</h2>
+    <p>Contenido visual, dinámico y profesional</p>
   </section>
 
   <section class="grid">
 
     <article class="card" th:each="curso : ${cursos}">
 
-      <div class="card-image"></div>
+      <!-- MEDIA GRANDE -->
+      <div class="media">
 
+        <!-- IMAGEN -->
+        <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
+             class="media-img">
+
+        <!-- VIDEO -->
+        <video class="media-video" muted loop>
+          <source src="/videos/demo.mp4" type="video/mp4">
+        </video>
+
+        <!-- OVERLAY -->
+        <div class="overlay">
+          <span class="category" th:text="${curso.categoriaNombre}">Categoría</span>
+          <h3 th:text="${curso.titulo}">Curso</h3>
+        </div>
+
+      </div>
+
+      <!-- INFO -->
       <div class="card-body">
 
-        <span class="category" th:text="${curso.categoriaNombre}">Categoría</span>
-
-        <h3 th:text="${curso.titulo}">Título</h3>
-
-        <p th:text="${curso.descripcion}">Descripción</p>
+        <p th:text="${curso.descripcion}">
+          Descripción del curso
+        </p>
 
         <div class="actions">
           <a th:href="@{/web/cursos/editar/{id}(id=${curso.id})}" class="btn-outline">Editar</a>
@@ -58,10 +75,26 @@
 </main>
 
 <script>
-const search = document.getElementById("searchInput");
+document.querySelectorAll(".media").forEach(container => {
+  const video = container.querySelector("video");
 
+  container.addEventListener("mouseenter", () => {
+    video.style.opacity = 1;
+    video.play();
+  });
+
+  container.addEventListener("mouseleave", () => {
+    video.pause();
+    video.currentTime = 0;
+    video.style.opacity = 0;
+  });
+});
+
+// buscador
+const search = document.getElementById("searchInput");
 search.addEventListener("input", () => {
   const text = search.value.toLowerCase();
+
   document.querySelectorAll(".card").forEach(card => {
     const title = card.querySelector("h3").textContent.toLowerCase();
     card.style.display = title.includes(text) ? "block" : "none";
