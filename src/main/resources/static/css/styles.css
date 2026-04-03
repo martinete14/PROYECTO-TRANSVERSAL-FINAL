@@ -1,0 +1,58 @@
+body {
+    background: #f5f7fa;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* HEADER */
+header {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+
+/* TITULO */
+h1 {
+    font-weight: 700;
+}
+
+/* CARDS */
+.card {
+    border: none;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+}
+
+/* BADGE */
+.badge {
+    font-size: 0.8rem;
+}
+
+/* BOTONES */
+.btn {
+    border-radius: 8px;
+}
+
+.btn-success {
+    background-color: #22c55e;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #f59e0b;
+    border: none;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    border: none;
+}
+
+/* FOOTER */
+footer {
+    color: #666;
+    font-size: 0.9rem;
+}
