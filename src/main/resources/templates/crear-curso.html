@@ -20,6 +20,11 @@
 </header>
 
 <main class="container form-page" role="main">
+    <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
+        <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
+        <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
+    </section>
+
     <section class="hero">
         <h2>Nuevo curso</h2>
         <p>Completa la informacion y agrega imagen y/o video para su tarjeta.</p>

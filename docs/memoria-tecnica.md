@@ -67,8 +67,22 @@ Entregables BD:
 - Listado de cursos por categoria
 - Inscripcion de usuarios en cursos
 - Consulta de cursos de un usuario
+- Carga de imagen y video por curso (archivo o URL)
+- Reproduccion de video al hover en tarjetas de cursos
 - Validaciones de datos en entidades (`@NotBlank`, `@NotNull`)
 - Manejo basico de errores con `GlobalExceptionHandler`
+
+Robustez multimedia:
+
+- Validacion de tipo de archivo (`image/*`, `video/*`)
+- Limites de tamano configurados para subida
+- Almacenamiento de archivos en ruta configurable
+- Publicacion estatica de archivos multimedia en `/uploads/**`
+
+Pruebas implementadas:
+
+- Test de contexto de Spring Boot
+- Tests unitarios de servicios (`CursoServiceImplTest`, `InscripcionServiceImplTest`)
 
 ## 7. Frontend y SEO
 
@@ -93,6 +107,11 @@ Requisitos cubiertos:
    - Linux/Mac: `./mvnw spring-boot:run`
 4. Acceder en navegador a `http://localhost:8081/web/cursos`.
 
+### Alcance de Sistemas en esta entrega
+
+- La aplicacion queda desplegable y operativa en local con Java + MySQL.
+- La parte de contenedores (Docker / docker-compose) queda fuera de alcance en esta fase porque no fue contenido impartido aun.
+
 ## 9. Diagramas
 
 - Diagrama de clases: `docs/diagrama-clases.mmd`
@@ -102,4 +121,4 @@ Requisitos cubiertos:
 ## 10. Conclusiones
 
 El proyecto cumple con los requisitos principales del modulo transversal para Programacion, BD, Lenguaje de Marcas/SEO y uso de Git.
-La fase de contenedores Docker y despliegue en Linux queda planificada para la etapa final del proyecto, segun el ritmo de clase.
+La parte de contenedores Docker no se incluye en esta entrega por alcance academico definido en clase.

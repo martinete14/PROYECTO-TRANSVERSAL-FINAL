@@ -24,6 +24,11 @@
 
 <main class="container py-4" role="main">
 
+  <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
+    <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
+    <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
+  </section>
+
   <section class="hero">
     <h2>Explora los cursos</h2>
     <p>Contenido visual, dinámico y profesional para encontrar la mejor formación.</p>
@@ -82,6 +87,21 @@
 
   </section>
 
+  <section class="empty-state" th:if="${#lists.isEmpty(cursos)}">
+    <article>
+      <h3>Aun no hay cursos cargados</h3>
+      <p>Empieza creando tu primer curso para que los alumnos puedan explorar el catalogo.</p>
+      <a th:href="@{/web/cursos/nuevo}" class="btn-primary">Crear primer curso</a>
+    </article>
+  </section>
+
+  <section id="searchNoResults" class="empty-state" style="display:none;">
+    <article>
+      <h3>No encontramos cursos con ese texto</h3>
+      <p>Prueba con otra palabra clave o limpia la busqueda para ver todo el catalogo.</p>
+    </article>
+  </section>
+
 </main>
 
 <footer class="container py-3">
@@ -108,13 +128,21 @@ document.querySelectorAll(".media").forEach(container => {
 
 // buscador
 const search = document.getElementById("searchInput");
+const noResults = document.getElementById("searchNoResults");
 search.addEventListener("input", () => {
   const text = search.value.toLowerCase();
+  let visibleCount = 0;
 
   document.querySelectorAll(".card").forEach(card => {
     const title = card.querySelector("h3").textContent.toLowerCase();
-    card.style.display = title.includes(text) ? "block" : "none";
+    const visible = title.includes(text);
+    card.style.display = visible ? "block" : "none";
+    if (visible) visibleCount += 1;
   });
+
+  if (noResults) {
+    noResults.style.display = (text.length > 0 && visibleCount === 0) ? "block" : "none";
+  }
 });
 </script>
 

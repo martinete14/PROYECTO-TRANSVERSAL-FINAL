@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.model.Categoria;
 import com.example.demo.model.Curso;
@@ -26,8 +28,14 @@ import com.example.demo.service.CursoService;
 @RequestMapping("/web/cursos")
 public class WebController {
 
-    private static final String IMAGE_UPLOAD_DIR = "src/main/resources/static/uploads/images";
-    private static final String VIDEO_UPLOAD_DIR = "src/main/resources/static/uploads/videos";
+    private static final long MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
+    private static final long MAX_VIDEO_BYTES = 120 * 1024 * 1024; // 120 MB
+
+    @Value("${app.upload.images-dir:uploads/images}")
+    private String imageUploadDir;
+
+    @Value("${app.upload.videos-dir:uploads/videos}")
+    private String videoUploadDir;
 
     private final CursoService cursoService;
     private final CategoriaRepository categoriaRepository;
@@ -58,31 +66,45 @@ public class WebController {
             @RequestParam(required = false) String videoUrl,
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) MultipartFile videoFile,
-            @RequestParam Long categoriaId
+            @RequestParam Long categoriaId,
+            RedirectAttributes redirectAttributes
     ) {
-        Curso curso = new Curso();
-        curso.setTitulo(titulo);
-        curso.setDescripcion(descripcion);
-        curso.setInstructor(instructor);
+        try {
+            Curso curso = new Curso();
+            curso.setTitulo(titulo);
+            curso.setDescripcion(descripcion);
+            curso.setInstructor(instructor);
 
-        String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, IMAGE_UPLOAD_DIR, "/uploads/images/");
-        String videoFinal = resolveMediaUrl(videoUrl, videoFile, VIDEO_UPLOAD_DIR, "/uploads/videos/");
+            validateImageFile(imagenFile);
+            validateVideoFile(videoFile);
 
-        curso.setImagenUrl(imagenFinal);
-        curso.setVideoUrl(videoFinal);
+            String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, imageUploadDir, "/uploads/images/");
+            String videoFinal = resolveMediaUrl(videoUrl, videoFile, videoUploadDir, "/uploads/videos/");
 
-        Categoria categoria = new Categoria();
-        categoria.setId(categoriaId);
-        curso.setCategoria(categoria);
+            curso.setImagenUrl(imagenFinal);
+            curso.setVideoUrl(videoFinal);
 
-        cursoService.crearCurso(curso);
+            Categoria categoria = new Categoria();
+            categoria.setId(categoriaId);
+            curso.setCategoria(categoria);
 
-        return "redirect:/web/cursos";
+            cursoService.crearCurso(curso);
+            redirectAttributes.addFlashAttribute("successMessage", "Curso creado correctamente. Ya puedes verlo en el catalogo.");
+            return "redirect:/web/cursos";
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/web/cursos/nuevo";
+        }
     }
 
     @PostMapping("/eliminar/{id}")
-    public String eliminarCurso(@PathVariable Long id) {
-        cursoService.eliminarCurso(id);
+    public String eliminarCurso(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            cursoService.eliminarCurso(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Curso eliminado correctamente.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
         return "redirect:/web/cursos";
     }
 
@@ -108,28 +130,37 @@ public class WebController {
             @RequestParam(required = false) String videoUrl,
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) MultipartFile videoFile,
-            @RequestParam Long categoriaId
+            @RequestParam Long categoriaId,
+            RedirectAttributes redirectAttributes
     ) {
-        Curso cursoExistente = cursoService.obtenerCursoPorId(id);
+        try {
+            Curso cursoExistente = cursoService.obtenerCursoPorId(id);
 
-        Curso curso = new Curso();
-        curso.setTitulo(titulo);
-        curso.setDescripcion(descripcion);
-        curso.setInstructor(instructor);
+            Curso curso = new Curso();
+            curso.setTitulo(titulo);
+            curso.setDescripcion(descripcion);
+            curso.setInstructor(instructor);
 
-        String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, IMAGE_UPLOAD_DIR, "/uploads/images/");
-        String videoFinal = resolveMediaUrl(videoUrl, videoFile, VIDEO_UPLOAD_DIR, "/uploads/videos/");
+            validateImageFile(imagenFile);
+            validateVideoFile(videoFile);
 
-        curso.setImagenUrl(firstNonBlank(imagenFinal, cursoExistente.getImagenUrl()));
-        curso.setVideoUrl(firstNonBlank(videoFinal, cursoExistente.getVideoUrl()));
+            String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, imageUploadDir, "/uploads/images/");
+            String videoFinal = resolveMediaUrl(videoUrl, videoFile, videoUploadDir, "/uploads/videos/");
 
-        Categoria categoria = new Categoria();
-        categoria.setId(categoriaId);
-        curso.setCategoria(categoria);
+            curso.setImagenUrl(firstNonBlank(imagenFinal, cursoExistente.getImagenUrl()));
+            curso.setVideoUrl(firstNonBlank(videoFinal, cursoExistente.getVideoUrl()));
 
-        cursoService.actualizarCurso(id, curso);
+            Categoria categoria = new Categoria();
+            categoria.setId(categoriaId);
+            curso.setCategoria(categoria);
 
-        return "redirect:/web/cursos";
+            cursoService.actualizarCurso(id, curso);
+            redirectAttributes.addFlashAttribute("successMessage", "Curso actualizado correctamente.");
+            return "redirect:/web/cursos";
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/web/cursos/editar/" + id;
+        }
     }
 
     private String resolveMediaUrl(String url, MultipartFile file, String uploadDir, String publicPrefix) {
@@ -169,6 +200,32 @@ public class WebController {
             return publicPrefix + fileName;
         } catch (IOException e) {
             throw new RuntimeException("No se pudo guardar el archivo multimedia", e);
+        }
+    }
+
+    private void validateImageFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return;
+        }
+        String contentType = file.getContentType();
+        if (!StringUtils.hasText(contentType) || !contentType.startsWith("image/")) {
+            throw new RuntimeException("El archivo de imagen no es valido");
+        }
+        if (file.getSize() > MAX_IMAGE_BYTES) {
+            throw new RuntimeException("La imagen supera el limite de 5 MB");
+        }
+    }
+
+    private void validateVideoFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return;
+        }
+        String contentType = file.getContentType();
+        if (!StringUtils.hasText(contentType) || !contentType.startsWith("video/")) {
+            throw new RuntimeException("El archivo de video no es valido");
+        }
+        if (file.getSize() > MAX_VIDEO_BYTES) {
+            throw new RuntimeException("El video supera el limite de 120 MB");
         }
     }
 }

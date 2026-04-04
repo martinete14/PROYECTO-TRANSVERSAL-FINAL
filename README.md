@@ -35,6 +35,8 @@ Estructura principal:
 - Inscripcion de usuarios a cursos
 - Consulta de cursos por categoria
 - Consulta de cursos por usuario
+- Carga multimedia por curso (imagen y video por URL o por archivo)
+- Validacion de tipo y tamano de archivos multimedia
 - Validaciones con Bean Validation
 - Manejo basico de errores con GlobalExceptionHandler
 
@@ -68,6 +70,18 @@ Incluyen:
 - Jerarquia de encabezados
 - Diseno responsive
 
+## Calidad tecnica y pruebas
+
+- Tests unitarios de servicios para reglas de negocio:
+	- `CursoServiceImplTest`
+	- `InscripcionServiceImplTest`
+- Test de contexto de aplicacion (`DemoApplicationTests`)
+- Configuracion de subida de archivos por propiedades:
+	- `app.upload.base-dir`
+	- `app.upload.images-dir`
+	- `app.upload.videos-dir`
+- Publicacion de multimedia mediante ruta `/uploads/**`
+
 ## Como ejecutar en local
 
 1. Crear base de datos e inicializar esquema:
@@ -95,4 +109,7 @@ Incluyen:
 
 Proyecto preparado para la parte de Programacion, Base de Datos, Lenguaje de Marcas/SEO y Entornos de Desarrollo.
 
-La parte de despliegue con Docker queda planificada para la fase final, segun calendario de clase.
+Alcance acordado para esta entrega:
+
+- Se incluye ejecucion local completa (Spring Boot + MySQL).
+- No se incluye Docker ni docker-compose porque ese contenido no fue impartido en clase en esta fase.
