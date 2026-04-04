@@ -24,6 +24,13 @@ public class Curso {
     @NotBlank(message = "La descripción es obligatoria")
     private String descripcion;
 
+    @NotBlank(message = "El nombre del profesional es obligatorio")
+    private String instructor;
+
+    private String imagenUrl;
+
+    private String videoUrl;
+
     @NotNull(message = "La categoría es obligatoria")
     @ManyToOne
     @JoinColumn(name = "categoria_id")
@@ -60,7 +67,31 @@ public class Curso {
         return categoria;
     }
 
+    public String getInstructor() {
+        return instructor;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public void setInstructor(String instructor) {
+        this.instructor = instructor;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

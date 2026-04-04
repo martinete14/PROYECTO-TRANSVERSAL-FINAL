@@ -36,19 +36,27 @@
       <!-- MEDIA GRANDE -->
       <div class="media">
 
-        <!-- IMAGEN -->
-        <img src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
-             class="media-img">
+        <img th:if="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
+             th:src="${curso.imagenUrl}"
+             class="media-img"
+             alt="Imagen del curso">
+        <img th:unless="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
+             src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
+             class="media-img"
+             alt="Imagen del curso">
 
-        <!-- VIDEO -->
-        <video class="media-video" muted loop>
-          <source src="/videos/demo.mp4" type="video/mp4">
+        <video class="media-video" muted loop playsinline th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">
+          <source th:src="${curso.videoUrl}" type="video/mp4">
+        </video>
+        <video class="media-video" muted loop playsinline th:unless="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">
+          <source src="https://cdn.coverr.co/videos/coverr-a-student-working-on-a-laptop-1579/1080p.mp4" type="video/mp4">
         </video>
 
         <!-- OVERLAY -->
         <div class="overlay">
           <span class="category" th:text="${curso.categoriaNombre}">Categoría</span>
           <h3 th:text="${curso.titulo}">Curso</h3>
+          <p class="instructor" th:text="${curso.instructor}">Profesional</p>
         </div>
 
       </div>

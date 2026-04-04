@@ -77,6 +77,9 @@ public class CursoServiceImpl implements CursoService {
 
         curso.setTitulo(cursoActualizado.getTitulo());
         curso.setDescripcion(cursoActualizado.getDescripcion());
+        curso.setInstructor(cursoActualizado.getInstructor());
+        curso.setImagenUrl(cursoActualizado.getImagenUrl());
+        curso.setVideoUrl(cursoActualizado.getVideoUrl());
 
         if (cursoActualizado.getCategoria() == null || cursoActualizado.getCategoria().getId() == null) {
             throw new RuntimeException("La categoría es obligatoria");
@@ -106,6 +109,9 @@ public class CursoServiceImpl implements CursoService {
                 curso.getId(),
                 curso.getTitulo(),
                 curso.getDescripcion(),
+            curso.getInstructor(),
+            curso.getImagenUrl(),
+            curso.getVideoUrl(),
                 curso.getCategoria().getId(),
                 curso.getCategoria().getNombre()
         );
