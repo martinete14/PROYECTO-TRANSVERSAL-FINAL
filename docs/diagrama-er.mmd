@@ -1,0 +1,29 @@
+erDiagram
+    CATEGORIA ||--o{ CURSO : clasifica
+    USUARIO ||--o{ INSCRIPCION : realiza
+    CURSO ||--o{ INSCRIPCION : recibe
+
+    CATEGORIA {
+        BIGINT id PK
+        VARCHAR nombre
+        VARCHAR descripcion
+    }
+
+    CURSO {
+        BIGINT id PK
+        VARCHAR titulo
+        VARCHAR descripcion
+        BIGINT categoria_id FK
+    }
+
+    USUARIO {
+        BIGINT id PK
+        VARCHAR nombre
+        VARCHAR email UNIQUE
+    }
+
+    INSCRIPCION {
+        BIGINT id PK
+        BIGINT usuario_id FK
+        BIGINT curso_id FK
+    }

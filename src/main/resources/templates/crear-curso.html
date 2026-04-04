@@ -2,10 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Crear Curso</title>
-    <meta name="description" content="Crear nuevo curso">
+    <title>Crear curso | Mini Academia</title>
+    <meta name="description" content="Formulario para crear un nuevo curso en la plataforma Mini Academia.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -19,6 +20,7 @@
 <main class="container mt-4">
 
     <section>
+        <article>
         <form action="/web/cursos/crear" method="post">
 
             <div class="mb-3">
@@ -48,9 +50,16 @@
             <button type="submit" class="btn btn-success">Crear Curso</button>
 
         </form>
+        </article>
     </section>
 
 </main>
+
+<footer class="container py-3">
+    <section>
+        <p class="text-muted mb-0">Mini Academia - Gestión de cursos</p>
+    </section>
+</footer>
 
 </body>
 </html>

@@ -1,0 +1,58 @@
+classDiagram
+    class Curso {
+      +Long id
+      +String titulo
+      +String descripcion
+      +Categoria categoria
+    }
+
+    class Categoria {
+      +Long id
+      +String nombre
+      +String descripcion
+    }
+
+    class Usuario {
+      +Long id
+      +String nombre
+      +String email
+    }
+
+    class Inscripcion {
+      +Long id
+      +Usuario usuario
+      +Curso curso
+    }
+
+    class CursoController
+    class WebController
+    class UsuarioController
+    class InscripcionController
+
+    class CursoService
+    class CursoServiceImpl
+    class InscripcionService
+    class InscripcionServiceImpl
+
+    class CursoRepository
+    class CategoriaRepository
+    class UsuarioRepository
+    class InscripcionRepository
+
+    Curso "*" --> "1" Categoria
+    Inscripcion "*" --> "1" Usuario
+    Inscripcion "*" --> "1" Curso
+
+    CursoController --> CursoService
+    UsuarioController --> CursoService
+    InscripcionController --> InscripcionService
+    WebController --> CursoService
+
+    CursoServiceImpl ..|> CursoService
+    InscripcionServiceImpl ..|> InscripcionService
+
+    CursoServiceImpl --> CursoRepository
+    CursoServiceImpl --> CategoriaRepository
+    InscripcionServiceImpl --> InscripcionRepository
+    InscripcionServiceImpl --> UsuarioRepository
+    InscripcionServiceImpl --> CursoRepository
