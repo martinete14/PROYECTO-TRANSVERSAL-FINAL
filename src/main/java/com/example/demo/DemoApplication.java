@@ -1,3 +1,4 @@
+/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo;
 
 import org.springframework.boot.SpringApplication;

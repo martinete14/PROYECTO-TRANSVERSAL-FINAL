@@ -76,7 +76,7 @@
         <div class="actions">
           <a th:href="@{/web/cursos/editar/{id}(id=${curso.id})}" class="btn-outline">Editar</a>
 
-          <form th:action="@{/web/cursos/eliminar/{id}(id=${curso.id})}" method="post">
+          <form th:action="@{/web/cursos/eliminar/{id}(id=${curso.id})}" method="post" class="delete-form" th:attr="data-curso=${curso.titulo}">
             <button class="btn-danger">Eliminar</button>
           </form>
         </div>
@@ -103,6 +103,17 @@
   </section>
 
 </main>
+
+<div id="deleteModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">Confirmar eliminacion</h3>
+    <p id="modalText">¿Seguro que quieres eliminar este curso?</p>
+    <div class="modal-actions">
+      <button id="cancelDeleteBtn" type="button" class="btn-outline">Cancelar</button>
+      <button id="confirmDeleteBtn" type="button" class="btn-danger">Si, eliminar</button>
+    </div>
+  </div>
+</div>
 
 <footer class="container py-3">
   <section>
@@ -142,6 +153,40 @@ search.addEventListener("input", () => {
 
   if (noResults) {
     noResults.style.display = (text.length > 0 && visibleCount === 0) ? "block" : "none";
+  }
+});
+
+let pendingDeleteForm = null;
+const deleteModal = document.getElementById("deleteModal");
+const modalText = document.getElementById("modalText");
+const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+
+document.querySelectorAll(".delete-form").forEach(form => {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    pendingDeleteForm = form;
+    const curso = form.getAttribute("data-curso") || "este curso";
+    modalText.textContent = `¿Seguro que quieres eliminar "${curso}"? Esta accion no se puede deshacer.`;
+    deleteModal.style.display = "flex";
+  });
+});
+
+confirmDeleteBtn.addEventListener("click", () => {
+  if (pendingDeleteForm) {
+    pendingDeleteForm.submit();
+  }
+});
+
+cancelDeleteBtn.addEventListener("click", () => {
+  pendingDeleteForm = null;
+  deleteModal.style.display = "none";
+});
+
+deleteModal.addEventListener("click", (event) => {
+  if (event.target === deleteModal) {
+    pendingDeleteForm = null;
+    deleteModal.style.display = "none";
   }
 });
 </script>
