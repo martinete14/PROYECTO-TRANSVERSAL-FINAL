@@ -44,16 +44,22 @@
         <img th:if="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
              th:src="${curso.imagenUrl}"
              class="media-img"
+             loading="lazy"
+             decoding="async"
              alt="Imagen del curso">
         <img th:unless="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
              src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
              class="media-img"
+             loading="lazy"
+             decoding="async"
              alt="Imagen del curso">
 
-        <video class="media-video" muted loop playsinline th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">
+           <video class="media-video" muted loop playsinline preload="none" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
+            th:poster="${curso.imagenUrl}">
           <source th:src="${curso.videoUrl}" type="video/mp4">
         </video>
-        <video class="media-video" muted loop playsinline th:unless="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">
+           <video class="media-video" muted loop playsinline preload="none" th:unless="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
+            poster="https://images.unsplash.com/photo-1529070538774-1843cb3265df">
           <source src="https://cdn.coverr.co/videos/coverr-a-student-working-on-a-laptop-1579/1080p.mp4" type="video/mp4">
         </video>
 
