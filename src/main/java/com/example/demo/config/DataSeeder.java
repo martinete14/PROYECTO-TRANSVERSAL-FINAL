@@ -1,19 +1,11 @@
 /* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.config;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,9 +36,6 @@ public class DataSeeder implements CommandLineRunner {
     private static final String ADMIN_EMAIL = "admin@miniacademia.local";
     private static final String ADMIN_PASSWORD = "admin123";
     private static final String INSTRUCTOR_RECUPERADO = "Pendiente de reasignar";
-    private static final String PREFIJO_RECUPERADO = "Contenido recuperado";
-    private static final Path UPLOADS_IMAGES_DIR = Paths.get("uploads", "images");
-    private static final Path UPLOADS_VIDEOS_DIR = Paths.get("uploads", "videos");
     private static final Set<String> TITULOS_DESTACADOS_SEMANA = Set.of(
         "Grandes preguntas del universo",
         "Instructor de vuelo: de privado a comercial",
@@ -170,12 +159,7 @@ public class DataSeeder implements CommandLineRunner {
             cursoRepository.saveAll(cursosAGuardar);
         }
 
-        Categoria recuperados = buscarOCrearCategoria(
-            categorias,
-            "Recuperados",
-            "Material recuperado automaticamente desde uploads para reasignacion manual"
-        );
-        recuperarMultimediaHuerfana(recuperados);
+        limpiarCursosTemporalesRecuperados();
 
         aplicarDestacadosFijos();
     }
@@ -253,119 +237,15 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
-    private void recuperarMultimediaHuerfana(Categoria categoriaRecuperados) {
-        List<Curso> cursosActuales = cursoRepository.findAll();
-
-        List<Curso> recuperadosPrevios = cursosActuales.stream()
-            .filter(curso -> curso.getTitulo() != null && curso.getTitulo().startsWith(PREFIJO_RECUPERADO))
+    private void limpiarCursosTemporalesRecuperados() {
+        List<Curso> cursosTemporales = cursoRepository.findAll().stream()
+            .filter(curso -> (curso.getTitulo() != null && curso.getTitulo().startsWith("Contenido recuperado"))
+                || INSTRUCTOR_RECUPERADO.equals(curso.getInstructor()))
             .toList();
 
-        if (!recuperadosPrevios.isEmpty()) {
-            cursoRepository.deleteAll(recuperadosPrevios);
+        if (!cursosTemporales.isEmpty()) {
+            cursoRepository.deleteAll(cursosTemporales);
         }
-
-        List<Curso> cursosReales = cursoRepository.findAll().stream()
-            .filter(curso -> curso.getTitulo() == null || !curso.getTitulo().startsWith(PREFIJO_RECUPERADO))
-            .toList();
-
-        Set<String> imagenesEnUso = cursosReales.stream()
-            .map(Curso::getImagenUrl)
-            .filter(url -> url != null && !url.isBlank())
-            .collect(Collectors.toSet());
-
-        Set<String> videosEnUso = cursosReales.stream()
-            .map(Curso::getVideoUrl)
-            .filter(url -> url != null && !url.isBlank())
-            .collect(Collectors.toSet());
-
-        List<MediaArchivo> imagenesDisponibles = listarArchivosUpload(UPLOADS_IMAGES_DIR, "/uploads/images/");
-        List<MediaArchivo> videosDisponibles = listarArchivosUpload(UPLOADS_VIDEOS_DIR, "/uploads/videos/");
-
-        List<MediaArchivo> imagenesHuerfanas = deduplicarPorContenido(
-            imagenesDisponibles.stream()
-                .filter(archivo -> !imagenesEnUso.contains(archivo.url()))
-                .toList()
-        );
-
-        List<MediaArchivo> videosHuerfanos = deduplicarPorContenido(
-            videosDisponibles.stream()
-                .filter(archivo -> !videosEnUso.contains(archivo.url()))
-                .toList()
-        );
-
-        if (imagenesHuerfanas.isEmpty() && videosHuerfanos.isEmpty()) {
-            return;
-        }
-
-        List<Curso> nuevosRecuperados = new ArrayList<>();
-
-        for (MediaArchivo imagen : imagenesHuerfanas) {
-            Curso recuperado = new Curso();
-            recuperado.setTitulo(PREFIJO_RECUPERADO + " IMG - " + imagen.nombreArchivo());
-            recuperado.setDescripcion("Imagen recuperada automaticamente desde uploads para reasignacion manual. Archivo: " + imagen.nombreArchivo());
-            recuperado.setInstructor(INSTRUCTOR_RECUPERADO);
-            recuperado.setCategoria(categoriaRecuperados);
-            recuperado.setImagenUrl(imagen.url());
-            nuevosRecuperados.add(recuperado);
-        }
-
-        for (MediaArchivo video : videosHuerfanos) {
-            Curso recuperado = new Curso();
-            recuperado.setTitulo(PREFIJO_RECUPERADO + " VID - " + video.nombreArchivo());
-            recuperado.setDescripcion("Video recuperado automaticamente desde uploads para reasignacion manual. Archivo: " + video.nombreArchivo());
-            recuperado.setInstructor(INSTRUCTOR_RECUPERADO);
-            recuperado.setCategoria(categoriaRecuperados);
-            recuperado.setVideoUrl(video.url());
-            nuevosRecuperados.add(recuperado);
-        }
-
-        cursoRepository.saveAll(nuevosRecuperados);
-    }
-
-    private List<MediaArchivo> listarArchivosUpload(Path relativeDir, String urlBase) {
-        Path absoluteDir = relativeDir.toAbsolutePath();
-        if (!Files.exists(absoluteDir) || !Files.isDirectory(absoluteDir)) {
-            return List.of();
-        }
-
-        try (var stream = Files.list(absoluteDir)) {
-            return stream
-                .filter(Files::isRegularFile)
-                .sorted(Comparator.comparing(path -> path.getFileName().toString(), String.CASE_INSENSITIVE_ORDER))
-                .map(path -> new MediaArchivo(
-                    urlBase + path.getFileName().toString(),
-                    path.getFileName().toString(),
-                    calcularHash(path)
-                ))
-                .toList();
-        } catch (IOException ignored) {
-            return List.of();
-        }
-    }
-
-    private List<MediaArchivo> deduplicarPorContenido(List<MediaArchivo> archivos) {
-        Map<String, MediaArchivo> unicos = new LinkedHashMap<>();
-        for (MediaArchivo archivo : archivos) {
-            unicos.putIfAbsent(archivo.hashContenido(), archivo);
-        }
-        return new ArrayList<>(unicos.values());
-    }
-
-    private String calcularHash(Path path) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(Files.readAllBytes(path));
-            StringBuilder builder = new StringBuilder();
-            for (byte valor : hash) {
-                builder.append(String.format("%02x", valor));
-            }
-            return builder.toString();
-        } catch (IOException | NoSuchAlgorithmException ex) {
-            return path.getFileName().toString();
-        }
-    }
-
-    private record MediaArchivo(String url, String nombreArchivo, String hashContenido) {
     }
 
     private void aplicarDestacadosFijos() {
