@@ -3,11 +3,13 @@ package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,6 +25,8 @@ public class Curso {
     private String titulo;
 
     @NotBlank(message = "La descripción es obligatoria")
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
     @NotBlank(message = "El nombre del profesional es obligatorio")
@@ -31,6 +35,8 @@ public class Curso {
     private String imagenUrl;
 
     private String videoUrl;
+
+    private boolean destacadoSemana;
 
     @NotNull(message = "La categoría es obligatoria")
     @ManyToOne
@@ -94,5 +100,13 @@ public class Curso {
 
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
+    }
+
+    public boolean isDestacadoSemana() {
+        return destacadoSemana;
+    }
+
+    public void setDestacadoSemana(boolean destacadoSemana) {
+        this.destacadoSemana = destacadoSemana;
     }
 }

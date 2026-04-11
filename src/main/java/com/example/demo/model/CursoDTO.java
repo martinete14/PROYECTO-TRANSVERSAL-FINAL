@@ -11,10 +11,11 @@ public class CursoDTO {
     private String videoUrl;
     private Long categoriaId;
     private String categoriaNombre;
+    private boolean destacadoSemana;
 
     public CursoDTO() {}
 
-    public CursoDTO(Long id, String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId, String categoriaNombre) {
+    public CursoDTO(Long id, String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId, String categoriaNombre, boolean destacadoSemana) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -23,6 +24,7 @@ public class CursoDTO {
         this.videoUrl = videoUrl;
         this.categoriaId = categoriaId;
         this.categoriaNombre = categoriaNombre;
+        this.destacadoSemana = destacadoSemana;
     }
 
     // GETTERS Y SETTERS
@@ -59,6 +61,10 @@ public class CursoDTO {
         return categoriaNombre;
     }
 
+    public boolean isDestacadoSemana() {
+        return destacadoSemana;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -89,5 +95,9 @@ public class CursoDTO {
 
     public void setCategoriaNombre(String categoriaNombre) {
         this.categoriaNombre = categoriaNombre;
+    }
+
+    public void setDestacadoSemana(boolean destacadoSemana) {
+        this.destacadoSemana = destacadoSemana;
     }
 }

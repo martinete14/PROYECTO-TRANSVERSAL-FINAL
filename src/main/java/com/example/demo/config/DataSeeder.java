@@ -1,12 +1,14 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.config;
 
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ public class DataSeeder implements CommandLineRunner {
     private static final String ADMIN_NAME = "Admin MiniAcademia";
     private static final String ADMIN_EMAIL = "admin@miniacademia.local";
     private static final String ADMIN_PASSWORD = "admin123";
+    private static final String INSTRUCTOR_RECUPERADO = "Pendiente de reasignar";
     private static final Set<String> TITULOS_DESTACADOS_SEMANA = Set.of(
         "Grandes preguntas del universo",
         "Instructor de vuelo: de privado a comercial",
@@ -59,44 +62,44 @@ public class DataSeeder implements CommandLineRunner {
 
         List<Categoria> categorias = categoriaRepository.findAll();
 
-        Categoria ciencia = buscarOCrearCategoria(categorias, "Ciencia y Pensamiento", "Explora ideas científicas, filosofía y preguntas fundamentales");
-        Categoria humor = buscarOCrearCategoria(categorias, "Humor y Creatividad", "Humor aplicado al lenguaje, observación social y pensamiento crítico");
-        Categoria educacion = buscarOCrearCategoria(categorias, "Educación e Idiomas", "Formación académica, idiomas y compromiso social");
-        Categoria tecnologia = buscarOCrearCategoria(categorias, "Tecnología y Sistemas", "Impacto de la tecnología en organizaciones y educación superior");
-        Categoria disenoProgramacion = buscarOCrearCategoria(categorias, "Diseño y Programación", "Diseño digital, desarrollo web y programación orientada a proyectos");
+        Categoria ciencia = buscarOCrearCategoria(categorias, "Ciencia y Pensamiento", "Explora ideas cientÃ­ficas, filosofÃ­a y preguntas fundamentales");
+        Categoria humor = buscarOCrearCategoria(categorias, "Humor y Creatividad", "Humor aplicado al lenguaje, observaciÃ³n social y pensamiento crÃ­tico");
+        Categoria educacion = buscarOCrearCategoria(categorias, "EducaciÃ³n e Idiomas", "FormaciÃ³n acadÃ©mica, idiomas y compromiso social");
+        Categoria tecnologia = buscarOCrearCategoria(categorias, "TecnologÃ­a y Sistemas", "Impacto de la tecnologÃ­a en organizaciones y educaciÃ³n superior");
+        Categoria disenoProgramacion = buscarOCrearCategoria(categorias, "DiseÃ±o y ProgramaciÃ³n", "DiseÃ±o digital, desarrollo web y programaciÃ³n orientada a proyectos");
         Categoria literatura = buscarOCrearCategoria(categorias, "Literatura y Escritura", "Escritura, analisis cultural y pensamiento contemporaneo");
-        Categoria hoteleria = buscarOCrearCategoria(categorias, "Hotelería y Servicio", "Gestión hotelera, liderazgo de equipos y excelencia operativa");
-        buscarOCrearCategoria(categorias, "Gastronomía y Oficio", "Cocina profesional, parrilla y cultura del trabajo");
-        Categoria liderazgo = buscarOCrearCategoria(categorias, "Liderazgo y Derecho", "Gestión comunitaria, empresa y mirada jurídica internacional");
-        Categoria marketing = buscarOCrearCategoria(categorias, "Marketing y Análisis Internacional", "Estrategia comercial, análisis y relaciones internacionales");
-        Categoria aviacion = buscarOCrearCategoria(categorias, "Aviación y Operaciones de Vuelo", "Formación para pilotaje comercial, seguridad y toma de decisiones");
-        Categoria fisioterapia = buscarOCrearCategoria(categorias, "Salud y Fisioterapia", "Bienestar físico, readaptación funcional y prevención de lesiones");
-        Categoria gestionProyectos = buscarOCrearCategoria(categorias, "Gestión de Proyectos Global", "Planificación, liderazgo de equipos y ejecución de proyectos internacionales");
+        Categoria hoteleria = buscarOCrearCategoria(categorias, "HotelerÃ­a y Servicio", "GestiÃ³n hotelera, liderazgo de equipos y excelencia operativa");
+        buscarOCrearCategoria(categorias, "GastronomÃ­a y Oficio", "Cocina profesional, parrilla y cultura del trabajo");
+        Categoria liderazgo = buscarOCrearCategoria(categorias, "Liderazgo y Derecho", "GestiÃ³n comunitaria, empresa y mirada jurÃ­dica internacional");
+        Categoria marketing = buscarOCrearCategoria(categorias, "Marketing y AnÃ¡lisis Internacional", "Estrategia comercial, anÃ¡lisis y relaciones internacionales");
+        Categoria aviacion = buscarOCrearCategoria(categorias, "AviaciÃ³n y Operaciones de Vuelo", "FormaciÃ³n para pilotaje comercial, seguridad y toma de decisiones");
+        Categoria fisioterapia = buscarOCrearCategoria(categorias, "Salud y Fisioterapia", "Bienestar fÃ­sico, readaptaciÃ³n funcional y prevenciÃ³n de lesiones");
+        Categoria gestionProyectos = buscarOCrearCategoria(categorias, "GestiÃ³n de Proyectos Global", "PlanificaciÃ³n, liderazgo de equipos y ejecuciÃ³n de proyectos internacionales");
 
         // Categorias adicionales para ampliar el catalogo y mejorar el filtro principal.
         Categoria historia = buscarOCrearCategoria(categorias, "Historia y Sociedad", "Procesos historicos, memoria colectiva y comprension del presente");
-        buscarOCrearCategoria(categorias, "Cine y Actuación", "Actuacion, lenguaje audiovisual y construccion de personajes");
-        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseño de espacios habitables");
+        buscarOCrearCategoria(categorias, "Cine y ActuaciÃ³n", "Actuacion, lenguaje audiovisual y construccion de personajes");
+        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseÃ±o de espacios habitables");
         buscarOCrearCategoria(categorias, "Cultura Pop y Narrativa", "Universos narrativos, fandom y analisis cultural");
 
         fusionarCategoriasRelacionadas(
             disenoProgramacion,
-            Arrays.asList("Diseño", "Diseno", "Diseño Web", "Diseno Web", "Programación", "Programacion", "Desarrollo Web", "Frontend", "Backend")
+            Arrays.asList("DiseÃ±o", "Diseno", "DiseÃ±o Web", "Diseno Web", "ProgramaciÃ³n", "Programacion", "Desarrollo Web", "Frontend", "Backend")
         );
 
         List<Curso> cursos = new ArrayList<>();
-        cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan Martín Maldacena", "https://images.unsplash.com/photo-1507413245164-6160d8298b31", "https://cdn.coverr.co/videos/coverr-space-stars-1608/1080p.mp4", ciencia));
-        cursos.add(crearCurso("Humor con mirada crítica", "Humor, lenguaje y creatividad: cómo se construye una mirada crítica desde la risa.", "Yayo Guridi", "https://images.unsplash.com/photo-1521791136064-7986c2920216", "https://cdn.coverr.co/videos/coverr-laughing-friends-5174/1080p.mp4", humor));
-        cursos.add(crearCurso("Idiomas y compromiso social global", "Educación, idiomas y compromiso social desde la experiencia rotaria internacional.", "Victoria Tejerina Allende", "https://images.unsplash.com/photo-1523240795612-9a054b0db644", "https://cdn.coverr.co/videos/coverr-group-study-session-1579/1080p.mp4", educacion));
-        cursos.add(crearCurso("Tecnología en la educación superior", "Sistemas, educación superior y el rol de la tecnología en la formación académica.", "Fernando Javier Villagra", "https://images.unsplash.com/photo-1518779578993-ec3579fee39f", "https://cdn.coverr.co/videos/coverr-team-meeting-1578/1080p.mp4", tecnologia));
-        cursos.add(crearCurso("Escritura para entender el presente", "Escritura, pensamiento y literatura como herramienta para entender el presente.", "Rosa Montero", "https://images.unsplash.com/photo-1455390582262-044cdead277a", "https://cdn.coverr.co/videos/coverr-writing-in-a-notebook-5175/1080p.mp4", literatura));
-        cursos.add(crearCurso("Gestión hotelera con excelencia", "Experiencia real en hotelería premiada, gestión de equipos y excelencia en servicio.", "Christine Fox & David Mcghie", "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa", "https://cdn.coverr.co/videos/coverr-hotel-lobby-5182/1080p.mp4", hoteleria));
-        cursos.add(crearCurso("Liderazgo, empresa y derecho", "Liderazgo comunitario, empresa y derecho desde una mirada internacional.", "Mel Powell", "https://images.unsplash.com/photo-1552664730-d307ca884978", "https://cdn.coverr.co/videos/coverr-business-team-5179/1080p.mp4", liderazgo));
-        cursos.add(crearCurso("Marketing aplicado al mundo real", "Marketing, análisis y relaciones internacionales aplicadas al mundo real.", "Francesco Nicola Bute", "https://images.unsplash.com/photo-1552664730-d307ca884978", "https://cdn.coverr.co/videos/coverr-marketing-meeting-5178/1080p.mp4", marketing));
-        cursos.add(crearCurso("Instructor de vuelo: de privado a comercial", "Entrenamiento integral con enfoque operativo: navegación, meteorología, CRM y toma de decisiones para pilotos privados y comerciales.", "Alejo Testa", "https://images.unsplash.com/photo-1436491865332-7a61a109cc05", "https://cdn.coverr.co/videos/coverr-plane-taking-off-5180/1080p.mp4", aviacion));
-        cursos.add(crearCurso("El pasado que explica todo", "Descubre procesos historicos que construyen el presente desde una mirada critica y bien documentada.", "Nils Jacobsen", "https://images.unsplash.com/photo-1461360228754-6e81c478b882", "https://cdn.coverr.co/videos/coverr-man-reading-a-book-5306/1080p.mp4", historia));
-        cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevención de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b", "https://cdn.coverr.co/videos/coverr-doctor-checking-a-patient-1574/1080p.mp4", fisioterapia));
-        cursos.add(crearCurso("Gestión de proyectos de inicio a cierre", "Metodologías, planificación y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40", "https://cdn.coverr.co/videos/coverr-meeting-in-an-office-1577/1080p.mp4", gestionProyectos));
+        cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan MartÃ­n Maldacena", "/uploads/images/img-001.png", "/uploads/videos/vid-001.mp4", ciencia));
+        cursos.add(crearCurso("Humor con mirada crÃ­tica", "Humor, lenguaje y creatividad: cÃ³mo se construye una mirada crÃ­tica desde la risa.", "Yayo Guridi", "/uploads/images/img-002.jpg", "/uploads/videos/vid-002.mp4", humor));
+        cursos.add(crearCurso("Idiomas y compromiso social global", "EducaciÃ³n, idiomas y compromiso social desde la experiencia rotaria internacional.", "Victoria Tejerina Allende", "/uploads/images/img-003.png", "/uploads/videos/vid-003.mp4", educacion));
+        cursos.add(crearCurso("TecnologÃ­a en la educaciÃ³n superior", "Sistemas, educaciÃ³n superior y el rol de la tecnologÃ­a en la formaciÃ³n acadÃ©mica.", "Fernando Javier Villagra", "/uploads/images/1e776772-4fd3-48f7-b452-b5e537197a18.png", "/uploads/videos/vid-004.mp4", tecnologia));
+        cursos.add(crearCurso("Escritura para entender el presente", "Escritura, pensamiento y literatura como herramienta para entender el presente.", "Rosa Montero", "/uploads/images/img-004.jpg", "/uploads/videos/vid-005.mp4", literatura));
+        cursos.add(crearCurso("GestiÃ³n hotelera con excelencia", "Experiencia real en hotelerÃ­a premiada, gestiÃ³n de equipos y excelencia en servicio.", "Christine Fox & David Mcghie", "/uploads/images/img-005.png", "/uploads/videos/vid-006.mp4", hoteleria));
+        cursos.add(crearCurso("Liderazgo, empresa y derecho", "Liderazgo comunitario, empresa y derecho desde una mirada internacional.", "Mel Powell", "/uploads/images/img-006.jpeg", "/uploads/videos/vid-007.mp4", liderazgo));
+        cursos.add(crearCurso("Marketing aplicado al mundo real", "Marketing, anÃ¡lisis y relaciones internacionales aplicadas al mundo real.", "Francesco Nicola Bute", "/uploads/images/img-007.jpg", "/uploads/videos/vid-008.mp4", marketing));
+        cursos.add(crearCurso("Instructor de vuelo: de privado a comercial", "Entrenamiento integral con enfoque operativo: navegaciÃ³n, meteorologÃ­a, CRM y toma de decisiones para pilotos privados y comerciales.", "Alejo Testa", "/uploads/images/img-008.png", "/uploads/videos/vid-009.mp4", aviacion));
+        cursos.add(crearCurso("El pasado que explica todo", "Descubre procesos historicos que construyen el presente desde una mirada critica y bien documentada.", "Nils Jacobsen", "/uploads/images/482e1a87-e046-4e82-b0c2-400cd4bc8236.png", "/uploads/videos/vid-010.mp4", historia));
+        cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevenciÃ³n de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "/uploads/images/img-009.jpg", "/uploads/videos/vid-011.mp4", fisioterapia));
+        cursos.add(crearCurso("GestiÃ³n de proyectos de inicio a cierre", "MetodologÃ­as, planificaciÃ³n y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "/uploads/images/536a64bf-112e-4e05-a672-c8c0617ecf6c.png", "/uploads/videos/vid-012.mp4", gestionProyectos));
 
         Set<String> titulosLegacy = new HashSet<>(Arrays.asList(
             "java spring boot desde cero",
@@ -126,16 +129,37 @@ public class DataSeeder implements CommandLineRunner {
             cursoRepository.deleteAll(cursosLegacy);
         }
 
-        Set<String> titulosActuales = new HashSet<>();
-        cursoRepository.findAll().forEach(c -> titulosActuales.add(c.getTitulo().toLowerCase(Locale.ROOT)));
-
-        List<Curso> cursosNuevos = cursos.stream()
-                .filter(c -> !titulosActuales.contains(c.getTitulo().toLowerCase(Locale.ROOT)))
-                .toList();
-
-        if (!cursosNuevos.isEmpty()) {
-            cursoRepository.saveAll(cursosNuevos);
+        // Actualizar cursos existentes o crear nuevos
+        List<Curso> cursosActuales = cursoRepository.findAll();
+        Map<String, Curso> cursosPorTituloNormalizado = new HashMap<>();
+        for (Curso curso : cursosActuales) {
+            cursosPorTituloNormalizado.put(normalizarTexto(curso.getTitulo()), curso);
         }
+
+        List<Curso> cursosAGuardar = new ArrayList<>();
+        for (Curso cursoNuevo : cursos) {
+            String tituloNormalizado = normalizarTexto(cursoNuevo.getTitulo());
+            Curso existente = cursosPorTituloNormalizado.get(tituloNormalizado);
+            
+            if (existente != null) {
+                // Actualizar curso existente con nuevas URLs
+                existente.setDescripcion(cursoNuevo.getDescripcion());
+                existente.setInstructor(cursoNuevo.getInstructor());
+                existente.setImagenUrl(cursoNuevo.getImagenUrl());
+                existente.setVideoUrl(cursoNuevo.getVideoUrl());
+                existente.setCategoria(cursoNuevo.getCategoria());
+                cursosAGuardar.add(existente);
+            } else {
+                // Crear nuevo curso
+                cursosAGuardar.add(cursoNuevo);
+            }
+        }
+
+        if (!cursosAGuardar.isEmpty()) {
+            cursoRepository.saveAll(cursosAGuardar);
+        }
+
+        limpiarCursosTemporalesRecuperados();
 
         aplicarDestacadosFijos();
     }
@@ -213,6 +237,17 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 
+    private void limpiarCursosTemporalesRecuperados() {
+        List<Curso> cursosTemporales = cursoRepository.findAll().stream()
+            .filter(curso -> (curso.getTitulo() != null && curso.getTitulo().startsWith("Contenido recuperado"))
+                || INSTRUCTOR_RECUPERADO.equals(curso.getInstructor()))
+            .toList();
+
+        if (!cursosTemporales.isEmpty()) {
+            cursoRepository.deleteAll(cursosTemporales);
+        }
+    }
+
     private void aplicarDestacadosFijos() {
         List<Curso> cursos = cursoRepository.findAll();
         List<Curso> actualizados = cursos.stream()
@@ -248,3 +283,4 @@ public class DataSeeder implements CommandLineRunner {
         usuarioRepository.save(usuario);
     }
 }
+

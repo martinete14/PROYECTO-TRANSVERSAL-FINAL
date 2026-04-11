@@ -12,7 +12,8 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
 
     List<Curso> findByCategoriaId(Long categoriaId);
 
-    // 🔥 NUEVO
+    List<Curso> findByInstructorContainingIgnoreCase(String instructor);
+
     @Query("SELECT i.curso FROM Inscripcion i WHERE i.usuario.id = :usuarioId")
     List<Curso> findCursosByUsuarioId(Long usuarioId);
 }

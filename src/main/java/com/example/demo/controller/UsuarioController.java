@@ -21,7 +21,7 @@ public class UsuarioController {
         this.cursoService = cursoService;
     }
 
-    // 🔥 GET cursos de un usuario
+    //  GET cursos de un usuario
     @GetMapping("/{id}/cursos")
     public List<CursoDTO> obtenerCursosUsuario(@PathVariable Long id) {
         return cursoService.obtenerCursosPorUsuario(id);
