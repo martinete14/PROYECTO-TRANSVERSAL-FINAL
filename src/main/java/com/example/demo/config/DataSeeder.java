@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.config;
 
 import java.text.Normalizer;
@@ -62,44 +62,44 @@ public class DataSeeder implements CommandLineRunner {
 
         List<Categoria> categorias = categoriaRepository.findAll();
 
-        Categoria ciencia = buscarOCrearCategoria(categorias, "Ciencia y Pensamiento", "Explora ideas científicas, filosofía y preguntas fundamentales");
-        Categoria humor = buscarOCrearCategoria(categorias, "Humor y Creatividad", "Humor aplicado al lenguaje, observación social y pensamiento crítico");
-        Categoria educacion = buscarOCrearCategoria(categorias, "Educación e Idiomas", "Formación académica, idiomas y compromiso social");
-        Categoria tecnologia = buscarOCrearCategoria(categorias, "Tecnología y Sistemas", "Impacto de la tecnología en organizaciones y educación superior");
-        Categoria disenoProgramacion = buscarOCrearCategoria(categorias, "Diseño y Programación", "Diseño digital, desarrollo web y programación orientada a proyectos");
+        Categoria ciencia = buscarOCrearCategoria(categorias, "Ciencia y Pensamiento", "Explora ideas cientÃ­ficas, filosofÃ­a y preguntas fundamentales");
+        Categoria humor = buscarOCrearCategoria(categorias, "Humor y Creatividad", "Humor aplicado al lenguaje, observaciÃ³n social y pensamiento crÃ­tico");
+        Categoria educacion = buscarOCrearCategoria(categorias, "EducaciÃ³n e Idiomas", "FormaciÃ³n acadÃ©mica, idiomas y compromiso social");
+        Categoria tecnologia = buscarOCrearCategoria(categorias, "TecnologÃ­a y Sistemas", "Impacto de la tecnologÃ­a en organizaciones y educaciÃ³n superior");
+        Categoria disenoProgramacion = buscarOCrearCategoria(categorias, "DiseÃ±o y ProgramaciÃ³n", "DiseÃ±o digital, desarrollo web y programaciÃ³n orientada a proyectos");
         Categoria literatura = buscarOCrearCategoria(categorias, "Literatura y Escritura", "Escritura, analisis cultural y pensamiento contemporaneo");
-        Categoria hoteleria = buscarOCrearCategoria(categorias, "Hotelería y Servicio", "Gestión hotelera, liderazgo de equipos y excelencia operativa");
-        buscarOCrearCategoria(categorias, "Gastronomía y Oficio", "Cocina profesional, parrilla y cultura del trabajo");
-        Categoria liderazgo = buscarOCrearCategoria(categorias, "Liderazgo y Derecho", "Gestión comunitaria, empresa y mirada jurídica internacional");
-        Categoria marketing = buscarOCrearCategoria(categorias, "Marketing y Análisis Internacional", "Estrategia comercial, análisis y relaciones internacionales");
-        Categoria aviacion = buscarOCrearCategoria(categorias, "Aviación y Operaciones de Vuelo", "Formación para pilotaje comercial, seguridad y toma de decisiones");
-        Categoria fisioterapia = buscarOCrearCategoria(categorias, "Salud y Fisioterapia", "Bienestar físico, readaptación funcional y prevención de lesiones");
-        Categoria gestionProyectos = buscarOCrearCategoria(categorias, "Gestión de Proyectos Global", "Planificación, liderazgo de equipos y ejecución de proyectos internacionales");
+        Categoria hoteleria = buscarOCrearCategoria(categorias, "HotelerÃ­a y Servicio", "GestiÃ³n hotelera, liderazgo de equipos y excelencia operativa");
+        buscarOCrearCategoria(categorias, "GastronomÃ­a y Oficio", "Cocina profesional, parrilla y cultura del trabajo");
+        Categoria liderazgo = buscarOCrearCategoria(categorias, "Liderazgo y Derecho", "GestiÃ³n comunitaria, empresa y mirada jurÃ­dica internacional");
+        Categoria marketing = buscarOCrearCategoria(categorias, "Marketing y AnÃ¡lisis Internacional", "Estrategia comercial, anÃ¡lisis y relaciones internacionales");
+        Categoria aviacion = buscarOCrearCategoria(categorias, "AviaciÃ³n y Operaciones de Vuelo", "FormaciÃ³n para pilotaje comercial, seguridad y toma de decisiones");
+        Categoria fisioterapia = buscarOCrearCategoria(categorias, "Salud y Fisioterapia", "Bienestar fÃ­sico, readaptaciÃ³n funcional y prevenciÃ³n de lesiones");
+        Categoria gestionProyectos = buscarOCrearCategoria(categorias, "GestiÃ³n de Proyectos Global", "PlanificaciÃ³n, liderazgo de equipos y ejecuciÃ³n de proyectos internacionales");
 
         // Categorias adicionales para ampliar el catalogo y mejorar el filtro principal.
         Categoria historia = buscarOCrearCategoria(categorias, "Historia y Sociedad", "Procesos historicos, memoria colectiva y comprension del presente");
-        buscarOCrearCategoria(categorias, "Cine y Actuación", "Actuacion, lenguaje audiovisual y construccion de personajes");
-        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseño de espacios habitables");
+        buscarOCrearCategoria(categorias, "Cine y ActuaciÃ³n", "Actuacion, lenguaje audiovisual y construccion de personajes");
+        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseÃ±o de espacios habitables");
         buscarOCrearCategoria(categorias, "Cultura Pop y Narrativa", "Universos narrativos, fandom y analisis cultural");
 
         fusionarCategoriasRelacionadas(
             disenoProgramacion,
-            Arrays.asList("Diseño", "Diseno", "Diseño Web", "Diseno Web", "Programación", "Programacion", "Desarrollo Web", "Frontend", "Backend")
+            Arrays.asList("DiseÃ±o", "Diseno", "DiseÃ±o Web", "Diseno Web", "ProgramaciÃ³n", "Programacion", "Desarrollo Web", "Frontend", "Backend")
         );
 
         List<Curso> cursos = new ArrayList<>();
-        cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan Martín Maldacena", "/uploads/images/0f6b3ce5-7705-415f-900a-1815fc003a2b.png", "/uploads/videos/17611120-11db-4ea2-a9ce-0b2f1a4d68ce.mp4", ciencia));
-        cursos.add(crearCurso("Humor con mirada crítica", "Humor, lenguaje y creatividad: cómo se construye una mirada crítica desde la risa.", "Yayo Guridi", "/uploads/images/1606bd28-708c-4368-ac78-99ec75d061da.jpg", "/uploads/videos/265fbdc9-0190-48be-a918-8117bcf7ed6d.mp4", humor));
-        cursos.add(crearCurso("Idiomas y compromiso social global", "Educación, idiomas y compromiso social desde la experiencia rotaria internacional.", "Victoria Tejerina Allende", "/uploads/images/16c1a8e0-8b86-4b69-850c-01993e72c26e.png", "/uploads/videos/32dd16b3-849f-4b2b-9026-c9fc03355376.mp4", educacion));
-        cursos.add(crearCurso("Tecnología en la educación superior", "Sistemas, educación superior y el rol de la tecnología en la formación académica.", "Fernando Javier Villagra", "/uploads/images/1e776772-4fd3-48f7-b452-b5e537197a18.png", "/uploads/videos/33dfd196-8ec9-466b-84e8-0010f745c6ac.mp4", tecnologia));
-        cursos.add(crearCurso("Escritura para entender el presente", "Escritura, pensamiento y literatura como herramienta para entender el presente.", "Rosa Montero", "/uploads/images/22799d26-6f56-46a9-b907-1a80edc3d342.jpg", "/uploads/videos/375c3e43-b0e3-4f73-8bd8-b181f39570b7.mp4", literatura));
-        cursos.add(crearCurso("Gestión hotelera con excelencia", "Experiencia real en hotelería premiada, gestión de equipos y excelencia en servicio.", "Christine Fox & David Mcghie", "/uploads/images/23a3e63e-0d7a-47eb-bf4f-91664c636557.png", "/uploads/videos/3c9080f7-5558-42c2-8a9b-5bf25d8652e4.mp4", hoteleria));
-        cursos.add(crearCurso("Liderazgo, empresa y derecho", "Liderazgo comunitario, empresa y derecho desde una mirada internacional.", "Mel Powell", "/uploads/images/25eeda1c-aef5-4734-b120-7d986390e62f.jpeg", "/uploads/videos/560fd961-ad95-4e91-b135-e31133d13e53.mp4", liderazgo));
-        cursos.add(crearCurso("Marketing aplicado al mundo real", "Marketing, análisis y relaciones internacionales aplicadas al mundo real.", "Francesco Nicola Bute", "/uploads/images/323a11b0-7be1-4d3e-982d-ad1821baa1c0.jpg", "/uploads/videos/5f0e3e9b-5bbc-4683-b3b0-2d000cb12d2e.mp4", marketing));
-        cursos.add(crearCurso("Instructor de vuelo: de privado a comercial", "Entrenamiento integral con enfoque operativo: navegación, meteorología, CRM y toma de decisiones para pilotos privados y comerciales.", "Alejo Testa", "/uploads/images/3f79b893-54f0-476f-8525-ebd15ac2589c.png", "/uploads/videos/5fc7cdce-2732-47fa-acf8-7b92144c406d.mp4", aviacion));
-        cursos.add(crearCurso("El pasado que explica todo", "Descubre procesos historicos que construyen el presente desde una mirada critica y bien documentada.", "Nils Jacobsen", "/uploads/images/482e1a87-e046-4e82-b0c2-400cd4bc8236.png", "/uploads/videos/63e7e9e3-002a-47bc-898c-1c703681b8a9.mp4", historia));
-        cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevención de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "/uploads/images/4e931701-5b7a-4682-8913-d3eaffc57bcd.jpg", "/uploads/videos/69052cb3-cca5-46dd-ac7c-01734bc3a178.mp4", fisioterapia));
-        cursos.add(crearCurso("Gestión de proyectos de inicio a cierre", "Metodologías, planificación y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "/uploads/images/536a64bf-112e-4e05-a672-c8c0617ecf6c.png", "/uploads/videos/86584f29-d803-42fb-923c-b0cd4be83444.mp4", gestionProyectos));
+        cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan MartÃ­n Maldacena", "/uploads/images/img-001.png", "/uploads/videos/vid-001.mp4", ciencia));
+        cursos.add(crearCurso("Humor con mirada crÃ­tica", "Humor, lenguaje y creatividad: cÃ³mo se construye una mirada crÃ­tica desde la risa.", "Yayo Guridi", "/uploads/images/img-002.jpg", "/uploads/videos/vid-002.mp4", humor));
+        cursos.add(crearCurso("Idiomas y compromiso social global", "EducaciÃ³n, idiomas y compromiso social desde la experiencia rotaria internacional.", "Victoria Tejerina Allende", "/uploads/images/img-003.png", "/uploads/videos/vid-003.mp4", educacion));
+        cursos.add(crearCurso("TecnologÃ­a en la educaciÃ³n superior", "Sistemas, educaciÃ³n superior y el rol de la tecnologÃ­a en la formaciÃ³n acadÃ©mica.", "Fernando Javier Villagra", "/uploads/images/1e776772-4fd3-48f7-b452-b5e537197a18.png", "/uploads/videos/vid-004.mp4", tecnologia));
+        cursos.add(crearCurso("Escritura para entender el presente", "Escritura, pensamiento y literatura como herramienta para entender el presente.", "Rosa Montero", "/uploads/images/img-004.jpg", "/uploads/videos/vid-005.mp4", literatura));
+        cursos.add(crearCurso("GestiÃ³n hotelera con excelencia", "Experiencia real en hotelerÃ­a premiada, gestiÃ³n de equipos y excelencia en servicio.", "Christine Fox & David Mcghie", "/uploads/images/img-005.png", "/uploads/videos/vid-006.mp4", hoteleria));
+        cursos.add(crearCurso("Liderazgo, empresa y derecho", "Liderazgo comunitario, empresa y derecho desde una mirada internacional.", "Mel Powell", "/uploads/images/img-006.jpeg", "/uploads/videos/vid-007.mp4", liderazgo));
+        cursos.add(crearCurso("Marketing aplicado al mundo real", "Marketing, anÃ¡lisis y relaciones internacionales aplicadas al mundo real.", "Francesco Nicola Bute", "/uploads/images/img-007.jpg", "/uploads/videos/vid-008.mp4", marketing));
+        cursos.add(crearCurso("Instructor de vuelo: de privado a comercial", "Entrenamiento integral con enfoque operativo: navegaciÃ³n, meteorologÃ­a, CRM y toma de decisiones para pilotos privados y comerciales.", "Alejo Testa", "/uploads/images/img-008.png", "/uploads/videos/vid-009.mp4", aviacion));
+        cursos.add(crearCurso("El pasado que explica todo", "Descubre procesos historicos que construyen el presente desde una mirada critica y bien documentada.", "Nils Jacobsen", "/uploads/images/482e1a87-e046-4e82-b0c2-400cd4bc8236.png", "/uploads/videos/vid-010.mp4", historia));
+        cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevenciÃ³n de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "/uploads/images/img-009.jpg", "/uploads/videos/vid-011.mp4", fisioterapia));
+        cursos.add(crearCurso("GestiÃ³n de proyectos de inicio a cierre", "MetodologÃ­as, planificaciÃ³n y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "/uploads/images/536a64bf-112e-4e05-a672-c8c0617ecf6c.png", "/uploads/videos/vid-012.mp4", gestionProyectos));
 
         Set<String> titulosLegacy = new HashSet<>(Arrays.asList(
             "java spring boot desde cero",
@@ -283,3 +283,4 @@ public class DataSeeder implements CommandLineRunner {
         usuarioRepository.save(usuario);
     }
 }
+
