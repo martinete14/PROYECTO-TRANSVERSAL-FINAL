@@ -4,9 +4,11 @@ package com.example.demo.config;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -126,15 +128,34 @@ public class DataSeeder implements CommandLineRunner {
             cursoRepository.deleteAll(cursosLegacy);
         }
 
-        Set<String> titulosActuales = new HashSet<>();
-        cursoRepository.findAll().forEach(c -> titulosActuales.add(c.getTitulo().toLowerCase(Locale.ROOT)));
+        // Actualizar cursos existentes o crear nuevos
+        List<Curso> cursosActuales = cursoRepository.findAll();
+        Map<String, Curso> cursosPorTituloNormalizado = new HashMap<>();
+        for (Curso curso : cursosActuales) {
+            cursosPorTituloNormalizado.put(normalizarTexto(curso.getTitulo()), curso);
+        }
 
-        List<Curso> cursosNuevos = cursos.stream()
-                .filter(c -> !titulosActuales.contains(c.getTitulo().toLowerCase(Locale.ROOT)))
-                .toList();
+        List<Curso> cursosAGuardar = new ArrayList<>();
+        for (Curso cursoNuevo : cursos) {
+            String tituloNormalizado = normalizarTexto(cursoNuevo.getTitulo());
+            Curso existente = cursosPorTituloNormalizado.get(tituloNormalizado);
+            
+            if (existente != null) {
+                // Actualizar curso existente con nuevas URLs
+                existente.setDescripcion(cursoNuevo.getDescripcion());
+                existente.setInstructor(cursoNuevo.getInstructor());
+                existente.setImagenUrl(cursoNuevo.getImagenUrl());
+                existente.setVideoUrl(cursoNuevo.getVideoUrl());
+                existente.setCategoria(cursoNuevo.getCategoria());
+                cursosAGuardar.add(existente);
+            } else {
+                // Crear nuevo curso
+                cursosAGuardar.add(cursoNuevo);
+            }
+        }
 
-        if (!cursosNuevos.isEmpty()) {
-            cursoRepository.saveAll(cursosNuevos);
+        if (!cursosAGuardar.isEmpty()) {
+            cursoRepository.saveAll(cursosAGuardar);
         }
 
         aplicarDestacadosFijos();

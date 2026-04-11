@@ -20,6 +20,12 @@ public interface CursoService {
 
     void eliminarCurso(Long id);
 
-    // 🔵 NUEVO (PARA EDITAR)
+    // 🔵 NUEVO (PARA EDITAR) mejora completa
     Curso obtenerCursoPorId(Long id);
+
+    List<Curso> obtenerCursosEntidad();
+
+    List<Curso> obtenerCursosPorInstructor(String instructor);
+
+    void actualizarDestacadoSemana(Long id, boolean destacadoSemana);
 }
