@@ -87,7 +87,7 @@
   <section th:if="${!#lists.isEmpty(cursos)}">
     <p class="hero-kicker section-heading-kicker">SELECCION ALEATORIA</p>
     <div class="section-heading">
-      <h2>Ocho cursos para descubrir hoy</h2>
+      <h2 th:text="${#lists.size(cursos)} + ' cursos para descubrir hoy'">Ocho cursos para descubrir hoy</h2>
       <div class="section-heading-filter">
         <select id="categorySelect" class="filter-select" aria-label="Filtrar por categoria">
           <option value="">Todas las categorias</option>
