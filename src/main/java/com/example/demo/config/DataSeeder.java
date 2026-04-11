@@ -1,9 +1,14 @@
 /* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.config;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -35,6 +40,9 @@ public class DataSeeder implements CommandLineRunner {
     private static final String ADMIN_NAME = "Admin MiniAcademia";
     private static final String ADMIN_EMAIL = "admin@miniacademia.local";
     private static final String ADMIN_PASSWORD = "admin123";
+    private static final String INSTRUCTOR_RECUPERADO = "Pendiente de reasignar";
+    private static final Path UPLOADS_IMAGES_DIR = Paths.get("uploads", "images");
+    private static final Path UPLOADS_VIDEOS_DIR = Paths.get("uploads", "videos");
     private static final Set<String> TITULOS_DESTACADOS_SEMANA = Set.of(
         "Grandes preguntas del universo",
         "Instructor de vuelo: de privado a comercial",
@@ -158,6 +166,13 @@ public class DataSeeder implements CommandLineRunner {
             cursoRepository.saveAll(cursosAGuardar);
         }
 
+        Categoria recuperados = buscarOCrearCategoria(
+            categorias,
+            "Recuperados",
+            "Material recuperado automaticamente desde uploads para reasignacion manual"
+        );
+        recuperarMultimediaHuerfana(recuperados);
+
         aplicarDestacadosFijos();
     }
 
@@ -231,6 +246,76 @@ public class DataSeeder implements CommandLineRunner {
             }
 
             categoriaRepository.delete(candidata);
+        }
+    }
+
+    private void recuperarMultimediaHuerfana(Categoria categoriaRecuperados) {
+        List<Curso> cursosActuales = cursoRepository.findAll();
+
+        Set<String> imagenesEnUso = cursosActuales.stream()
+            .map(Curso::getImagenUrl)
+            .filter(url -> url != null && !url.isBlank())
+            .collect(Collectors.toSet());
+
+        Set<String> videosEnUso = cursosActuales.stream()
+            .map(Curso::getVideoUrl)
+            .filter(url -> url != null && !url.isBlank())
+            .collect(Collectors.toSet());
+
+        List<String> imagenesDisponibles = listarArchivosUpload(UPLOADS_IMAGES_DIR, "/uploads/images/");
+        List<String> videosDisponibles = listarArchivosUpload(UPLOADS_VIDEOS_DIR, "/uploads/videos/");
+
+        List<String> imagenesHuerfanas = imagenesDisponibles.stream()
+            .filter(url -> !imagenesEnUso.contains(url))
+            .toList();
+
+        List<String> videosHuerfanos = videosDisponibles.stream()
+            .filter(url -> !videosEnUso.contains(url))
+            .toList();
+
+        int totalRecuperados = Math.max(imagenesHuerfanas.size(), videosHuerfanos.size());
+        if (totalRecuperados == 0) {
+            return;
+        }
+
+        List<Curso> nuevosRecuperados = new ArrayList<>();
+        for (int i = 0; i < totalRecuperados; i++) {
+            Curso recuperado = new Curso();
+            recuperado.setTitulo("Contenido recuperado " + (i + 1));
+            recuperado.setDescripcion("Curso temporal generado automaticamente para recuperar multimedia tras incidencia de base de datos.");
+            recuperado.setInstructor(INSTRUCTOR_RECUPERADO);
+            recuperado.setCategoria(categoriaRecuperados);
+
+            if (i < imagenesHuerfanas.size()) {
+                recuperado.setImagenUrl(imagenesHuerfanas.get(i));
+            }
+
+            if (i < videosHuerfanos.size()) {
+                recuperado.setVideoUrl(videosHuerfanos.get(i));
+            }
+
+            nuevosRecuperados.add(recuperado);
+        }
+
+        cursoRepository.saveAll(nuevosRecuperados);
+    }
+
+    private List<String> listarArchivosUpload(Path relativeDir, String urlBase) {
+        Path absoluteDir = relativeDir.toAbsolutePath();
+        if (!Files.exists(absoluteDir) || !Files.isDirectory(absoluteDir)) {
+            return List.of();
+        }
+
+        try (var stream = Files.list(absoluteDir)) {
+            return stream
+                .filter(Files::isRegularFile)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .sorted(Comparator.naturalOrder())
+                .map(filename -> urlBase + filename)
+                .toList();
+        } catch (IOException ignored) {
+            return List.of();
         }
     }
 
