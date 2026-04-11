@@ -70,33 +70,38 @@ public class WebController {
 
     @GetMapping
     public String verCursos(@RequestParam(required = false) Long categoriaId, Model model) {
-        List<CursoDTO> cursos = new ArrayList<>(cursoService.obtenerCursos());
+        List<CursoDTO> todosLosCursos = new ArrayList<>(cursoService.obtenerCursos());
+        boolean esPortada = categoriaId == null;
 
-        if (categoriaId != null) {
-            cursos = cursos.stream()
+        List<CursoDTO> cursosCatalogo;
+        List<CursoDTO> cursosDestacados;
+
+        if (esPortada) {
+            cursosDestacados = todosLosCursos.stream()
+                .filter(CursoDTO::isDestacadoSemana)
+                .limit(4)
+                .toList();
+
+            List<CursoDTO> cursosNoDestacados = todosLosCursos.stream()
+                .filter(curso -> !curso.isDestacadoSemana())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+            Collections.shuffle(cursosNoDestacados);
+            cursosCatalogo = cursosNoDestacados.stream()
+                .limit(8)
+                .toList();
+        } else {
+            cursosCatalogo = todosLosCursos.stream()
                 .filter(curso -> categoriaId.equals(curso.getCategoriaId()))
                 .collect(Collectors.toCollection(ArrayList::new));
+            cursosDestacados = List.of();
         }
-
-        List<CursoDTO> cursosDestacados = cursos.stream()
-            .filter(CursoDTO::isDestacadoSemana)
-            .limit(4)
-            .toList();
-
-        List<CursoDTO> cursosNoDestacados = cursos.stream()
-            .filter(curso -> !curso.isDestacadoSemana())
-            .collect(Collectors.toCollection(ArrayList::new));
-
-        Collections.shuffle(cursosNoDestacados);
-
-        List<CursoDTO> cursosCatalogo = cursosNoDestacados.stream()
-            .limit(8)
-            .toList();
 
         model.addAttribute("cursosDestacados", cursosDestacados);
         model.addAttribute("cursos", cursosCatalogo);
         model.addAttribute("categorias", categoriaRepository.findAll());
         model.addAttribute("categoriaSeleccionada", categoriaId);
+        model.addAttribute("esPortada", esPortada);
 
         return "cursos";
     }

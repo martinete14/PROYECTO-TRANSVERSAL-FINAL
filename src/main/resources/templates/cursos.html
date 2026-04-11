@@ -42,11 +42,11 @@
     <p>Descubre cuatro cursos destacados y una seleccion reducida de cursos aleatorios para navegar sin agobio y con foco.</p>
   </section>
 
-  <section class="featured-banner" th:if="${!#lists.isEmpty(cursosDestacados)}">
+  <section class="featured-banner" th:if="${esPortada and !#lists.isEmpty(cursosDestacados)}">
     <p>Destacados de la semana</p>
   </section>
 
-  <section class="featured-row" th:if="${!#lists.isEmpty(cursosDestacados)}">
+  <section class="featured-row" th:if="${esPortada and !#lists.isEmpty(cursosDestacados)}">
     <article class="course-card course-card--featured"
              th:each="cursoDestacado : ${cursosDestacados}"
              tabindex="0"
@@ -105,7 +105,7 @@
              th:attr="data-title=${curso.titulo},data-category=${curso.categoriaNombre},data-category-id=${curso.categoriaId},data-instructor=${curso.instructor},data-href=@{/web/cursos/{id}(id=${curso.id})}">
 
       <div class="media-frame">
-      <div class="course-badge-new" th:if="${iterStat.first}">NUEVO</div>
+      <div class="course-badge-new" th:if="${esPortada and iterStat.first}">NUEVO</div>
         <img th:if="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
              th:src="${curso.imagenUrl}"
              class="media-img"
