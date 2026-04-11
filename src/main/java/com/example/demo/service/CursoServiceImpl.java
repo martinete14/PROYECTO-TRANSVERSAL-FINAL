@@ -2,6 +2,7 @@
 package com.example.demo.service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -104,17 +105,109 @@ public class CursoServiceImpl implements CursoService {
         cursoRepository.deleteById(id);
     }
 
-    // mapper xd
+    @Override
+    public List<Curso> obtenerCursosEntidad() {
+        return cursoRepository.findAll();
+    }
+
+    @Override
+    public List<Curso> obtenerCursosPorInstructor(String instructor) {
+        if (instructor == null || instructor.isBlank()) {
+            return cursoRepository.findAll();
+        }
+        return cursoRepository.findByInstructorContainingIgnoreCase(instructor.trim());
+    }
+
+    @Override
+    public void actualizarDestacadoSemana(Long id, boolean destacadoSemana) {
+        Curso curso = cursoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        curso.setDestacadoSemana(destacadoSemana);
+        cursoRepository.save(curso);
+    }
+
+    // mappppper xd
     private CursoDTO mapToDTO(Curso curso) {
         return new CursoDTO(
                 curso.getId(),
                 curso.getTitulo(),
-                curso.getDescripcion(),
-            curso.getInstructor(),
-            curso.getImagenUrl(),
-            curso.getVideoUrl(),
+                construirDescripcionCatalogo(curso),
+                curso.getInstructor(),
+                curso.getImagenUrl(),
+                curso.getVideoUrl(),
                 curso.getCategoria().getId(),
-                curso.getCategoria().getNombre()
+            curso.getCategoria().getNombre(),
+            curso.isDestacadoSemana()
         );
+    }
+
+    private String construirDescripcionCatalogo(Curso curso) {
+        String enfoque = obtenerEnfoquePorCategoria(curso);
+
+        return String.format(
+                "Este curso incluye %s, ejemplos claros y practica aplicada para avanzar con seguridad.",
+                enfoque
+        );
+    }
+
+    private String obtenerNombreVisible(String instructor) {
+        if (instructor == null || instructor.isBlank()) {
+            return "Este instructor";
+        }
+
+        String[] partes = instructor.trim().split("\\s+");
+        if (partes.length >= 2) {
+            return partes[0] + " " + partes[1];
+        }
+
+        return partes[0];
+    }
+
+    private String obtenerEnfoquePorCategoria(Curso curso) {
+        if (curso.getCategoria() == null || curso.getCategoria().getNombre() == null) {
+            return "contenido actual, criterio profesional";
+        }
+
+        String categoria = curso.getCategoria().getNombre().toLowerCase(Locale.ROOT);
+
+        if (categoria.contains("ciencia")) {
+            return "analisis riguroso, ideas potentes";
+        }
+        if (categoria.contains("humor")) {
+            return "creatividad verbal, mirada critica";
+        }
+        if (categoria.contains("idioma") || categoria.contains("educa")) {
+            return "comunicacion global, aprendizaje practico";
+        }
+        if (categoria.contains("tecnolog") || categoria.contains("programaci") || categoria.contains("diseño") || categoria.contains("diseno")) {
+            return "vision digital, resolucion practica";
+        }
+        if (categoria.contains("literatura") || categoria.contains("escritura")) {
+            return "lectura profunda, escritura consciente";
+        }
+        if (categoria.contains("hotel")) {
+            return "gestion operativa, servicio excelente";
+        }
+        if (categoria.contains("gastronom")) {
+            return "tecnica culinaria, oficio real";
+        }
+        if (categoria.contains("liderazgo") || categoria.contains("derecho")) {
+            return "criterio estrategico, liderazgo humano";
+        }
+        if (categoria.contains("marketing")) {
+            return "estrategia comercial, analisis util";
+        }
+        if (categoria.contains("aviaci")) {
+            return "disciplina operativa, decisiones seguras";
+        }
+        if (categoria.contains("fisioterapia") || categoria.contains("salud")) {
+            return "movilidad funcional, bienestar corporal";
+        }
+        if (categoria.contains("proyecto")) {
+            return "planificacion ordenada, ejecucion solida";
+        }
+
+        return "contenido actual, criterio profesional";
     }
 }
