@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Acceso | Mini Academia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<header class="topbar" role="banner">
+  <h1 class="brand">Mini Academia</h1>
+</header>
+
+<main class="page-shell form-page" role="main">
+  <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
+    <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
+    <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
+  </section>
+
+  <section class="form-card form-card-premium" style="max-width:640px;margin:26px auto;">
+    <article>
+      <div class="form-heading-row">
+        <div>
+          <p class="section-kicker">ACCESO SEGURO</p>
+          <h2 class="form-title">Iniciar sesión</h2>
+        </div>
+        <p class="form-heading-note">Usa uno de los perfiles demo para navegar por permisos reales de rol.</p>
+      </div>
+
+      <form th:action="@{/web/auth/login}" method="post" class="editorial-form">
+        <section class="form-section-grid">
+          <div class="field field-span-2">
+            <label class="field-label">Email</label>
+            <input type="email" name="email" class="field-input" th:value="${defaultEmail}" required>
+          </div>
+
+          <div class="field field-span-2">
+            <label class="field-label">Contraseña</label>
+            <input type="password" name="password" class="field-input" required>
+          </div>
+        </section>
+
+        <div class="form-actions form-actions-spaced">
+          <button type="submit" class="btn-primary">Entrar</button>
+        </div>
+      </form>
+
+      <section style="margin-top:18px;color:#9eb0c6;font-size:13px;line-height:1.5;">
+        <p><strong>Perfiles demo:</strong></p>
+        <p>Cliente: alumno.demo@miniacademia.local / cliente123</p>
+        <p>Instructor: instructor@miniacademia.local / instructor123</p>
+        <p>Admin: admin@miniacademia.local / admin123</p>
+      </section>
+    </article>
+  </section>
+</main>
+
+</body>
+</html>

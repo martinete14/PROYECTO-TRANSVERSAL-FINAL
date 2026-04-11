@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Academia | Panel admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar" role="banner">
+  <h1 class="brand">Panel Admin</h1>
+  <div class="topbar-actions">
+    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
+    <a th:href="@{/web/cursos/nuevo}" class="btn-outline">+ Crear curso</a>
+    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
+      <button type="submit" class="btn-outline">Salir</button>
+    </form>
+  </div>
+</header>
+
+<main class="page-shell" role="main">
+  <section class="hero-cinematic">
+    <p class="hero-kicker">GESTION GLOBAL</p>
+    <h2>Administracion de cursos</h2>
+    <p>Desde aqui puedes marcar destacados de la semana, editar o eliminar cursos sin cargar la vista publica.</p>
+  </section>
+
+  <section class="filters" aria-label="Filtro de instructor">
+    <form th:action="@{/web/cursos/admin}" method="get" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;justify-content:flex-end;">
+      <input name="instructor" placeholder="Filtrar por instructor" th:value="${instructorFiltro}" />
+      <button class="btn-outline" type="submit">Filtrar</button>
+      <a class="btn-outline" th:href="@{/web/cursos/admin}">Limpiar</a>
+    </form>
+  </section>
+
+  <section class="acquired-panel">
+    <header class="acquired-head">
+      <h3>Listado de cursos</h3>
+      <p class="acquired-user" th:text="${#lists.size(cursos)} + ' cursos encontrados'">0 cursos encontrados</p>
+    </header>
+
+    <div class="acquired-table-wrap" th:if="${!#lists.isEmpty(cursos)}">
+      <table class="acquired-table" aria-label="Listado de cursos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Titulo</th>
+            <th>Instructor</th>
+            <th>Categoria</th>
+            <th>Destacado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="curso : ${cursos}">
+            <td th:text="${curso.id}">1</td>
+            <td th:text="${curso.titulo}">Curso</td>
+            <td th:text="${curso.instructor}">Instructor</td>
+            <td th:text="${curso.categoria.nombre}">Categoria</td>
+            <td>
+              <form th:action="@{/web/cursos/admin/destacado/{id}(id=${curso.id})}" method="post" style="display:flex;gap:8px;align-items:center;">
+                <input type="hidden" name="instructor" th:value="${instructorFiltro}">
+                <input type="hidden" name="destacado" th:value="${!curso.destacadoSemana}">
+                <button type="submit" class="btn-outline" th:text="${curso.destacadoSemana} ? 'Quitar' : 'Marcar'">Marcar</button>
+              </form>
+            </td>
+            <td>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <a th:href="@{/web/cursos/editar/{id}(id=${curso.id})}" class="btn-outline">Editar</a>
+                <form th:action="@{/web/cursos/eliminar/{id}(id=${curso.id})}" method="post" onsubmit="return confirm('¿Seguro que quieres eliminar este curso?');">
+                  <button type="submit" class="btn-danger">Eliminar</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="acquired-empty" th:if="${#lists.isEmpty(cursos)}">No hay cursos para mostrar con ese filtro.</p>
+  </section>
+</main>
+</body>
+</html>

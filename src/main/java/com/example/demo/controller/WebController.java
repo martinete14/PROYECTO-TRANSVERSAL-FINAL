@@ -6,7 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -20,10 +24,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.demo.config.AuthSessionKeys;
 import com.example.demo.model.Categoria;
 import com.example.demo.model.Curso;
+import com.example.demo.model.CursoDTO;
+import com.example.demo.model.Inscripcion;
+import com.example.demo.model.RolUsuario;
+import com.example.demo.model.Usuario;
 import com.example.demo.repository.CategoriaRepository;
+import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.CursoService;
+import com.example.demo.service.InscripcionService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/web/cursos")
@@ -40,16 +53,130 @@ public class WebController {
 
     private final CursoService cursoService;
     private final CategoriaRepository categoriaRepository;
+    private final InscripcionService inscripcionService;
+    private final UsuarioRepository usuarioRepository;
 
-    public WebController(CursoService cursoService, CategoriaRepository categoriaRepository) {
+    public WebController(
+        CursoService cursoService,
+        CategoriaRepository categoriaRepository,
+        InscripcionService inscripcionService,
+        UsuarioRepository usuarioRepository
+    ) {
         this.cursoService = cursoService;
         this.categoriaRepository = categoriaRepository;
+        this.inscripcionService = inscripcionService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping
-    public String verCursos(Model model) {
-        model.addAttribute("cursos", cursoService.obtenerCursos());
+    public String verCursos(@RequestParam(required = false) Long categoriaId, Model model) {
+        List<CursoDTO> cursos = new ArrayList<>(cursoService.obtenerCursos());
+
+        if (categoriaId != null) {
+            cursos = cursos.stream()
+                .filter(curso -> categoriaId.equals(curso.getCategoriaId()))
+                .collect(Collectors.toCollection(ArrayList::new));
+        }
+
+        List<CursoDTO> cursosDestacados = cursos.stream()
+            .filter(CursoDTO::isDestacadoSemana)
+            .limit(4)
+            .toList();
+
+        List<CursoDTO> cursosNoDestacados = cursos.stream()
+            .filter(curso -> !curso.isDestacadoSemana())
+            .collect(Collectors.toCollection(ArrayList::new));
+
+        Collections.shuffle(cursosNoDestacados);
+
+        List<CursoDTO> cursosCatalogo = cursosNoDestacados.stream()
+            .limit(8)
+            .toList();
+
+        model.addAttribute("cursosDestacados", cursosDestacados);
+        model.addAttribute("cursos", cursosCatalogo);
+        model.addAttribute("categorias", categoriaRepository.findAll());
+        model.addAttribute("categoriaSeleccionada", categoriaId);
+
         return "cursos";
+    }
+
+    @GetMapping("/admin")
+    public String panelAdmin(@RequestParam(required = false) String instructor, Model model) {
+        List<Curso> cursos = cursoService.obtenerCursosPorInstructor(instructor);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("instructorFiltro", instructor == null ? "" : instructor);
+        return "admin-cursos";
+    }
+
+    @PostMapping("/admin/destacado/{id}")
+    public String cambiarDestacado(
+        @PathVariable Long id,
+        @RequestParam boolean destacado,
+        @RequestParam(required = false) String instructor,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            cursoService.actualizarDestacadoSemana(id, destacado);
+            redirectAttributes.addFlashAttribute("successMessage", "Destacado actualizado correctamente.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
+        if (StringUtils.hasText(instructor)) {
+            return "redirect:/web/cursos/admin?instructor=" + instructor;
+        }
+
+        return "redirect:/web/cursos/admin";
+    }
+
+    @GetMapping("/instructor")
+    public String panelInstructor(@RequestParam(required = false) String nombre, Model model, HttpSession session) {
+        RolUsuario rol = obtenerRolSesion(session);
+        String nombreFiltro = nombre;
+
+        if (rol == RolUsuario.INSTRUCTOR) {
+            nombreFiltro = obtenerUsuarioSesion(session).getNombre();
+        }
+
+        List<Curso> cursos = cursoService.obtenerCursosPorInstructor(nombreFiltro);
+        model.addAttribute("cursos", cursos);
+        model.addAttribute("nombreInstructor", nombreFiltro == null ? "" : nombreFiltro);
+        return "instructor-cursos";
+    }
+
+    @GetMapping("/{id}")
+    public String verDetalleCurso(@PathVariable Long id, Model model) {
+        Curso curso = cursoService.obtenerCursoPorId(id);
+
+        model.addAttribute("curso", curso);
+        return "curso-detalle";
+    }
+
+    @GetMapping("/adquiridos")
+    public String verCursosAdquiridos(Model model, HttpSession session) {
+        validarRolCliente(session);
+        Usuario usuario = obtenerUsuarioSesion(session);
+        List<Inscripcion> inscripciones = inscripcionService.obtenerPorUsuario(usuario.getId());
+
+        model.addAttribute("inscripciones", inscripciones);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("usuarioId", usuario.getId());
+        return "cursos-adquiridos";
+    }
+
+    @PostMapping("/comprar/{cursoId}")
+    public String comprarCurso(@PathVariable Long cursoId, RedirectAttributes redirectAttributes, HttpSession session) {
+        try {
+            validarRolCliente(session);
+            Usuario usuario = obtenerUsuarioSesion(session);
+            inscripcionService.inscribir(usuario.getId(), cursoId);
+            redirectAttributes.addFlashAttribute("successMessage", "Curso adquirido correctamente. Ya aparece en Mis cursos.");
+            return "redirect:/web/cursos/adquiridos";
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/web/cursos";
+        }
     }
 
     @GetMapping("/nuevo")
@@ -68,13 +195,17 @@ public class WebController {
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) MultipartFile videoFile,
             @RequestParam Long categoriaId,
+            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
         try {
+            Usuario usuarioSesion = obtenerUsuarioSesion(session);
+            RolUsuario rol = obtenerRolSesion(session);
+
             Curso curso = new Curso();
             curso.setTitulo(titulo);
             curso.setDescripcion(descripcion);
-            curso.setInstructor(instructor);
+            curso.setInstructor(rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor);
 
             validateImageFile(imagenFile);
             validateVideoFile(videoFile);
@@ -99,8 +230,10 @@ public class WebController {
     }
 
     @PostMapping("/eliminar/{id}")
-    public String eliminarCurso(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String eliminarCurso(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
+            Curso curso = cursoService.obtenerCursoPorId(id);
+            validarPermisoGestionCurso(session, curso);
             cursoService.eliminarCurso(id);
             redirectAttributes.addFlashAttribute("successMessage", "Curso eliminado correctamente.");
         } catch (RuntimeException ex) {
@@ -111,9 +244,10 @@ public class WebController {
 
     // 🔵 EDITAR
     @GetMapping("/editar/{id}")
-    public String mostrarFormularioEditar(@PathVariable Long id, Model model) {
+    public String mostrarFormularioEditar(@PathVariable Long id, Model model, HttpSession session) {
 
         Curso curso = cursoService.obtenerCursoPorId(id);
+        validarPermisoGestionCurso(session, curso);
 
         model.addAttribute("curso", curso);
         model.addAttribute("categorias", categoriaRepository.findAll());
@@ -132,15 +266,20 @@ public class WebController {
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) MultipartFile videoFile,
             @RequestParam Long categoriaId,
+            HttpSession session,
             RedirectAttributes redirectAttributes
     ) {
         try {
+            Usuario usuarioSesion = obtenerUsuarioSesion(session);
+            RolUsuario rol = obtenerRolSesion(session);
+
             Curso cursoExistente = cursoService.obtenerCursoPorId(id);
+            validarPermisoGestionCurso(session, cursoExistente);
 
             Curso curso = new Curso();
             curso.setTitulo(titulo);
             curso.setDescripcion(descripcion);
-            curso.setInstructor(instructor);
+            curso.setInstructor(rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor);
 
             validateImageFile(imagenFile);
             validateVideoFile(videoFile);
@@ -227,6 +366,43 @@ public class WebController {
         }
         if (file.getSize() > MAX_VIDEO_BYTES) {
             throw new RuntimeException("El video supera el limite de 120 MB");
+        }
+    }
+
+    private Usuario obtenerUsuarioSesion(HttpSession session) {
+        Object authUserId = session.getAttribute(AuthSessionKeys.AUTH_USER_ID);
+        if (!(authUserId instanceof Long userId)) {
+            throw new RuntimeException("Sesion invalida. Inicia sesion nuevamente.");
+        }
+
+        return usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("El usuario de la sesion no existe."));
+    }
+
+    private RolUsuario obtenerRolSesion(HttpSession session) {
+        Object role = session.getAttribute("AUTH_ROLE");
+        return RolUsuario.fromValue(role == null ? null : role.toString());
+    }
+
+    private void validarPermisoGestionCurso(HttpSession session, Curso curso) {
+        RolUsuario rol = obtenerRolSesion(session);
+        if (rol == RolUsuario.ADMIN) {
+            return;
+        }
+
+        Usuario usuario = obtenerUsuarioSesion(session);
+        String nombreInstructor = curso.getInstructor() == null ? "" : curso.getInstructor().trim();
+
+        if (rol == RolUsuario.INSTRUCTOR && nombreInstructor.equalsIgnoreCase(usuario.getNombre().trim())) {
+            return;
+        }
+
+        throw new RuntimeException("No tienes permisos para gestionar este curso.");
+    }
+
+    private void validarRolCliente(HttpSession session) {
+        if (obtenerRolSesion(session) != RolUsuario.CLIENTE) {
+            throw new RuntimeException("Esta accion esta disponible solo para el rol CLIENTE.");
         }
     }
 }

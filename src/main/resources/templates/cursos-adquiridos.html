@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Academia | Cursos adquiridos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<header class="topbar" role="banner">
+  <h1 class="brand">Mini Academia</h1>
+  <div class="topbar-actions">
+    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
+    <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
+    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
+    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
+      <button type="submit" class="btn-outline">Salir</button>
+    </form>
+  </div>
+</header>
+
+<main class="page-shell" role="main">
+  <section class="hero-cinematic">
+    <p class="hero-kicker">AREA DEL USUARIO</p>
+    <h2>Mis cursos adquiridos</h2>
+    <p>Consulta todos los cursos en los que ya estas inscrito y accede al detalle desde esta vista.</p>
+  </section>
+
+  <section class="acquired-panel">
+    <header class="acquired-head">
+      <h3>Listado de inscripciones</h3>
+      <p class="acquired-user" th:if="${usuario != null}">
+        Usuario: <strong th:text="${usuario.nombre}">Nombre</strong>
+        (<span th:text="${usuario.email}">email</span>)
+      </p>
+      <p class="acquired-user" th:if="${usuario == null}">
+        Usuario no encontrado para ID <span th:text="${usuarioId}">1</span>
+      </p>
+    </header>
+
+    <div class="acquired-table-wrap" th:if="${!#lists.isEmpty(inscripciones)}">
+      <table class="acquired-table" aria-label="Cursos adquiridos">
+        <thead>
+          <tr>
+            <th>ID Inscripcion</th>
+            <th>Curso</th>
+            <th>Categoria</th>
+            <th>Instructor</th>
+            <th>Accion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="inscripcion : ${inscripciones}">
+            <td th:text="${inscripcion.id}">1</td>
+            <td th:text="${inscripcion.curso.titulo}">Curso</td>
+            <td th:text="${inscripcion.curso.categoria.nombre}">Categoria</td>
+            <td th:text="${inscripcion.curso.instructor}">Instructor</td>
+            <td>
+              <a class="btn-primary" th:href="@{/web/cursos/{id}(id=${inscripcion.curso.id})}">Ver curso</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="acquired-empty" th:if="${#lists.isEmpty(inscripciones)}">
+      No hay cursos adquiridos para este usuario por ahora.
+    </p>
+  </section>
+</main>
+
+<footer class="page-footer">
+  <section>
+    <p>Mini Academia - Vista de cursos adquiridos</p>
+  </section>
+</footer>
+
+</body>
+</html>

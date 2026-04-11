@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${curso.titulo + ' | Mini Academia'}">Detalle curso | Mini Academia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+
+<header class="topbar" role="banner">
+  <h1 class="brand">Mini Academia</h1>
+  <div class="topbar-actions">
+    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
+    <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
+    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
+    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
+      <button type="submit" class="btn-outline">Salir</button>
+    </form>
+  </div>
+</header>
+
+<main class="page-shell course-detail-page" role="main">
+  <section class="course-detail-layout">
+    <article class="course-detail-main">
+      <p class="hero-kicker" th:text="${curso.categoria != null ? curso.categoria.nombre : 'Categoria'}">Categoria</p>
+      <h2 th:text="${curso.titulo}">Titulo del curso</h2>
+      <p class="course-detail-instructor">Dictado por <strong th:text="${curso.instructor}">Instructor</strong></p>
+      <p class="course-detail-description" th:text="${curso.descripcion}">Descripcion del curso</p>
+
+      <div class="course-detail-actions">
+        <form th:if="${isCliente}" th:action="@{/web/cursos/comprar/{id}(id=${curso.id})}" method="post">
+          <button class="btn-primary" type="submit">Comprar curso</button>
+        </form>
+        <a class="btn-outline" th:href="@{/web/cursos}">Seguir explorando</a>
+      </div>
+
+      <p class="course-detail-note">Demo actual: este espacio esta preparado para usar un video corto y optimizado como preview del curso.</p>
+    </article>
+
+    <aside class="course-detail-media">
+      <video controls playsinline preload="metadata" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
+             th:poster="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl) ? curso.imagenUrl : '/images/course-placeholder.svg'}">
+        <source th:src="${curso.videoUrl}" type="video/mp4">
+      </video>
+
+      <img th:unless="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
+           th:src="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl) ? curso.imagenUrl : '/images/course-placeholder.svg'}"
+           alt="Vista del curso"
+           loading="lazy"
+           decoding="async">
+    </aside>
+  </section>
+</main>
+
+<footer class="page-footer">
+  <section>
+    <p>Mini Academia - Experiencia de compra en construccion</p>
+  </section>
+</footer>
+
+</body>
+</html>
