@@ -75,4 +75,9 @@ public class AuthController {
         session.invalidate();
         return "redirect:/web/auth/login";
     }
+
+    @GetMapping("/denegado")
+    public String accesoDenegado() {
+        return "acceso-denegado";
+    }
 }

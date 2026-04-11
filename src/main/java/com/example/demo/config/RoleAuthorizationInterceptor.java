@@ -35,7 +35,7 @@ public class RoleAuthorizationInterceptor implements HandlerInterceptor {
         RolUsuario rol = RolUsuario.fromValue((String) session.getAttribute("AUTH_ROLE"));
 
         if (path.startsWith("/web/cursos/admin") && rol != RolUsuario.ADMIN) {
-            response.sendRedirect("/web/cursos");
+            response.sendRedirect("/web/auth/denegado");
             return false;
         }
 
@@ -49,12 +49,12 @@ public class RoleAuthorizationInterceptor implements HandlerInterceptor {
 
         boolean requiereGestion = rutasGestion.stream().anyMatch(path::startsWith);
         if (requiereGestion && rol != RolUsuario.ADMIN && rol != RolUsuario.INSTRUCTOR) {
-            response.sendRedirect("/web/cursos");
+            response.sendRedirect("/web/auth/denegado");
             return false;
         }
 
         if (path.startsWith("/web/cursos/instructor") && rol != RolUsuario.ADMIN && rol != RolUsuario.INSTRUCTOR) {
-            response.sendRedirect("/web/cursos");
+            response.sendRedirect("/web/auth/denegado");
             return false;
         }
 
