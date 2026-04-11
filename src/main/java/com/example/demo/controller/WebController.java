@@ -2,13 +2,19 @@
 package com.example.demo.controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -71,6 +77,7 @@ public class WebController {
     @GetMapping
     public String verCursos(@RequestParam(required = false) Long categoriaId, Model model) {
         List<CursoDTO> todosLosCursos = new ArrayList<>(cursoService.obtenerCursos());
+        todosLosCursos.forEach(this::sanearTextoCurso);
         boolean esPortada = categoriaId == null;
 
         List<CursoDTO> cursosCatalogo;
@@ -89,7 +96,22 @@ public class WebController {
             Collections.shuffle(cursosNoDestacados);
             cursosCatalogo = cursosNoDestacados.stream()
                 .limit(8)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
+
+            // Si hay menos de 8 no destacados, completar con cursos restantes para mantener 8 tarjetas.
+            if (cursosCatalogo.size() < 8) {
+                Set<Long> idsActuales = cursosCatalogo.stream().map(CursoDTO::getId).collect(Collectors.toSet());
+                for (CursoDTO curso : todosLosCursos) {
+                    if (idsActuales.contains(curso.getId())) {
+                        continue;
+                    }
+                    cursosCatalogo.add(curso);
+                    idsActuales.add(curso.getId());
+                    if (cursosCatalogo.size() >= 8) {
+                        break;
+                    }
+                }
+            }
         } else {
             cursosCatalogo = todosLosCursos.stream()
                 .filter(curso -> categoriaId.equals(curso.getCategoriaId()))
@@ -99,11 +121,81 @@ public class WebController {
 
         model.addAttribute("cursosDestacados", cursosDestacados);
         model.addAttribute("cursos", cursosCatalogo);
-        model.addAttribute("categorias", categoriaRepository.findAll());
+        model.addAttribute("categorias", construirCategoriasFiltro(todosLosCursos));
         model.addAttribute("categoriaSeleccionada", categoriaId);
         model.addAttribute("esPortada", esPortada);
 
         return "cursos";
+    }
+
+    private void sanearTextoCurso(CursoDTO curso) {
+        curso.setTitulo(repararMojibake(curso.getTitulo()));
+        curso.setDescripcion(repararMojibake(curso.getDescripcion()));
+        curso.setInstructor(repararMojibake(curso.getInstructor()));
+        curso.setCategoriaNombre(repararMojibake(curso.getCategoriaNombre()));
+    }
+
+    private List<CategoriaFiltro> construirCategoriasFiltro(List<CursoDTO> cursos) {
+        Map<String, CategoriaFiltro> unicas = new LinkedHashMap<>();
+
+        for (CursoDTO curso : cursos) {
+            if (curso.getCategoriaId() == null || !StringUtils.hasText(curso.getCategoriaNombre())) {
+                continue;
+            }
+
+            String nombreLimpio = repararMojibake(curso.getCategoriaNombre());
+            String clave = normalizarTexto(nombreLimpio);
+            unicas.putIfAbsent(clave, new CategoriaFiltro(curso.getCategoriaId(), nombreLimpio));
+        }
+
+        return unicas.values().stream()
+            .sorted(Comparator.comparing(CategoriaFiltro::getNombre, String.CASE_INSENSITIVE_ORDER))
+            .toList();
+    }
+
+    private String normalizarTexto(String valor) {
+        if (!StringUtils.hasText(valor)) {
+            return "";
+        }
+
+        return valor.toLowerCase(Locale.ROOT)
+            .replace("á", "a")
+            .replace("é", "e")
+            .replace("í", "i")
+            .replace("ó", "o")
+            .replace("ú", "u")
+            .replace("ñ", "n")
+            .trim();
+    }
+
+    private String repararMojibake(String valor) {
+        if (!StringUtils.hasText(valor)) {
+            return valor;
+        }
+
+        if (valor.contains("Ã") || valor.contains("Â")) {
+            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Â", "");
+        }
+
+        return valor;
+    }
+
+    public static class CategoriaFiltro {
+        private final Long id;
+        private final String nombre;
+
+        public CategoriaFiltro(Long id, String nombre) {
+            this.id = id;
+            this.nombre = nombre;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
     }
 
     @GetMapping("/admin")
