@@ -1,6 +1,10 @@
 CREATE DATABASE IF NOT EXISTS miniacademy CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE miniacademy;
 
+CREATE USER IF NOT EXISTS 'miniacademy_app'@'localhost' IDENTIFIED BY 'miniacademy_app_2026';
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, ALTER, INDEX, DROP ON miniacademy.* TO 'miniacademy_app'@'localhost';
+FLUSH PRIVILEGES;
+
 CREATE TABLE IF NOT EXISTS categoria (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -10,7 +14,7 @@ CREATE TABLE IF NOT EXISTS categoria (
 CREATE TABLE IF NOT EXISTS curso (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(150) NOT NULL,
-    descripcion VARCHAR(500) NOT NULL,
+    descripcion TEXT NOT NULL,
     instructor VARCHAR(120) NOT NULL,
     imagen_url VARCHAR(500),
     video_url VARCHAR(500),

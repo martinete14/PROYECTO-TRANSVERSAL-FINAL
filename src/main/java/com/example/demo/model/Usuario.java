@@ -22,6 +22,12 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
+    @Column(length = 24)
+    private String rol;
+
+    @Column(length = 120)
+    private String password;
+
     // getters y setters
 
     public Long getId() {
@@ -46,5 +52,21 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -143,25 +143,58 @@ public class CursoServiceImpl implements CursoService {
     }
 
     private String construirDescripcionCatalogo(Curso curso) {
-        String enfoque = obtenerEnfoquePorCategoria(curso);
+        String titulo = curso.getTitulo() == null ? "" : curso.getTitulo().trim().toLowerCase(Locale.ROOT);
 
-        return String.format(
-                "Este curso incluye %s, ejemplos claros y practica aplicada para avanzar con seguridad.",
-                enfoque
-        );
+        if (titulo.contains("grandes preguntas del universo")) {
+            return "Si alguna vez miraste al cielo con curiosidad, aqui vas a encontrar ideas enormes contadas de forma clara y fascinante.";
+        }
+        if (titulo.contains("humor con mirada crítica") || titulo.contains("humor con mirada critica")) {
+            return "Un curso con humor inteligente, observacion afilada y ejemplos que te hacen reir mientras te dejan pensando un buen rato.";
+        }
+        if (titulo.contains("idiomas y compromiso social global")) {
+            return "Ideal para abrir la cabeza: idiomas, mirada internacional y aprendizaje util para moverte mejor en un mundo conectado.";
+        }
+        if (titulo.contains("tecnología en la educación superior") || titulo.contains("tecnologia en la educacion superior")) {
+            return "Una guia directa para entender como la tecnologia cambia aulas, equipos y decisiones en la educacion de hoy.";
+        }
+        if (titulo.contains("escritura para entender el presente")) {
+            return "Lecturas, ideas y ejercicios para mirar el presente con mas profundidad y escribir con una voz mucho mas consciente.";
+        }
+        if (titulo.contains("gestión hotelera con excelencia") || titulo.contains("gestion hotelera con excelencia")) {
+            return "Detras del servicio impecable hay estrategia, ritmo y criterio: aqui se aprende como se sostiene de verdad.";
+        }
+        if (titulo.contains("liderazgo, empresa y derecho")) {
+            return "Empresa, comunidad y vision juridica se cruzan en un recorrido pensado para decidir mejor y liderar con mas criterio.";
+        }
+        if (titulo.contains("marketing aplicado al mundo real")) {
+            return "No es marketing de manual: aqui todo baja al terreno real, con ideas que sirven para vender, analizar y comunicar mejor.";
+        }
+        if (titulo.contains("instructor de vuelo: de privado a comercial")) {
+            return "Desde los primeros vuelos hasta la mentalidad comercial, este recorrido te mete en la logica real de cabina y operacion.";
+        }
+        if (titulo.contains("el pasado que explica todo")) {
+            return "La historia deja de sentirse lejana cuando conecta con el presente: este curso atrapa explicando por que seguimos siendo eso que heredamos.";
+        }
+        if (titulo.contains("fisioterapia funcional para la vida diaria")) {
+            return "Un enfoque claro y util para moverte mejor, prevenir molestias y entender tu cuerpo sin rodeos ni tecnicismos innecesarios.";
+        }
+        if (titulo.contains("gestión de proyectos de inicio a cierre") || titulo.contains("gestion de proyectos de inicio a cierre")) {
+            return "Si quieres ordenar proyectos sin perderte entre metodologias, aqui tienes una base clara para planificar, coordinar y cerrar bien.";
+        }
+
+        return construirDescripcionGenerica(curso);
     }
 
-    private String obtenerNombreVisible(String instructor) {
-        if (instructor == null || instructor.isBlank()) {
-            return "Este instructor";
-        }
+    private String construirDescripcionGenerica(Curso curso) {
+        String enfoque = obtenerEnfoquePorCategoria(curso);
+        String titulo = curso.getTitulo() == null ? "este curso" : curso.getTitulo().trim();
+        int variante = Math.abs((titulo + enfoque).hashCode()) % 3;
 
-        String[] partes = instructor.trim().split("\\s+");
-        if (partes.length >= 2) {
-            return partes[0] + " " + partes[1];
-        }
-
-        return partes[0];
+        return switch (variante) {
+            case 0 -> String.format("%s propone %s con un enfoque claro, actual y facil de llevar a la practica.", titulo, enfoque);
+            case 1 -> String.format("Una propuesta pensada para descubrir %s sin perderte en teoria innecesaria.", enfoque);
+            default -> String.format("Ideas utiles, mirada actual y %s para que el tema te atrape desde el primer minuto.", enfoque);
+        };
     }
 
     private String obtenerEnfoquePorCategoria(Curso curso) {

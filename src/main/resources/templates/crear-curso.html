@@ -6,81 +6,127 @@
     <meta name="description" content="Formulario para crear un nuevo curso en la plataforma Mini Academia.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 
 <body>
 
 <header class="topbar" role="banner">
-    <h1>Mini Academia</h1>
+    <h1 class="brand">Mini Academia</h1>
     <div class="topbar-actions">
+        <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
         <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
+        <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
+            <button type="submit" class="btn-outline">Salir</button>
+        </form>
     </div>
 </header>
 
-<main class="container form-page" role="main">
+<main class="page-shell form-page" role="main">
     <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
         <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
         <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
     </section>
 
-    <section class="hero">
-        <h2>Nuevo curso</h2>
-        <p>Completa la informacion y agrega imagen y/o video para su tarjeta.</p>
+    <section class="form-hero">
+        <div class="form-hero-copy">
+            <p class="hero-kicker">NUEVO LANZAMIENTO</p>
+            <h2>Construye una ficha de curso que se sienta profesional desde el primer vistazo</h2>
+            <p>Completa los datos principales y sube recursos visuales ligeros. La portada será la protagonista en móvil y el video quedará como apoyo para desktop.</p>
+        </div>
+
+        <aside class="form-side-panel">
+            <span class="form-side-label">Guia visual</span>
+            <h3>Para una tarjeta más convincente</h3>
+            <ul class="form-side-list">
+                <li>Usa un titulo claro y directo.</li>
+                <li>La imagen debe funcionar sola en móvil.</li>
+                <li>El video solo debe reforzar la primera impresión.</li>
+                <li>Evita descripciones largas y planas.</li>
+            </ul>
+        </aside>
     </section>
 
-    <section class="form-card">
+    <section class="form-card form-card-premium">
         <article>
-            <h2 class="form-title">Datos del curso</h2>
-
-            <form th:action="@{/web/cursos/crear}" method="post" enctype="multipart/form-data">
-                <div class="field">
-                    <label class="field-label">Titulo</label>
-                    <input type="text" name="titulo" class="field-input" required>
+            <div class="form-heading-row">
+                <div>
+                    <p class="section-kicker">CONFIGURACION DEL CURSO</p>
+                    <h2 class="form-title">Datos del curso</h2>
                 </div>
+                <p class="form-heading-note">Los campos multimedia son opcionales, pero mejoran mucho la percepción visual del catálogo.</p>
+            </div>
 
-                <div class="field">
-                    <label class="field-label">Descripcion</label>
-                    <input type="text" name="descripcion" class="field-input" required>
-                </div>
+            <form th:action="@{/web/cursos/crear}" method="post" enctype="multipart/form-data" class="editorial-form">
+                <section class="form-section-grid">
+                    <div class="field field-span-2">
+                        <label class="field-label">Titulo</label>
+                        <input type="text" name="titulo" class="field-input" required placeholder="Ej. Produccion musical para principiantes">
+                    </div>
 
-                <div class="field">
-                    <label class="field-label">Profesional / Instructor</label>
-                    <input type="text" name="instructor" class="field-input" required>
-                </div>
+                    <div class="field field-span-2">
+                        <label class="field-label">Descripcion</label>
+                        <textarea name="descripcion" class="field-input field-textarea" rows="4" required placeholder="Resume en pocas lineas qué aprenderá el alumno y por qué este curso destaca."></textarea>
+                    </div>
 
-                <div class="field">
-                    <label class="field-label">URL de imagen (opcional)</label>
-                    <input type="url" name="imagenUrl" class="field-input" placeholder="https://...">
-                </div>
+                    <div class="field">
+                        <label class="field-label">Profesional / Instructor</label>
+                        <input type="text" name="instructor" class="field-input" required placeholder="Nombre del profesional">
+                    </div>
 
-                <div class="field">
-                    <label class="field-label">Archivo de imagen (opcional)</label>
-                    <input type="file" name="imagenFile" class="field-input" accept="image/*">
-                    <small class="helper-text">Si subes archivo, se usa en lugar de la URL.</small>
-                </div>
+                    <div class="field">
+                        <label class="field-label">Categoria</label>
+                        <select name="categoriaId" class="field-input" required>
+                            <option value="">Seleccionar categoria</option>
+                            <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+                        </select>
+                    </div>
+                </section>
 
-                <div class="field">
-                    <label class="field-label">URL de video MP4 (opcional)</label>
-                    <input type="url" name="videoUrl" class="field-input" placeholder="https://...mp4">
-                </div>
+                <section class="form-block">
+                    <div class="form-block-header">
+                        <h3>Portada del curso</h3>
+                        <p>Prioriza una imagen limpia y ligera, porque será la base de la experiencia en móvil.</p>
+                    </div>
 
-                <div class="field">
-                    <label class="field-label">Archivo de video (opcional)</label>
-                    <input type="file" name="videoFile" class="field-input" accept="video/mp4,video/*">
-                    <small class="helper-text">Recomendado MP4 para mejor compatibilidad.</small>
-                </div>
+                    <div class="form-section-grid">
+                        <div class="field">
+                            <label class="field-label">URL de imagen</label>
+                            <input type="url" name="imagenUrl" class="field-input" placeholder="https://...">
+                        </div>
 
-                <div class="field">
-                    <label class="field-label">Categoria</label>
-                    <select name="categoriaId" class="field-input" required>
-                        <option value="">Seleccionar categoria</option>
-                        <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
-                    </select>
-                </div>
+                        <div class="field">
+                            <label class="field-label">Archivo de imagen</label>
+                            <input type="file" name="imagenFile" class="field-input" accept="image/*">
+                            <small class="helper-text">Si subes archivo, tendrá prioridad sobre la URL.</small>
+                        </div>
+                    </div>
+                </section>
 
-                <div class="form-actions">
+                <section class="form-block">
+                    <div class="form-block-header">
+                        <h3>Previsualizacion en video</h3>
+                        <p>Se mostrará en escritorio al pasar el mouse. En móvil se mantiene la portada estática para no penalizar carga.</p>
+                    </div>
+
+                    <div class="form-section-grid">
+                        <div class="field">
+                            <label class="field-label">URL de video MP4</label>
+                            <input type="url" name="videoUrl" class="field-input" placeholder="https://...mp4">
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">Archivo de video</label>
+                            <input type="file" name="videoFile" class="field-input" accept="video/mp4,video/*">
+                            <small class="helper-text">Recomendado MP4 y duración corta para una previsualización ligera.</small>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="form-actions form-actions-spaced">
                     <button type="submit" class="btn-primary">Crear curso</button>
                     <a th:href="@{/web/cursos}" class="btn-outline">Cancelar</a>
                 </div>
@@ -89,7 +135,7 @@
     </section>
 </main>
 
-<footer class="container py-3">
+<footer class="page-footer">
     <section>
         <p>Mini Academia - Gestion de cursos</p>
     </section>

@@ -2,45 +2,110 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Mini Academia | Catálogo de cursos online</title>
-  <meta name="description" content="Explora cursos online por categoría, consulta descripciones y gestiona el catálogo de la mini academia.">
+  <title>Mini Academia | Catalogo de cursos online</title>
+  <meta name="description" content="Explora cursos online por categoria, consulta descripciones y gestiona el catalogo de la mini academia.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 
 <body>
 
 <header class="topbar" role="banner">
-  <h1>Mini Academia</h1>
+  <h1 class="brand">Mini Academia</h1>
 
   <div class="topbar-actions">
-    <input id="searchInput" placeholder="Buscar cursos..." />
-    <a th:href="@{/web/cursos/nuevo}" class="btn-primary">Nuevo curso</a>
+    <input id="searchInput" placeholder="Buscar por titulo o palabra clave..." />
+    <span class="btn-outline" th:if="${isAuthenticated}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
+    <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
+    <a th:if="${isCliente}" th:href="@{/web/cursos/adquiridos}" class="btn-outline">Mis cursos</a>
+    <form th:if="${isAuthenticated}" th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
+      <button type="submit" class="btn-outline">Salir</button>
+    </form>
   </div>
 </header>
 
-<main class="container py-4" role="main">
+<main class="page-shell" role="main">
 
   <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
     <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
     <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
   </section>
 
-  <section class="hero">
-    <h2>Explora los cursos</h2>
-    <p>Contenido visual, dinámico y profesional para encontrar la mejor formación.</p>
+  <section class="hero-cinematic">
+    <p class="hero-kicker">CURSOS DESTACADOS</p>
+    <h2>Aprende con una experiencia visual premium</h2>
+    <p>Descubre cuatro cursos destacados y una seleccion reducida de cursos aleatorios para navegar sin agobio y con foco.</p>
   </section>
 
-  <section class="grid">
+  <section class="featured-banner" th:if="${esPortada and !#lists.isEmpty(cursosDestacados)}">
+    <p>Destacados de la semana</p>
+  </section>
 
-    <article class="card" th:each="curso : ${cursos}">
+  <section class="featured-row" th:if="${esPortada and !#lists.isEmpty(cursosDestacados)}">
+    <article class="course-card course-card--featured"
+             th:each="cursoDestacado : ${cursosDestacados}"
+             tabindex="0"
+             role="link"
+             th:attr="data-title=${cursoDestacado.titulo},data-category=${cursoDestacado.categoriaNombre},data-category-id=${cursoDestacado.categoriaId},data-instructor=${cursoDestacado.instructor},data-href=@{/web/cursos/{id}(id=${cursoDestacado.id})}">
+      <div class="media-frame">
+        <img th:if="${cursoDestacado.imagenUrl != null and !#strings.isEmpty(cursoDestacado.imagenUrl)}"
+             th:src="${cursoDestacado.imagenUrl}"
+             class="media-img"
+             loading="lazy"
+             decoding="async"
+             alt="Imagen del curso destacado">
+        <img th:unless="${cursoDestacado.imagenUrl != null and !#strings.isEmpty(cursoDestacado.imagenUrl)}"
+             th:src="@{/images/course-placeholder.svg}"
+             class="media-img"
+             loading="lazy"
+             decoding="async"
+             alt="Imagen del curso destacado">
 
-      <!-- MEDIA GRANDE -->
-      <div class="media">
+        <video class="media-video" muted loop playsinline preload="metadata" th:if="${cursoDestacado.videoUrl != null and !#strings.isEmpty(cursoDestacado.videoUrl)}"
+               th:poster="${cursoDestacado.imagenUrl != null and !#strings.isEmpty(cursoDestacado.imagenUrl) ? cursoDestacado.imagenUrl : '/images/course-placeholder.svg'}">
+          <source th:src="${cursoDestacado.videoUrl}" type="video/mp4">
+        </video>
 
+        <div class="overlay-gradient"></div>
+        <div class="media-label" th:text="${cursoDestacado.categoriaNombre}">Categoria</div>
+      </div>
+      <div class="card-body">
+        <div class="meta-row">
+          <span class="instructor" th:text="${cursoDestacado.instructor}">Instructor</span>
+        </div>
+        <h3 class="course-title" th:text="${cursoDestacado.titulo}">Curso destacado</h3>
+        <p class="course-desc" th:text="${cursoDestacado.descripcion}">Descripcion del curso</p>
+      </div>
+    </article>
+  </section>
+
+  <section th:if="${!#lists.isEmpty(cursos)}">
+    <p class="hero-kicker section-heading-kicker">SELECCION ALEATORIA</p>
+    <div class="section-heading">
+      <h2>Ocho cursos para descubrir hoy</h2>
+      <div class="section-heading-filter">
+        <select id="categorySelect" class="filter-select" aria-label="Filtrar por categoria">
+          <option value="">Todas las categorias</option>
+          <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}" th:selected="${categoriaSeleccionada != null and categoriaSeleccionada == categoria.id}"></option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <section class="course-grid">
+
+    <article class="course-card" th:each="curso, iterStat : ${cursos}"
+             tabindex="0"
+             role="link"
+             th:attr="data-title=${curso.titulo},data-category=${curso.categoriaNombre},data-category-id=${curso.categoriaId},data-instructor=${curso.instructor},data-href=@{/web/cursos/{id}(id=${curso.id})}">
+
+      <div class="media-frame">
+      <div class="course-badge-new" th:if="${esPortada and iterStat.first}">NUEVO</div>
         <img th:if="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
              th:src="${curso.imagenUrl}"
              class="media-img"
@@ -48,45 +113,31 @@
              decoding="async"
              alt="Imagen del curso">
         <img th:unless="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
-             src="https://images.unsplash.com/photo-1529070538774-1843cb3265df"
+             th:src="@{/images/course-placeholder.svg}"
              class="media-img"
              loading="lazy"
              decoding="async"
              alt="Imagen del curso">
 
-           <video class="media-video" muted loop playsinline preload="none" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
-            th:poster="${curso.imagenUrl}">
+        <video class="media-video" muted loop playsinline preload="metadata" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
+               th:poster="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl) ? curso.imagenUrl : '/images/course-placeholder.svg'}">
           <source th:src="${curso.videoUrl}" type="video/mp4">
         </video>
-           <video class="media-video" muted loop playsinline preload="none" th:unless="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}"
-            poster="https://images.unsplash.com/photo-1529070538774-1843cb3265df">
-          <source src="https://cdn.coverr.co/videos/coverr-a-student-working-on-a-laptop-1579/1080p.mp4" type="video/mp4">
-        </video>
 
-        <!-- OVERLAY -->
-        <div class="overlay">
-          <span class="category" th:text="${curso.categoriaNombre}">Categoría</span>
-          <h3 th:text="${curso.titulo}">Curso</h3>
-          <p class="instructor" th:text="${curso.instructor}">Profesional</p>
-        </div>
-
+        <div class="overlay-gradient"></div>
+        <div class="media-label" th:text="${curso.categoriaNombre}">Categoria</div>
       </div>
 
-      <!-- INFO -->
       <div class="card-body">
-
-        <p th:text="${curso.descripcion}">
-          Descripción del curso
-        </p>
-
-        <div class="actions">
-          <a th:href="@{/web/cursos/editar/{id}(id=${curso.id})}" class="btn-outline">Editar</a>
-
-          <form th:action="@{/web/cursos/eliminar/{id}(id=${curso.id})}" method="post" class="delete-form" th:attr="data-curso=${curso.titulo}">
-            <button class="btn-danger">Eliminar</button>
-          </form>
+        <div class="meta-row">
+          <span class="instructor" th:text="${curso.instructor}">Profesional</span>
         </div>
 
+        <h3 class="course-title" th:text="${curso.titulo}">Curso</h3>
+
+        <p class="course-desc" th:text="${curso.descripcion}">
+          Descripcion del curso
+        </p>
       </div>
 
     </article>
@@ -97,104 +148,188 @@
     <article>
       <h3>Aun no hay cursos cargados</h3>
       <p>Empieza creando tu primer curso para que los alumnos puedan explorar el catalogo.</p>
-      <a th:href="@{/web/cursos/nuevo}" class="btn-primary">Crear primer curso</a>
+      <a th:if="${canManageCourses}" th:href="@{/web/cursos/nuevo}" class="btn-primary">Crear primer curso</a>
     </article>
   </section>
 
   <section id="searchNoResults" class="empty-state" style="display:none;">
     <article>
       <h3>No encontramos cursos con ese texto</h3>
-      <p>Prueba con otra palabra clave o limpia la busqueda para ver todo el catalogo.</p>
+      <p>Prueba con otra palabra, cambia los filtros o limpia la busqueda para ver todo el catalogo.</p>
     </article>
   </section>
 
 </main>
 
-<div id="deleteModal" class="modal-backdrop" style="display:none;">
-  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <h3 id="modalTitle">Confirmar eliminacion</h3>
-    <p id="modalText">¿Seguro que quieres eliminar este curso?</p>
-    <div class="modal-actions">
-      <button id="cancelDeleteBtn" type="button" class="btn-outline">Cancelar</button>
-      <button id="confirmDeleteBtn" type="button" class="btn-danger">Si, eliminar</button>
-    </div>
-  </div>
-</div>
-
-<footer class="container py-3">
+<footer class="page-footer">
   <section>
-    <p class="text-muted mb-0">Mini Academia - Proyecto DAW/DAM 2026</p>
+    <p>Mini Academia - Hecha por nete, marti nete</p>
   </section>
 </footer>
 
 <script>
-document.querySelectorAll(".media").forEach(container => {
+const isHoverDevice = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+const warmVideo = (video) => {
+  if (!video || video.dataset.warmed === "1") {
+    return;
+  }
+
+  video.dataset.warmed = "1";
+  video.preload = "auto";
+  video.load();
+};
+
+const mediaFrames = Array.from(document.querySelectorAll(".media-frame"));
+
+if (isHoverDevice && "IntersectionObserver" in window) {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) {
+        return;
+      }
+
+      const video = entry.target.querySelector("video");
+      warmVideo(video);
+      observer.unobserve(entry.target);
+    });
+  }, { rootMargin: "220px" });
+
+  mediaFrames.forEach((frame) => observer.observe(frame));
+}
+
+mediaFrames.forEach(container => {
   const video = container.querySelector("video");
+  if (!video) {
+    return;
+  }
 
-  container.addEventListener("mouseenter", () => {
-    video.style.opacity = 1;
-    video.play();
-  });
-
-  container.addEventListener("mouseleave", () => {
+  if (!isHoverDevice) {
     video.pause();
     video.currentTime = 0;
+    video.style.opacity = 0;
+    return;
+  }
+
+  const parentCard = container.closest(".course-card");
+  if (!parentCard) {
+    return;
+  }
+
+  parentCard.addEventListener("mouseenter", () => {
+    warmVideo(video);
+    video.style.opacity = 1;
+
+    const playVideo = () => {
+      video.play().catch(() => {});
+    };
+
+    if (video.readyState >= 2) {
+      playVideo();
+      return;
+    }
+
+    video.addEventListener("canplay", playVideo, { once: true });
+  });
+
+  parentCard.addEventListener("mouseleave", () => {
+    video.pause();
     video.style.opacity = 0;
   });
 });
 
-// buscador
-const search = document.getElementById("searchInput");
+const cards = Array.from(document.querySelectorAll(".course-card"));
+const featuredRow = document.querySelector(".featured-row");
+const sectionHeading = document.querySelector(".section-heading");
+const courseGrid = document.querySelector(".course-grid");
+const searchInput = document.getElementById("searchInput");
 const noResults = document.getElementById("searchNoResults");
-search.addEventListener("input", () => {
-  const text = search.value.toLowerCase();
-  let visibleCount = 0;
+const categorySelect = document.getElementById("categorySelect");
 
-  document.querySelectorAll(".card").forEach(card => {
-    const title = card.querySelector("h3").textContent.toLowerCase();
-    const visible = title.includes(text);
-    card.style.display = visible ? "block" : "none";
-    if (visible) visibleCount += 1;
+const normalize = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+cards.forEach(card => {
+  const targetHref = card.dataset.href;
+  if (!targetHref) {
+    return;
+  }
+
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("a, button, form")) {
+      return;
+    }
+
+    window.location.href = targetHref;
   });
 
-  if (noResults) {
-    noResults.style.display = (text.length > 0 && visibleCount === 0) ? "block" : "none";
-  }
-});
+  card.addEventListener("keydown", (event) => {
+    if (event.target.closest("a, button, form")) {
+      return;
+    }
 
-let pendingDeleteForm = null;
-const deleteModal = document.getElementById("deleteModal");
-const modalText = document.getElementById("modalText");
-const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
 
-document.querySelectorAll(".delete-form").forEach(form => {
-  form.addEventListener("submit", (event) => {
     event.preventDefault();
-    pendingDeleteForm = form;
-    const curso = form.getAttribute("data-curso") || "este curso";
-    modalText.textContent = `¿Seguro que quieres eliminar "${curso}"? Esta accion no se puede deshacer.`;
-    deleteModal.style.display = "flex";
+    window.location.href = targetHref;
   });
 });
 
-confirmDeleteBtn.addEventListener("click", () => {
-  if (pendingDeleteForm) {
-    pendingDeleteForm.submit();
-  }
-});
+const applyFilters = () => {
+  const searchValue = normalize(searchInput.value);
 
-cancelDeleteBtn.addEventListener("click", () => {
-  pendingDeleteForm = null;
-  deleteModal.style.display = "none";
-});
+  let visibleCount = 0;
+  let visibleFeatured = 0;
+  let visibleGrid = 0;
 
-deleteModal.addEventListener("click", (event) => {
-  if (event.target === deleteModal) {
-    pendingDeleteForm = null;
-    deleteModal.style.display = "none";
+  cards.forEach(card => {
+    const title = normalize(card.dataset.title);
+    const description = normalize(card.querySelector(".course-desc")?.textContent || "");
+
+    const visible = !searchValue || title.includes(searchValue) || description.includes(searchValue);
+    card.style.display = visible ? "flex" : "none";
+
+    if (visible) {
+      visibleCount += 1;
+
+      if (card.classList.contains("course-card--featured")) {
+        visibleFeatured += 1;
+      } else {
+        visibleGrid += 1;
+      }
+    }
+  });
+
+  if (featuredRow) {
+    featuredRow.style.display = visibleFeatured === 0 ? "none" : "grid";
   }
+
+  if (sectionHeading) {
+    sectionHeading.style.display = visibleGrid === 0 ? "none" : "block";
+  }
+
+  if (courseGrid) {
+    courseGrid.style.display = visibleGrid === 0 ? "none" : "grid";
+  }
+
+  noResults.style.display = visibleCount === 0 ? "block" : "none";
+};
+
+searchInput.addEventListener("input", applyFilters);
+categorySelect.addEventListener("change", () => {
+  const url = new URL(window.location.href);
+  const selectedValue = categorySelect.value;
+
+  if (selectedValue) {
+    url.searchParams.set("categoriaId", selectedValue);
+  } else {
+    url.searchParams.delete("categoriaId");
+  }
+
+  window.location.href = url.toString();
 });
+applyFilters();
 </script>
 
 </body>
