@@ -1,6 +1,7 @@
-﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+/* Martin Villagra Tejerina - 1 DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.config;
 
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,10 +37,16 @@ public class DataSeeder implements CommandLineRunner {
     private static final String ADMIN_EMAIL = "admin@miniacademia.local";
     private static final String ADMIN_PASSWORD = "admin123";
     private static final String INSTRUCTOR_RECUPERADO = "Pendiente de reasignar";
+
     private static final Set<String> TITULOS_DESTACADOS_SEMANA = Set.of(
         "Grandes preguntas del universo",
         "Instructor de vuelo: de privado a comercial",
         "El pasado que explica todo"
+    );
+
+    private static final Set<String> TITULOS_ELIMINADOS = Set.of(
+        "Idiomas y compromiso social global",
+        "Liderazgo, empresa y derecho"
     );
 
     private final CategoriaRepository categoriaRepository;
@@ -62,44 +69,41 @@ public class DataSeeder implements CommandLineRunner {
 
         List<Categoria> categorias = categoriaRepository.findAll();
 
-        Categoria ciencia = buscarOCrearCategoria(categorias, "Ciencia y Pensamiento", "Explora ideas cientÃ­ficas, filosofÃ­a y preguntas fundamentales");
-        Categoria humor = buscarOCrearCategoria(categorias, "Humor y Creatividad", "Humor aplicado al lenguaje, observaciÃ³n social y pensamiento crÃ­tico");
-        Categoria educacion = buscarOCrearCategoria(categorias, "EducaciÃ³n e Idiomas", "FormaciÃ³n acadÃ©mica, idiomas y compromiso social");
-        Categoria tecnologia = buscarOCrearCategoria(categorias, "TecnologÃ­a y Sistemas", "Impacto de la tecnologÃ­a en organizaciones y educaciÃ³n superior");
-        Categoria disenoProgramacion = buscarOCrearCategoria(categorias, "DiseÃ±o y ProgramaciÃ³n", "DiseÃ±o digital, desarrollo web y programaciÃ³n orientada a proyectos");
+        Categoria ciencia = buscarOCrearCategoria(categorias, "Ciencia y Pensamiento", "Explora ideas cientificas, filosofia y preguntas fundamentales");
+        Categoria humor = buscarOCrearCategoria(categorias, "Humor y Creatividad", "Humor aplicado al lenguaje, observacion social y pensamiento critico");
+        buscarOCrearCategoria(categorias, "Educacion e Idiomas", "Formacion academica, idiomas y compromiso social");
+        Categoria tecnologia = buscarOCrearCategoria(categorias, "Tecnologia y Sistemas", "Impacto de la tecnologia en organizaciones y educacion superior");
+        Categoria disenoProgramacion = buscarOCrearCategoria(categorias, "Diseno y Programacion", "Diseno digital, desarrollo web y programacion orientada a proyectos");
         Categoria literatura = buscarOCrearCategoria(categorias, "Literatura y Escritura", "Escritura, analisis cultural y pensamiento contemporaneo");
-        Categoria hoteleria = buscarOCrearCategoria(categorias, "HotelerÃ­a y Servicio", "GestiÃ³n hotelera, liderazgo de equipos y excelencia operativa");
-        buscarOCrearCategoria(categorias, "GastronomÃ­a y Oficio", "Cocina profesional, parrilla y cultura del trabajo");
-        Categoria liderazgo = buscarOCrearCategoria(categorias, "Liderazgo y Derecho", "GestiÃ³n comunitaria, empresa y mirada jurÃ­dica internacional");
-        Categoria marketing = buscarOCrearCategoria(categorias, "Marketing y AnÃ¡lisis Internacional", "Estrategia comercial, anÃ¡lisis y relaciones internacionales");
-        Categoria aviacion = buscarOCrearCategoria(categorias, "AviaciÃ³n y Operaciones de Vuelo", "FormaciÃ³n para pilotaje comercial, seguridad y toma de decisiones");
-        Categoria fisioterapia = buscarOCrearCategoria(categorias, "Salud y Fisioterapia", "Bienestar fÃ­sico, readaptaciÃ³n funcional y prevenciÃ³n de lesiones");
-        Categoria gestionProyectos = buscarOCrearCategoria(categorias, "GestiÃ³n de Proyectos Global", "PlanificaciÃ³n, liderazgo de equipos y ejecuciÃ³n de proyectos internacionales");
+        Categoria hoteleria = buscarOCrearCategoria(categorias, "Hoteleria y Servicio", "Gestion hotelera, liderazgo de equipos y excelencia operativa");
+        buscarOCrearCategoria(categorias, "Gastronomia y Oficio", "Cocina profesional, parrilla y cultura del trabajo");
+        buscarOCrearCategoria(categorias, "Liderazgo y Derecho", "Gestion comunitaria, empresa y mirada juridica internacional");
+        Categoria marketing = buscarOCrearCategoria(categorias, "Marketing y Analisis Internacional", "Estrategia comercial, analisis y relaciones internacionales");
+        Categoria aviacion = buscarOCrearCategoria(categorias, "Aviacion y Operaciones de Vuelo", "Formacion para pilotaje comercial, seguridad y toma de decisiones");
+        Categoria fisioterapia = buscarOCrearCategoria(categorias, "Salud y Fisioterapia", "Bienestar fisico, readaptacion funcional y prevencion de lesiones");
+        Categoria gestionProyectos = buscarOCrearCategoria(categorias, "Gestion de Proyectos Global", "Planificacion, liderazgo de equipos y ejecucion de proyectos internacionales");
 
-        // Categorias adicionales para ampliar el catalogo y mejorar el filtro principal.
         Categoria historia = buscarOCrearCategoria(categorias, "Historia y Sociedad", "Procesos historicos, memoria colectiva y comprension del presente");
-        buscarOCrearCategoria(categorias, "Cine y ActuaciÃ³n", "Actuacion, lenguaje audiovisual y construccion de personajes");
-        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseÃ±o de espacios habitables");
+        buscarOCrearCategoria(categorias, "Cine y Actuacion", "Actuacion, lenguaje audiovisual y construccion de personajes");
+        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseno de espacios habitables");
         buscarOCrearCategoria(categorias, "Cultura Pop y Narrativa", "Universos narrativos, fandom y analisis cultural");
 
         fusionarCategoriasRelacionadas(
             disenoProgramacion,
-            Arrays.asList("DiseÃ±o", "Diseno", "DiseÃ±o Web", "Diseno Web", "ProgramaciÃ³n", "Programacion", "Desarrollo Web", "Frontend", "Backend")
+            Arrays.asList("Diseno", "Diseno Web", "Programacion", "Desarrollo Web", "Frontend", "Backend")
         );
 
         List<Curso> cursos = new ArrayList<>();
-        cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan MartÃ­n Maldacena", "/uploads/images/img-027.png", "/uploads/videos/vid-004.mp4", ciencia));
-        cursos.add(crearCurso("Humor con mirada crÃ­tica", "Humor, lenguaje y creatividad: cÃ³mo se construye una mirada crÃ­tica desde la risa.", "Yayo Guridi", "/uploads/images/img-010.png", "/uploads/videos/vid-010.mp4", humor));
-        cursos.add(crearCurso("Idiomas y compromiso social global", "EducaciÃ³n, idiomas y compromiso social desde la experiencia rotaria internacional.", "Victoria Tejerina Allende", null, null, educacion));
-        cursos.add(crearCurso("TecnologÃ­a en la educaciÃ³n superior", "Sistemas, educaciÃ³n superior y el rol de la tecnologÃ­a en la formaciÃ³n acadÃ©mica.", "Fernando Javier Villagra", "/uploads/images/img-019.jpg", "/uploads/videos/vid-009.mp4", tecnologia));
+        cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan Martin Maldacena", "/uploads/images/img-027.png", "/uploads/videos/vid-004.mp4", ciencia));
+        cursos.add(crearCurso("Humor con mirada critica", "Humor, lenguaje y creatividad: como se construye una mirada critica desde la risa.", "Yayo Guridi", "/uploads/images/img-010.png", "/uploads/videos/vid-010.mp4", humor));
+        cursos.add(crearCurso("Tecnologia en la educacion superior", "Sistemas, educacion superior y el rol de la tecnologia en la formacion academica.", "Fernando Javier Villagra", "/uploads/images/img-019.jpg", "/uploads/videos/vid-009.mp4", tecnologia));
         cursos.add(crearCurso("Escritura para entender el presente", "Escritura, pensamiento y literatura como herramienta para entender el presente.", "Rosa Montero", "/uploads/images/img-003.png", "/uploads/videos/vid-024.mp4", literatura));
-        cursos.add(crearCurso("GestiÃ³n hotelera con excelencia", "Experiencia real en hotelerÃ­a premiada, gestiÃ³n de equipos y excelencia en servicio.", "Christine Fox & David Mcghie", "/uploads/images/img-032.jpg", "/uploads/videos/vid-026.mp4", hoteleria));
-        cursos.add(crearCurso("Liderazgo, empresa y derecho", "Liderazgo comunitario, empresa y derecho desde una mirada internacional.", "Mel Powell", null, null, liderazgo));
-        cursos.add(crearCurso("Marketing aplicado al mundo real", "Marketing, anÃ¡lisis y relaciones internacionales aplicadas al mundo real.", "Francesco Nicola Bute", "/uploads/images/img-002.png", "/uploads/videos/vid-011.mp4", marketing));
-        cursos.add(crearCurso("Instructor de vuelo: de privado a comercial", "Entrenamiento integral con enfoque operativo: navegaciÃ³n, meteorologÃ­a, CRM y toma de decisiones para pilotos privados y comerciales.", "Alejo Testa", "/uploads/images/img-004.jpg", "/uploads/videos/vid-002.mp4", aviacion));
+        cursos.add(crearCurso("Gestion hotelera con excelencia", "Experiencia real en hoteleria premiada, gestion de equipos y excelencia en servicio.", "Christine Fox & David Mcghie", "/uploads/images/img-032.jpg", "/uploads/videos/vid-026.mp4", hoteleria));
+        cursos.add(crearCurso("Marketing aplicado al mundo real", "Marketing, analisis y relaciones internacionales aplicadas al mundo real.", "Francesco Nicola Bute", "/uploads/images/img-002.png", "/uploads/videos/vid-011.mp4", marketing));
+        cursos.add(crearCurso("Instructor de vuelo: de privado a comercial", "Entrenamiento integral con enfoque operativo: navegacion, meteorologia, CRM y toma de decisiones para pilotos privados y comerciales.", "Alejo Testa", "/uploads/images/img-004.jpg", "/uploads/videos/vid-002.mp4", aviacion));
         cursos.add(crearCurso("El pasado que explica todo", "Descubre procesos historicos que construyen el presente desde una mirada critica y bien documentada.", "Nils Jacobsen", "/uploads/images/img-008.png", "/uploads/videos/vid-006.mp4", historia));
-        cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevenciÃ³n de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "/uploads/images/img-014.png", "/uploads/videos/vid-001.mp4", fisioterapia));
-        cursos.add(crearCurso("GestiÃ³n de proyectos de inicio a cierre", "MetodologÃ­as, planificaciÃ³n y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "/uploads/images/img-006.jpeg", "/uploads/videos/vid-014.mp4", gestionProyectos));
+        cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevencion de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "/uploads/images/img-014.png", "/uploads/videos/vid-001.mp4", fisioterapia));
+        cursos.add(crearCurso("Gestion de proyectos de inicio a cierre", "Metodologias, planificacion y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "/uploads/images/img-006.jpeg", "/uploads/videos/vid-014.mp4", gestionProyectos));
 
         Set<String> titulosLegacy = new HashSet<>(Arrays.asList(
             "java spring boot desde cero",
@@ -121,15 +125,20 @@ public class DataSeeder implements CommandLineRunner {
         ));
 
         List<Curso> cursosExistentes = cursoRepository.findAll();
-        List<Curso> cursosLegacy = cursosExistentes.stream()
-            .filter(c -> titulosLegacy.contains(c.getTitulo().toLowerCase(Locale.ROOT)))
+        Set<String> legacyNormalizados = titulosLegacy.stream().map(this::normalizarTexto).collect(Collectors.toSet());
+        Set<String> eliminadosNormalizados = TITULOS_ELIMINADOS.stream().map(this::normalizarTexto).collect(Collectors.toSet());
+
+        List<Curso> cursosAEliminar = cursosExistentes.stream()
+            .filter(c -> legacyNormalizados.contains(normalizarTexto(c.getTitulo()))
+                || eliminadosNormalizados.contains(normalizarTexto(c.getTitulo())))
             .toList();
 
-        if (!cursosLegacy.isEmpty()) {
-            cursoRepository.deleteAll(cursosLegacy);
+        if (!cursosAEliminar.isEmpty()) {
+            cursoRepository.deleteAll(cursosAEliminar);
         }
 
-        // Actualizar cursos existentes o crear nuevos
+        eliminarDuplicadosPorTituloNormalizado();
+
         List<Curso> cursosActuales = cursoRepository.findAll();
         Map<String, Curso> cursosPorTituloNormalizado = new HashMap<>();
         for (Curso curso : cursosActuales) {
@@ -140,9 +149,9 @@ public class DataSeeder implements CommandLineRunner {
         for (Curso cursoNuevo : cursos) {
             String tituloNormalizado = normalizarTexto(cursoNuevo.getTitulo());
             Curso existente = cursosPorTituloNormalizado.get(tituloNormalizado);
-            
+
             if (existente != null) {
-                // Actualizar curso existente con nuevas URLs
+                existente.setTitulo(cursoNuevo.getTitulo());
                 existente.setDescripcion(cursoNuevo.getDescripcion());
                 existente.setInstructor(cursoNuevo.getInstructor());
                 existente.setImagenUrl(cursoNuevo.getImagenUrl());
@@ -150,7 +159,6 @@ public class DataSeeder implements CommandLineRunner {
                 existente.setCategoria(cursoNuevo.getCategoria());
                 cursosAGuardar.add(existente);
             } else {
-                // Crear nuevo curso
                 cursosAGuardar.add(cursoNuevo);
             }
         }
@@ -160,28 +168,46 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         limpiarCursosTemporalesRecuperados();
-
         aplicarDestacadosFijos();
     }
 
     private Categoria buscarOCrearCategoria(List<Categoria> categorias, String nombre, String descripcion) {
         return categorias.stream()
-                .filter(c -> normalizarTexto(c.getNombre()).equals(normalizarTexto(nombre)))
-                .findFirst()
-                .map(existente -> {
-                    if (!Objects.equals(existente.getNombre(), nombre) || !Objects.equals(existente.getDescripcion(), descripcion)) {
-                        existente.setNombre(nombre);
-                        existente.setDescripcion(descripcion);
-                        return categoriaRepository.save(existente);
-                    }
-                    return existente;
-                })
-                .orElseGet(() -> {
-                    Categoria nueva = new Categoria();
-                    nueva.setNombre(nombre);
-                    nueva.setDescripcion(descripcion);
-                    return categoriaRepository.save(nueva);
-                });
+            .filter(c -> normalizarTexto(c.getNombre()).equals(normalizarTexto(nombre)))
+            .findFirst()
+            .map(existente -> {
+                if (!Objects.equals(existente.getNombre(), nombre) || !Objects.equals(existente.getDescripcion(), descripcion)) {
+                    existente.setNombre(nombre);
+                    existente.setDescripcion(descripcion);
+                    return categoriaRepository.save(existente);
+                }
+                return existente;
+            })
+            .orElseGet(() -> {
+                Categoria nueva = new Categoria();
+                nueva.setNombre(nombre);
+                nueva.setDescripcion(descripcion);
+                return categoriaRepository.save(nueva);
+            });
+    }
+
+    private void eliminarDuplicadosPorTituloNormalizado() {
+        List<Curso> cursos = cursoRepository.findAll();
+        Map<String, List<Curso>> porTitulo = cursos.stream().collect(Collectors.groupingBy(c -> normalizarTexto(c.getTitulo())));
+
+        List<Curso> duplicados = new ArrayList<>();
+        for (List<Curso> grupo : porTitulo.values()) {
+            if (grupo.size() <= 1) {
+                continue;
+            }
+
+            grupo.sort((a, b) -> Long.compare(a.getId(), b.getId()));
+            duplicados.addAll(grupo.subList(1, grupo.size()));
+        }
+
+        if (!duplicados.isEmpty()) {
+            cursoRepository.deleteAll(duplicados);
+        }
     }
 
     private String normalizarTexto(String valor) {
@@ -189,10 +215,21 @@ public class DataSeeder implements CommandLineRunner {
             return "";
         }
 
-        String sinAcentos = Normalizer.normalize(valor, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}+", "");
-
+        String reparado = repararMojibake(valor);
+        String sinAcentos = Normalizer.normalize(reparado, Normalizer.Form.NFD).replaceAll("\\p{M}+", "");
         return sinAcentos.toLowerCase(Locale.ROOT).trim();
+    }
+
+    private String repararMojibake(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return valor;
+        }
+
+        if (valor.contains("Ã") || valor.contains("Â")) {
+            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Â", "");
+        }
+
+        return valor;
     }
 
     private Curso crearCurso(String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Categoria categoria) {
@@ -216,10 +253,7 @@ public class DataSeeder implements CommandLineRunner {
                 continue;
             }
 
-            boolean debeFusionarse = aliases.stream()
-                .map(this::normalizarTexto)
-                .anyMatch(alias -> alias.equals(nombreNormalizado));
-
+            boolean debeFusionarse = aliases.stream().map(this::normalizarTexto).anyMatch(alias -> alias.equals(nombreNormalizado));
             if (!debeFusionarse) {
                 continue;
             }
@@ -283,4 +317,3 @@ public class DataSeeder implements CommandLineRunner {
         usuarioRepository.save(usuario);
     }
 }
-
