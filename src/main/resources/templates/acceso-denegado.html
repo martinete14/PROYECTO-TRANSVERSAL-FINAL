@@ -26,7 +26,8 @@
   <section class="hero-cinematic" style="margin-top:26px;">
     <p class="hero-kicker">PERMISO INSUFICIENTE</p>
     <h2>Acceso denegado</h2>
-    <p>Tu rol actual no tiene permiso para abrir esta pantalla. Si necesitas acceso, entra con un perfil autorizado.</p>
+    <p>Tu rol actual no tiene permiso para abrir esta pantalla. Esta ruta requiere <strong th:text="${requiredRoleMessage}">ADMIN</strong>.</p>
+    <p style="margin-top:8px;color:#a5b7cd;">Ruta solicitada: <strong th:text="${requestedPath}">/web/cursos/admin</strong></p>
   </section>
 
   <section class="empty-state">

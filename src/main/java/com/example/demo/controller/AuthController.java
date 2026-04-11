@@ -77,7 +77,16 @@ public class AuthController {
     }
 
     @GetMapping("/denegado")
-    public String accesoDenegado() {
+    public String accesoDenegado(
+        @RequestParam(required = false) String required,
+        @RequestParam(required = false) String from,
+        Model model
+    ) {
+        String rolRequerido = StringUtils.hasText(required) ? required : "ADMIN";
+        String rutaSolicitada = StringUtils.hasText(from) ? from : "/web/cursos";
+
+        model.addAttribute("requiredRoleMessage", rolRequerido);
+        model.addAttribute("requestedPath", rutaSolicitada);
         return "acceso-denegado";
     }
 }

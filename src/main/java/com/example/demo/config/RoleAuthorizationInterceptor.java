@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
-import java.util.Set;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -13,6 +14,12 @@ import jakarta.servlet.http.HttpSession;
 
 @Component
 public class RoleAuthorizationInterceptor implements HandlerInterceptor {
+
+    private final RoutePermissionPolicy routePermissionPolicy;
+
+    public RoleAuthorizationInterceptor(RoutePermissionPolicy routePermissionPolicy) {
+        this.routePermissionPolicy = routePermissionPolicy;
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,28 +40,12 @@ public class RoleAuthorizationInterceptor implements HandlerInterceptor {
         }
 
         RolUsuario rol = RolUsuario.fromValue((String) session.getAttribute("AUTH_ROLE"));
+        RoutePermissionPolicy.AuthorizationDecision decision = routePermissionPolicy.evaluate(path, rol);
 
-        if (path.startsWith("/web/cursos/admin") && rol != RolUsuario.ADMIN) {
-            response.sendRedirect("/web/auth/denegado");
-            return false;
-        }
-
-        Set<String> rutasGestion = Set.of(
-            "/web/cursos/nuevo",
-            "/web/cursos/crear",
-            "/web/cursos/editar",
-            "/web/cursos/actualizar",
-            "/web/cursos/eliminar"
-        );
-
-        boolean requiereGestion = rutasGestion.stream().anyMatch(path::startsWith);
-        if (requiereGestion && rol != RolUsuario.ADMIN && rol != RolUsuario.INSTRUCTOR) {
-            response.sendRedirect("/web/auth/denegado");
-            return false;
-        }
-
-        if (path.startsWith("/web/cursos/instructor") && rol != RolUsuario.ADMIN && rol != RolUsuario.INSTRUCTOR) {
-            response.sendRedirect("/web/auth/denegado");
+        if (!decision.allowed()) {
+            String required = URLEncoder.encode(decision.requiredRoleLabel(), StandardCharsets.UTF_8);
+            String from = URLEncoder.encode(path, StandardCharsets.UTF_8);
+            response.sendRedirect("/web/auth/denegado?required=" + required + "&from=" + from);
             return false;
         }
 
