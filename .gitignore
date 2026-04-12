@@ -33,4 +33,8 @@ build/
 .vscode/
 
 ### Runtime uploads ###
-uploads/
+# uploads/ tracked in git for backup
+
+### DB backups (generated files, not tracked) ###
+database/backups/*.sql
+database/backups/*.log
