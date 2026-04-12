@@ -79,6 +79,7 @@ public class WebController {
     public String verCursos(@RequestParam(required = false) Long categoriaId, Model model) {
         List<CursoDTO> todosLosCursos = new ArrayList<>(cursoService.obtenerCursos());
         todosLosCursos.forEach(this::sanearTextoCurso);
+        todosLosCursos = deduplicarCursosParaCatalogo(todosLosCursos);
         boolean esPortada = categoriaId == null;
 
         List<CursoDTO> cursosCatalogo;
@@ -127,6 +128,20 @@ public class WebController {
         model.addAttribute("esPortada", esPortada);
 
         return "cursos";
+    }
+
+    private List<CursoDTO> deduplicarCursosParaCatalogo(List<CursoDTO> cursos) {
+        Map<String, CursoDTO> unicos = new LinkedHashMap<>();
+
+        for (CursoDTO curso : cursos) {
+            String key = normalizarTexto(curso.getTitulo()) + "|"
+                + normalizarTexto(curso.getInstructor()) + "|"
+                + normalizarTexto(curso.getCategoriaNombre());
+
+            unicos.putIfAbsent(key, curso);
+        }
+
+        return new ArrayList<>(unicos.values());
     }
 
     private void sanearTextoCurso(CursoDTO curso) {
