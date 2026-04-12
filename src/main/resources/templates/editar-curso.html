@@ -65,18 +65,21 @@
                         <label class="field-label">Titulo</label>
                         <input type="text" name="titulo" class="field-input" th:value="${curso.titulo}" required minlength="8" maxlength="120">
                         <small class="helper-text">Entre 8 y 120 caracteres. Evita repetir el titulo de otro curso.</small>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'titulo')}" th:text="${fieldErrors['titulo']}"></small>
                     </div>
 
                     <div class="field field-span-2">
                         <label class="field-label">Descripcion</label>
                         <textarea name="descripcion" class="field-input field-textarea" rows="4" required minlength="30" maxlength="1800" th:text="${curso.descripcion}"></textarea>
                         <small class="helper-text">Entre 30 y 1800 caracteres para mantener una ficha clara y completa.</small>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'descripcion')}" th:text="${fieldErrors['descripcion']}"></small>
                     </div>
 
                     <div class="field">
                         <label class="field-label">Profesional / Instructor</label>
                         <input type="text" name="instructor" class="field-input" th:value="${curso.instructor}" required minlength="3" maxlength="120">
                         <small class="helper-text">Entre 3 y 120 caracteres.</small>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'instructor')}" th:text="${fieldErrors['instructor']}"></small>
                     </div>
 
                     <div class="field">
@@ -88,6 +91,7 @@
                                     th:selected="${cat.id == curso.categoria.id}">
                             </option>
                         </select>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'categoriaId')}" th:text="${fieldErrors['categoriaId']}"></small>
                     </div>
                 </section>
 
@@ -102,12 +106,14 @@
                             <label class="field-label">URL de imagen</label>
                             <input type="url" name="imagenUrl" class="field-input" th:value="${curso.imagenUrl}">
                             <small class="helper-text">Acepta https://, http:// o /uploads/images/ con PNG, JPG, JPEG, WEBP o GIF.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'imagenUrl')}" th:text="${fieldErrors['imagenUrl']}"></small>
                         </div>
 
                         <div class="field">
                             <label class="field-label">Archivo de imagen</label>
                             <input type="file" name="imagenFile" class="field-input" accept="image/*">
                             <small class="helper-text">Si subes un archivo nuevo, reemplaza la imagen anterior.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'imagenFile')}" th:text="${fieldErrors['imagenFile']}"></small>
                         </div>
                     </div>
                 </section>
@@ -123,12 +129,14 @@
                             <label class="field-label">URL de video MP4</label>
                             <input type="url" name="videoUrl" class="field-input" th:value="${curso.videoUrl}">
                             <small class="helper-text">Acepta https://, http:// o /uploads/videos/ en formato MP4.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'videoUrl')}" th:text="${fieldErrors['videoUrl']}"></small>
                         </div>
 
                         <div class="field">
                             <label class="field-label">Archivo de video</label>
                             <input type="file" name="videoFile" class="field-input" accept="video/mp4,video/*">
                             <small class="helper-text">Si subes un archivo nuevo, reemplaza el video anterior.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'videoFile')}" th:text="${fieldErrors['videoFile']}"></small>
                         </div>
                     </div>
                 </section>

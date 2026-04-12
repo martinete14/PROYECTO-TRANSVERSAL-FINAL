@@ -124,10 +124,18 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public List<Curso> obtenerCursosPorInstructor(String instructor) {
-        if (instructor == null || instructor.isBlank()) {
-            return cursoRepository.findAll();
-        }
-        return cursoRepository.findByInstructorContainingIgnoreCase(instructor.trim());
+        return obtenerCursosFiltrados(instructor, null);
+    }
+
+    @Override
+    public List<Curso> obtenerCursosFiltrados(String instructor, String titulo) {
+        String instructorNormalizado = instructor == null ? "" : instructor.trim().toLowerCase(Locale.ROOT);
+        String tituloNormalizado = titulo == null ? "" : titulo.trim().toLowerCase(Locale.ROOT);
+
+        return cursoRepository.findAll().stream()
+            .filter(curso -> instructorNormalizado.isBlank() || contieneIgnoreCase(curso.getInstructor(), instructorNormalizado))
+            .filter(curso -> tituloNormalizado.isBlank() || contieneIgnoreCase(curso.getTitulo(), tituloNormalizado))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -371,5 +379,12 @@ public class CursoServiceImpl implements CursoService {
                 .replaceAll("\\p{M}+", "");
 
         return sinAcentos.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+    }
+
+    private boolean contieneIgnoreCase(String valor, String filtroNormalizado) {
+        if (valor == null) {
+            return false;
+        }
+        return valor.toLowerCase(Locale.ROOT).contains(filtroNormalizado);
     }
 }

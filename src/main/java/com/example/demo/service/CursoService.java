@@ -27,5 +27,7 @@ public interface CursoService {
 
     List<Curso> obtenerCursosPorInstructor(String instructor);
 
+    List<Curso> obtenerCursosFiltrados(String instructor, String titulo);
+
     void actualizarDestacadoSemana(Long id, boolean destacadoSemana);
 }
