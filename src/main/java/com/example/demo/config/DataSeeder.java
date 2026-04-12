@@ -84,9 +84,10 @@ public class DataSeeder implements CommandLineRunner {
         Categoria gestionProyectos = buscarOCrearCategoria(categorias, "Gestion de Proyectos Global", "Planificacion, liderazgo de equipos y ejecucion de proyectos internacionales");
 
         Categoria historia = buscarOCrearCategoria(categorias, "Historia y Sociedad", "Procesos historicos, memoria colectiva y comprension del presente");
-        buscarOCrearCategoria(categorias, "Cine y Actuacion", "Actuacion, lenguaje audiovisual y construccion de personajes");
-        buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseno de espacios habitables");
+        Categoria cineActuacion = buscarOCrearCategoria(categorias, "Cine y Actuacion", "Actuacion, lenguaje audiovisual y construccion de personajes");
+        Categoria arquitectura = buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseno de espacios habitables");
         buscarOCrearCategoria(categorias, "Cultura Pop y Narrativa", "Universos narrativos, fandom y analisis cultural");
+        Categoria comunicacion = buscarOCrearCategoria(categorias, "Comunicacion y Periodismo", "Locucion, periodismo digital y comunicacion audiovisual");
 
         fusionarCategoriasRelacionadas(
             disenoProgramacion,
@@ -104,6 +105,10 @@ public class DataSeeder implements CommandLineRunner {
         cursos.add(crearCurso("El pasado que explica todo", "Descubre procesos historicos que construyen el presente desde una mirada critica y bien documentada.", "Nils Jacobsen", "/uploads/images/img-008.png", "/uploads/videos/vid-006.mp4", historia));
         cursos.add(crearCurso("Fisioterapia funcional para la vida diaria", "Movilidad, prevencion de lesiones y ejercicios funcionales para mejorar la calidad de vida.", "Tu mejor amigo - Fisioterapeuta", "/uploads/images/img-014.png", "/uploads/videos/vid-001.mp4", fisioterapia));
         cursos.add(crearCurso("Gestion de proyectos de inicio a cierre", "Metodologias, planificacion y seguimiento para liderar proyectos con alcance global.", "Juan de Dios", "/uploads/images/img-006.jpeg", "/uploads/videos/vid-014.mp4", gestionProyectos));
+        cursos.add(crearCurso("Locucion, periodismo y comunicacion digital", "Del microfono a la pantalla: formacion en locucion nacional, periodismo digital y comunicacion audiovisual contemporanea.", "Mariano Cardarelli", "/uploads/images/img-031.jpg", "/uploads/videos/vid-025.mp4", comunicacion));
+        cursos.add(crearCurso("Operaciones IFR y gestion de cabina", "Formacion avanzada en vuelo instrumental, procedimientos IFR y gestion eficiente de cabina en operaciones aereas exigentes.", "Alejo Testa", "/uploads/images/img-016.jpeg", "/uploads/videos/vid-008.mp4", aviacion));
+        cursos.add(crearCurso("Actuacion, comedia y construccion de personajes", "La tecnica actoral vista desde la comedia, el cine y el teatro: como crear personajes autenticos y memorables.", "Guillermo Francella", "/uploads/images/img-026.png", "/uploads/videos/vid-022.mp4", cineActuacion));
+        cursos.add(crearCurso("Arquitectura, proyecto y direccion de obra", "Diseno arquitectonico, direccion de proyectos y supervision de obra desde la practica profesional real.", "Giuliano Bute", "/uploads/images/img-030.png", "/uploads/videos/vid-029.mp4", arquitectura));
 
         Set<String> titulosLegacy = new HashSet<>(Arrays.asList(
             "java spring boot desde cero",
@@ -120,7 +125,6 @@ public class DataSeeder implements CommandLineRunner {
             "tecnologia en la educacion superior",
             "gestion hotelera con excelencia",
             "parrilla y cultura del oficio",
-            "operaciones ifr y gestion de cabina",
             "el poder de la aviacion ejecutiva"
         ));
 
