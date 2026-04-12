@@ -332,7 +332,14 @@ public class WebController {
         try {
             Curso curso = cursoService.obtenerCursoPorId(id);
             validarPermisoGestionCurso(session, curso);
+
+            String imagenAnterior = curso.getImagenUrl();
+            String videoAnterior = curso.getVideoUrl();
+
             cursoService.eliminarCurso(id);
+            tryDeleteUnusedManagedMedia(imagenAnterior, id);
+            tryDeleteUnusedManagedMedia(videoAnterior, id);
+
             redirectAttributes.addFlashAttribute("successMessage", "Curso eliminado correctamente.");
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
@@ -374,6 +381,9 @@ public class WebController {
             Curso cursoExistente = cursoService.obtenerCursoPorId(id);
             validarPermisoGestionCurso(session, cursoExistente);
 
+            String imagenAnterior = cursoExistente.getImagenUrl();
+            String videoAnterior = cursoExistente.getVideoUrl();
+
             Curso curso = new Curso();
             curso.setTitulo(titulo);
             curso.setDescripcion(descripcion);
@@ -393,6 +403,14 @@ public class WebController {
             curso.setCategoria(categoria);
 
             cursoService.actualizarCurso(id, curso);
+
+            if (!Objects.equals(imagenAnterior, curso.getImagenUrl())) {
+                tryDeleteUnusedManagedMedia(imagenAnterior, id);
+            }
+            if (!Objects.equals(videoAnterior, curso.getVideoUrl())) {
+                tryDeleteUnusedManagedMedia(videoAnterior, id);
+            }
+
             redirectAttributes.addFlashAttribute("successMessage", "Curso actualizado correctamente.");
             return "redirect:/web/cursos";
         } catch (RuntimeException ex) {
@@ -439,6 +457,52 @@ public class WebController {
         } catch (IOException e) {
             throw new RuntimeException("No se pudo guardar el archivo multimedia", e);
         }
+    }
+
+    private void tryDeleteUnusedManagedMedia(String mediaUrl, Long excludedCursoId) {
+        if (!StringUtils.hasText(mediaUrl) || !isManagedUploadPath(mediaUrl)) {
+            return;
+        }
+
+        boolean inUse = cursoService.obtenerCursosEntidad().stream()
+            .filter(curso -> !Objects.equals(curso.getId(), excludedCursoId))
+            .anyMatch(curso -> Objects.equals(mediaUrl, curso.getImagenUrl()) || Objects.equals(mediaUrl, curso.getVideoUrl()));
+
+        if (inUse) {
+            return;
+        }
+
+        Path localPath = resolveManagedMediaPath(mediaUrl);
+        if (localPath == null) {
+            return;
+        }
+
+        try {
+            Files.deleteIfExists(localPath);
+        } catch (IOException ignored) {
+            // No interrumpir el flujo CRUD por un fallo de limpieza.
+        }
+    }
+
+    private boolean isManagedUploadPath(String mediaUrl) {
+        return mediaUrl.startsWith("/uploads/images/") || mediaUrl.startsWith("/uploads/videos/");
+    }
+
+    private Path resolveManagedMediaPath(String mediaUrl) {
+        String fileName = mediaUrl.substring(mediaUrl.lastIndexOf('/') + 1);
+        if (!StringUtils.hasText(fileName)) {
+            return null;
+        }
+
+        if (mediaUrl.startsWith("/uploads/images/")) {
+            return Paths.get(imageUploadDir).resolve(fileName);
+        }
+
+        if (mediaUrl.startsWith("/uploads/videos/")) {
+            return Paths.get(videoUploadDir).resolve(fileName);
+        }
+
+        return null;
     }
 
     private void validateImageFile(MultipartFile file) {
