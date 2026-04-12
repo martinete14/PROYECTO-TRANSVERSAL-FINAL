@@ -1,8 +1,11 @@
 /* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.service;
 
+import java.text.Normalizer;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -15,6 +18,13 @@ import com.example.demo.repository.CursoRepository;
 
 @Service
 public class CursoServiceImpl implements CursoService {
+
+    private static final int MIN_TITULO_LENGTH = 8;
+    private static final int MAX_TITULO_LENGTH = 120;
+    private static final int MIN_DESCRIPCION_LENGTH = 30;
+    private static final int MAX_DESCRIPCION_LENGTH = 1800;
+    private static final int MIN_INSTRUCTOR_LENGTH = 3;
+    private static final int MAX_INSTRUCTOR_LENGTH = 120;
 
     private final CursoRepository cursoRepository;
     private final CategoriaRepository categoriaRepository;
@@ -57,6 +67,8 @@ public class CursoServiceImpl implements CursoService {
     @Override
     public Curso crearCurso(Curso curso) {
 
+        validarYPrepararCurso(curso, null);
+
         if (curso.getCategoria() == null || curso.getCategoria().getId() == null) {
             throw new RuntimeException("La categoría es obligatoria");
         }
@@ -73,6 +85,8 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public Curso actualizarCurso(Long id, Curso cursoActualizado) {
+
+        validarYPrepararCurso(cursoActualizado, id);
 
         Curso curso = cursoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
@@ -112,10 +126,20 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public List<Curso> obtenerCursosPorInstructor(String instructor) {
-        if (instructor == null || instructor.isBlank()) {
-            return cursoRepository.findAll();
-        }
-        return cursoRepository.findByInstructorContainingIgnoreCase(instructor.trim());
+        return obtenerCursosFiltrados(instructor, null);
+    }
+
+    @Override
+    public List<Curso> obtenerCursosFiltrados(String instructor, String titulo) {
+        String instructorNormalizado = instructor == null ? "" : instructor.trim().toLowerCase(Locale.ROOT);
+        String tituloNormalizado = titulo == null ? "" : titulo.trim().toLowerCase(Locale.ROOT);
+
+        List<Curso> filtrados = cursoRepository.findAll().stream()
+            .filter(curso -> instructorNormalizado.isBlank() || contieneIgnoreCase(curso.getInstructor(), instructorNormalizado))
+            .filter(curso -> tituloNormalizado.isBlank() || contieneIgnoreCase(curso.getTitulo(), tituloNormalizado))
+            .collect(Collectors.toList());
+
+        return deduplicarCursosPorContenido(filtrados);
     }
 
     @Override
@@ -242,5 +266,149 @@ public class CursoServiceImpl implements CursoService {
         }
 
         return "contenido actual, criterio profesional";
+    }
+
+    private void validarYPrepararCurso(Curso curso, Long cursoIdActual) {
+        if (curso == null) {
+            throw new RuntimeException("Los datos del curso no son validos");
+        }
+
+        String titulo = normalizarCampo(curso.getTitulo());
+        String descripcion = normalizarCampo(curso.getDescripcion());
+        String instructor = normalizarCampo(curso.getInstructor());
+        String imagenUrl = normalizarUrl(curso.getImagenUrl());
+        String videoUrl = normalizarUrl(curso.getVideoUrl());
+
+        validarLongitud(titulo, "El titulo es obligatorio", "El titulo debe tener al menos 8 caracteres", MAX_TITULO_LENGTH, "El titulo no puede superar los 120 caracteres", MIN_TITULO_LENGTH);
+        validarLongitud(descripcion, "La descripcion es obligatoria", "La descripcion debe tener al menos 30 caracteres", MAX_DESCRIPCION_LENGTH, "La descripcion no puede superar los 1800 caracteres", MIN_DESCRIPCION_LENGTH);
+        validarLongitud(instructor, "El nombre del profesional es obligatorio", "El nombre del profesional debe tener al menos 3 caracteres", MAX_INSTRUCTOR_LENGTH, "El nombre del profesional no puede superar los 120 caracteres", MIN_INSTRUCTOR_LENGTH);
+
+        validarUrlMultimedia(imagenUrl, true);
+        validarUrlMultimedia(videoUrl, false);
+
+        if (existeTituloDuplicado(titulo, cursoIdActual)) {
+            throw new RuntimeException("Ya existe un curso con ese titulo. Usa otro nombre para evitar tarjetas duplicadas.");
+        }
+
+        curso.setTitulo(titulo);
+        curso.setDescripcion(descripcion);
+        curso.setInstructor(instructor);
+        curso.setImagenUrl(imagenUrl);
+        curso.setVideoUrl(videoUrl);
+    }
+
+    private void validarLongitud(String valor, String mensajeVacio, String mensajeMin, int maximo, String mensajeMax, int minimo) {
+        if (valor == null || valor.isBlank()) {
+            throw new RuntimeException(mensajeVacio);
+        }
+        if (valor.length() < minimo) {
+            throw new RuntimeException(mensajeMin);
+        }
+        if (valor.length() > maximo) {
+            throw new RuntimeException(mensajeMax);
+        }
+    }
+
+    private void validarUrlMultimedia(String mediaUrl, boolean imagen) {
+        if (mediaUrl == null) {
+            return;
+        }
+
+        String limpia = limpiarQueryString(mediaUrl).toLowerCase(Locale.ROOT);
+        boolean esLocalValida = imagen
+                ? limpia.startsWith("/uploads/images/")
+                : limpia.startsWith("/uploads/videos/");
+        boolean esRemotaValida = limpia.startsWith("http://") || limpia.startsWith("https://");
+
+        if (!esLocalValida && !esRemotaValida) {
+            throw new RuntimeException(imagen
+                    ? "La URL de imagen debe empezar por https://, http:// o /uploads/images/"
+                    : "La URL de video debe empezar por https://, http:// o /uploads/videos/");
+        }
+
+        boolean extensionValida = imagen
+                ? limpia.endsWith(".png") || limpia.endsWith(".jpg") || limpia.endsWith(".jpeg") || limpia.endsWith(".webp") || limpia.endsWith(".gif")
+                : limpia.endsWith(".mp4");
+
+        if (!extensionValida) {
+            throw new RuntimeException(imagen
+                    ? "La imagen debe ser PNG, JPG, JPEG, WEBP o GIF"
+                    : "El video debe estar en formato MP4");
+        }
+    }
+
+    private boolean existeTituloDuplicado(String titulo, Long cursoIdActual) {
+        String tituloNormalizado = normalizarParaComparacion(titulo);
+
+        return cursoRepository.findAll().stream()
+                .filter(curso -> cursoIdActual == null || !cursoIdActual.equals(curso.getId()))
+                .map(Curso::getTitulo)
+                .map(this::normalizarParaComparacion)
+                .anyMatch(tituloNormalizado::equals);
+    }
+
+    private String normalizarCampo(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        return valor.trim().replaceAll("\\s+", " ");
+    }
+
+    private String normalizarUrl(String valor) {
+        String normalizada = normalizarCampo(valor);
+        return normalizada == null || normalizada.isBlank() ? null : normalizada;
+    }
+
+    private String limpiarQueryString(String valor) {
+        int queryIndex = valor.indexOf('?');
+        int hashIndex = valor.indexOf('#');
+        int corte = valor.length();
+
+        if (queryIndex >= 0) {
+            corte = Math.min(corte, queryIndex);
+        }
+        if (hashIndex >= 0) {
+            corte = Math.min(corte, hashIndex);
+        }
+
+        return valor.substring(0, corte);
+    }
+
+    private String normalizarParaComparacion(String valor) {
+        if (valor == null) {
+            return "";
+        }
+
+        String sinAcentos = Normalizer.normalize(valor, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "");
+
+        return sinAcentos.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
+    }
+
+    private boolean contieneIgnoreCase(String valor, String filtroNormalizado) {
+        if (valor == null) {
+            return false;
+        }
+        return valor.toLowerCase(Locale.ROOT).contains(filtroNormalizado);
+    }
+
+    private List<Curso> deduplicarCursosPorContenido(List<Curso> cursos) {
+        Map<String, Curso> unicos = new LinkedHashMap<>();
+
+        for (Curso curso : cursos) {
+            String mediaKey = normalizarParaComparacion(curso.getInstructor()) + "|"
+                + normalizarParaComparacion(curso.getImagenUrl()) + "|"
+                + normalizarParaComparacion(curso.getVideoUrl());
+
+            // Si no hay multimedia, incluir titulo para evitar colapsar cursos distintos.
+            if (normalizarParaComparacion(curso.getImagenUrl()).isBlank()
+                && normalizarParaComparacion(curso.getVideoUrl()).isBlank()) {
+                mediaKey += "|" + normalizarParaComparacion(curso.getTitulo());
+            }
+
+            unicos.putIfAbsent(mediaKey, curso);
+        }
+
+        return unicos.values().stream().collect(Collectors.toList());
     }
 }

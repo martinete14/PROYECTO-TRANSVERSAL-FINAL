@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,9 @@ public class DataSeeder implements CommandLineRunner {
         "Idiomas y compromiso social global",
         "Liderazgo, empresa y derecho"
     );
+
+    @Value("${app.seed.force-course-sync:false}")
+    private boolean forceCourseSync;
 
     private final CategoriaRepository categoriaRepository;
     private final CursoRepository cursoRepository;
@@ -94,6 +98,12 @@ public class DataSeeder implements CommandLineRunner {
             Arrays.asList("Diseno", "Diseno Web", "Programacion", "Desarrollo Web", "Frontend", "Backend")
         );
 
+        List<Curso> cursosExistentes = cursoRepository.findAll();
+        if (!cursosExistentes.isEmpty() && !forceCourseSync) {
+            limpiarCursosTemporalesRecuperados();
+            return;
+        }
+
         List<Curso> cursos = new ArrayList<>();
         cursos.add(crearCurso("Grandes preguntas del universo", "Ciencia, pensamiento y las grandes preguntas del universo explicadas con claridad.", "Juan Martin Maldacena", "/uploads/images/img-027.png", "/uploads/videos/vid-004.mp4", ciencia));
         cursos.add(crearCurso("Humor con mirada critica", "Humor, lenguaje y creatividad: como se construye una mirada critica desde la risa.", "Yayo Guridi", "/uploads/images/img-010.png", "/uploads/videos/vid-010.mp4", humor));
@@ -129,7 +139,6 @@ public class DataSeeder implements CommandLineRunner {
             "el poder de la aviacion ejecutiva"
         ));
 
-        List<Curso> cursosExistentes = cursoRepository.findAll();
         Set<String> legacyNormalizados = titulosLegacy.stream().map(this::normalizarTexto).collect(Collectors.toSet());
         Set<String> eliminadosNormalizados = TITULOS_ELIMINADOS.stream().map(this::normalizarTexto).collect(Collectors.toSet());
 

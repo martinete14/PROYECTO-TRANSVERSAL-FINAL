@@ -79,6 +79,7 @@ public class WebController {
     public String verCursos(@RequestParam(required = false) Long categoriaId, Model model) {
         List<CursoDTO> todosLosCursos = new ArrayList<>(cursoService.obtenerCursos());
         todosLosCursos.forEach(this::sanearTextoCurso);
+        todosLosCursos = deduplicarCursosParaCatalogo(todosLosCursos);
         boolean esPortada = categoriaId == null;
 
         List<CursoDTO> cursosCatalogo;
@@ -127,6 +128,20 @@ public class WebController {
         model.addAttribute("esPortada", esPortada);
 
         return "cursos";
+    }
+
+    private List<CursoDTO> deduplicarCursosParaCatalogo(List<CursoDTO> cursos) {
+        Map<String, CursoDTO> unicos = new LinkedHashMap<>();
+
+        for (CursoDTO curso : cursos) {
+            String key = normalizarTexto(curso.getTitulo()) + "|"
+                + normalizarTexto(curso.getInstructor()) + "|"
+                + normalizarTexto(curso.getCategoriaNombre());
+
+            unicos.putIfAbsent(key, curso);
+        }
+
+        return new ArrayList<>(unicos.values());
     }
 
     private void sanearTextoCurso(CursoDTO curso) {
@@ -200,10 +215,15 @@ public class WebController {
     }
 
     @GetMapping("/admin")
-    public String panelAdmin(@RequestParam(required = false) String instructor, Model model) {
-        List<Curso> cursos = cursoService.obtenerCursosPorInstructor(instructor);
+    public String panelAdmin(
+        @RequestParam(required = false) String instructor,
+        @RequestParam(required = false) String titulo,
+        Model model
+    ) {
+        List<Curso> cursos = cursoService.obtenerCursosFiltrados(instructor, titulo);
         model.addAttribute("cursos", cursos);
         model.addAttribute("instructorFiltro", instructor == null ? "" : instructor);
+        model.addAttribute("tituloFiltro", titulo == null ? "" : titulo);
         return "admin-cursos";
     }
 
@@ -212,6 +232,7 @@ public class WebController {
         @PathVariable Long id,
         @RequestParam boolean destacado,
         @RequestParam(required = false) String instructor,
+        @RequestParam(required = false) String titulo,
         RedirectAttributes redirectAttributes
     ) {
         try {
@@ -221,15 +242,28 @@ public class WebController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
 
+        List<String> params = new ArrayList<>();
         if (StringUtils.hasText(instructor)) {
-            return "redirect:/web/cursos/admin?instructor=" + instructor;
+            params.add("instructor=" + instructor.trim());
+        }
+        if (StringUtils.hasText(titulo)) {
+            params.add("titulo=" + titulo.trim());
+        }
+
+        if (!params.isEmpty()) {
+            return "redirect:/web/cursos/admin?" + String.join("&", params);
         }
 
         return "redirect:/web/cursos/admin";
     }
 
     @GetMapping("/instructor")
-    public String panelInstructor(@RequestParam(required = false) String nombre, Model model, HttpSession session) {
+    public String panelInstructor(
+        @RequestParam(required = false) String nombre,
+        @RequestParam(required = false) String titulo,
+        Model model,
+        HttpSession session
+    ) {
         RolUsuario rol = obtenerRolSesion(session);
         String nombreFiltro = nombre;
 
@@ -237,9 +271,10 @@ public class WebController {
             nombreFiltro = obtenerUsuarioSesion(session).getNombre();
         }
 
-        List<Curso> cursos = cursoService.obtenerCursosPorInstructor(nombreFiltro);
+        List<Curso> cursos = cursoService.obtenerCursosFiltrados(nombreFiltro, titulo);
         model.addAttribute("cursos", cursos);
         model.addAttribute("nombreInstructor", nombreFiltro == null ? "" : nombreFiltro);
+        model.addAttribute("tituloFiltro", titulo == null ? "" : titulo);
         return "instructor-cursos";
     }
 
@@ -280,6 +315,9 @@ public class WebController {
     @GetMapping("/nuevo")
     public String mostrarFormulario(Model model) {
         model.addAttribute("categorias", categoriaRepository.findAll());
+        if (!model.containsAttribute("formData")) {
+            model.addAttribute("formData", buildFormData("", "", "", "", "", null));
+        }
         return "crear-curso";
     }
 
@@ -292,18 +330,29 @@ public class WebController {
             @RequestParam(required = false) String videoUrl,
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) MultipartFile videoFile,
-            @RequestParam Long categoriaId,
+            @RequestParam(required = false) Long categoriaId,
             HttpSession session,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
         try {
             Usuario usuarioSesion = obtenerUsuarioSesion(session);
             RolUsuario rol = obtenerRolSesion(session);
+            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor;
+
+            Map<String, String> fieldErrors = validarFormularioCurso(titulo, descripcion, instructorFinal, imagenUrl, videoUrl, categoriaId, imagenFile, videoFile);
+            if (!fieldErrors.isEmpty()) {
+                model.addAttribute("categorias", categoriaRepository.findAll());
+                model.addAttribute("errorMessage", "Revisa los campos marcados e intenta de nuevo.");
+                model.addAttribute("fieldErrors", fieldErrors);
+                model.addAttribute("formData", buildFormData(titulo, descripcion, instructorFinal, imagenUrl, videoUrl, categoriaId));
+                return "crear-curso";
+            }
 
             Curso curso = new Curso();
             curso.setTitulo(titulo);
             curso.setDescripcion(descripcion);
-            curso.setInstructor(rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor);
+            curso.setInstructor(instructorFinal);
 
             validateImageFile(imagenFile);
             validateVideoFile(videoFile);
@@ -322,8 +371,16 @@ public class WebController {
             redirectAttributes.addFlashAttribute("successMessage", "Curso creado correctamente. Ya puedes verlo en el catalogo.");
             return "redirect:/web/cursos";
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            return "redirect:/web/cursos/nuevo";
+            model.addAttribute("categorias", categoriaRepository.findAll());
+            Map<String, String> fieldErrors = mapearErroresDesdeMensaje(ex.getMessage());
+            if (!fieldErrors.isEmpty()) {
+                model.addAttribute("errorMessage", "Revisa los campos marcados e intenta de nuevo.");
+                model.addAttribute("fieldErrors", fieldErrors);
+            } else {
+                model.addAttribute("errorMessage", ex.getMessage());
+            }
+            model.addAttribute("formData", buildFormData(titulo, descripcion, resolveInstructorPreview(session, instructor), imagenUrl, videoUrl, categoriaId));
+            return "crear-curso";
         }
     }
 
@@ -332,7 +389,14 @@ public class WebController {
         try {
             Curso curso = cursoService.obtenerCursoPorId(id);
             validarPermisoGestionCurso(session, curso);
+
+            String imagenAnterior = curso.getImagenUrl();
+            String videoAnterior = curso.getVideoUrl();
+
             cursoService.eliminarCurso(id);
+            tryDeleteUnusedManagedMedia(imagenAnterior, id);
+            tryDeleteUnusedManagedMedia(videoAnterior, id);
+
             redirectAttributes.addFlashAttribute("successMessage", "Curso eliminado correctamente.");
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
@@ -363,21 +427,38 @@ public class WebController {
             @RequestParam(required = false) String videoUrl,
             @RequestParam(required = false) MultipartFile imagenFile,
             @RequestParam(required = false) MultipartFile videoFile,
-            @RequestParam Long categoriaId,
+            @RequestParam(required = false) Long categoriaId,
             HttpSession session,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
+        Curso cursoExistente = null;
         try {
             Usuario usuarioSesion = obtenerUsuarioSesion(session);
             RolUsuario rol = obtenerRolSesion(session);
+            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor;
 
-            Curso cursoExistente = cursoService.obtenerCursoPorId(id);
+            Map<String, String> fieldErrors = validarFormularioCurso(titulo, descripcion, instructorFinal, imagenUrl, videoUrl, categoriaId, imagenFile, videoFile);
+            if (!fieldErrors.isEmpty()) {
+                cursoExistente = cursoService.obtenerCursoPorId(id);
+                validarPermisoGestionCurso(session, cursoExistente);
+                model.addAttribute("errorMessage", "Revisa los campos marcados e intenta de nuevo.");
+                model.addAttribute("fieldErrors", fieldErrors);
+                model.addAttribute("categorias", categoriaRepository.findAll());
+                model.addAttribute("curso", buildDraftCurso(id, titulo, descripcion, instructorFinal, firstNonBlank(imagenUrl, cursoExistente.getImagenUrl()), firstNonBlank(videoUrl, cursoExistente.getVideoUrl()), categoriaId, cursoExistente.getCategoria()));
+                return "editar-curso";
+            }
+
+            cursoExistente = cursoService.obtenerCursoPorId(id);
             validarPermisoGestionCurso(session, cursoExistente);
+
+            String imagenAnterior = cursoExistente.getImagenUrl();
+            String videoAnterior = cursoExistente.getVideoUrl();
 
             Curso curso = new Curso();
             curso.setTitulo(titulo);
             curso.setDescripcion(descripcion);
-            curso.setInstructor(rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor);
+            curso.setInstructor(instructorFinal);
 
             validateImageFile(imagenFile);
             validateVideoFile(videoFile);
@@ -393,11 +474,32 @@ public class WebController {
             curso.setCategoria(categoria);
 
             cursoService.actualizarCurso(id, curso);
+
+            if (!Objects.equals(imagenAnterior, curso.getImagenUrl())) {
+                tryDeleteUnusedManagedMedia(imagenAnterior, id);
+            }
+            if (!Objects.equals(videoAnterior, curso.getVideoUrl())) {
+                tryDeleteUnusedManagedMedia(videoAnterior, id);
+            }
+
             redirectAttributes.addFlashAttribute("successMessage", "Curso actualizado correctamente.");
             return "redirect:/web/cursos";
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            return "redirect:/web/cursos/editar/" + id;
+            if (cursoExistente == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+                return "redirect:/web/cursos";
+            }
+
+            Map<String, String> fieldErrors = mapearErroresDesdeMensaje(ex.getMessage());
+            if (!fieldErrors.isEmpty()) {
+                model.addAttribute("errorMessage", "Revisa los campos marcados e intenta de nuevo.");
+                model.addAttribute("fieldErrors", fieldErrors);
+            } else {
+                model.addAttribute("errorMessage", ex.getMessage());
+            }
+            model.addAttribute("categorias", categoriaRepository.findAll());
+            model.addAttribute("curso", buildDraftCurso(id, titulo, descripcion, resolveInstructorPreview(session, instructor), firstNonBlank(imagenUrl, cursoExistente.getImagenUrl()), firstNonBlank(videoUrl, cursoExistente.getVideoUrl()), categoriaId, cursoExistente.getCategoria()));
+            return "editar-curso";
         }
     }
 
@@ -416,6 +518,172 @@ public class WebController {
             return value;
         }
         return fallback;
+    }
+
+    private Map<String, Object> buildFormData(String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId) {
+        Map<String, Object> formData = new LinkedHashMap<>();
+        formData.put("titulo", titulo);
+        formData.put("descripcion", descripcion);
+        formData.put("instructor", instructor);
+        formData.put("imagenUrl", imagenUrl);
+        formData.put("videoUrl", videoUrl);
+        formData.put("categoriaId", categoriaId);
+        return formData;
+    }
+
+    private Curso buildDraftCurso(Long id, String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId, Categoria categoriaFallback) {
+        Curso curso = new Curso();
+        curso.setId(id);
+        curso.setTitulo(titulo);
+        curso.setDescripcion(descripcion);
+        curso.setInstructor(instructor);
+        curso.setImagenUrl(imagenUrl);
+        curso.setVideoUrl(videoUrl);
+
+        Categoria categoria = new Categoria();
+        if (categoriaId != null) {
+            categoria.setId(categoriaId);
+        } else if (categoriaFallback != null) {
+            categoria.setId(categoriaFallback.getId());
+            categoria.setNombre(categoriaFallback.getNombre());
+        }
+        if (categoria.getNombre() == null && categoriaFallback != null && Objects.equals(categoria.getId(), categoriaFallback.getId())) {
+            categoria.setNombre(categoriaFallback.getNombre());
+        }
+        curso.setCategoria(categoria);
+        return curso;
+    }
+
+    private String resolveInstructorPreview(HttpSession session, String instructor) {
+        try {
+            return obtenerRolSesion(session) == RolUsuario.INSTRUCTOR
+                ? obtenerUsuarioSesion(session).getNombre()
+                : instructor;
+        } catch (RuntimeException ex) {
+            return instructor;
+        }
+    }
+
+    private Map<String, String> validarFormularioCurso(
+        String titulo,
+        String descripcion,
+        String instructor,
+        String imagenUrl,
+        String videoUrl,
+        Long categoriaId,
+        MultipartFile imagenFile,
+        MultipartFile videoFile
+    ) {
+        Map<String, String> errors = new LinkedHashMap<>();
+
+        validarTextoCampo(titulo, 8, 120, "titulo", "El titulo", errors);
+        validarTextoCampo(descripcion, 30, 1800, "descripcion", "La descripcion", errors);
+        validarTextoCampo(instructor, 3, 120, "instructor", "El nombre del profesional", errors);
+
+        if (categoriaId == null) {
+            errors.put("categoriaId", "Debes seleccionar una categoria.");
+        }
+
+        validarUrlCampo(imagenUrl, true, "imagenUrl", errors);
+        validarUrlCampo(videoUrl, false, "videoUrl", errors);
+
+        try {
+            validateImageFile(imagenFile);
+        } catch (RuntimeException ex) {
+            errors.put("imagenFile", ex.getMessage());
+        }
+
+        try {
+            validateVideoFile(videoFile);
+        } catch (RuntimeException ex) {
+            errors.put("videoFile", ex.getMessage());
+        }
+
+        return errors;
+    }
+
+    private void validarTextoCampo(String valor, int min, int max, String key, String label, Map<String, String> errors) {
+        String limpio = valor == null ? "" : valor.trim().replaceAll("\\s+", " ");
+        if (!StringUtils.hasText(limpio)) {
+            errors.put(key, label + " es obligatorio.");
+            return;
+        }
+        if (limpio.length() < min) {
+            errors.put(key, label + " debe tener al menos " + min + " caracteres.");
+            return;
+        }
+        if (limpio.length() > max) {
+            errors.put(key, label + " no puede superar los " + max + " caracteres.");
+        }
+    }
+
+    private void validarUrlCampo(String url, boolean imagen, String key, Map<String, String> errors) {
+        if (!StringUtils.hasText(url)) {
+            return;
+        }
+
+        String limpia = limpiarQueryString(url).toLowerCase(Locale.ROOT);
+        boolean esLocalValida = imagen
+            ? limpia.startsWith("/uploads/images/")
+            : limpia.startsWith("/uploads/videos/");
+        boolean esRemotaValida = limpia.startsWith("http://") || limpia.startsWith("https://");
+
+        if (!esLocalValida && !esRemotaValida) {
+            errors.put(key, imagen
+                ? "La URL de imagen debe empezar por https://, http:// o /uploads/images/."
+                : "La URL de video debe empezar por https://, http:// o /uploads/videos/.");
+            return;
+        }
+
+        boolean extensionValida = imagen
+            ? limpia.endsWith(".png") || limpia.endsWith(".jpg") || limpia.endsWith(".jpeg") || limpia.endsWith(".webp") || limpia.endsWith(".gif")
+            : limpia.endsWith(".mp4");
+
+        if (!extensionValida) {
+            errors.put(key, imagen
+                ? "La imagen debe ser PNG, JPG, JPEG, WEBP o GIF."
+                : "El video debe estar en formato MP4.");
+        }
+    }
+
+    private String limpiarQueryString(String valor) {
+        int queryIndex = valor.indexOf('?');
+        int hashIndex = valor.indexOf('#');
+        int corte = valor.length();
+
+        if (queryIndex >= 0) {
+            corte = Math.min(corte, queryIndex);
+        }
+        if (hashIndex >= 0) {
+            corte = Math.min(corte, hashIndex);
+        }
+
+        return valor.substring(0, corte);
+    }
+
+    private Map<String, String> mapearErroresDesdeMensaje(String mensaje) {
+        Map<String, String> errors = new LinkedHashMap<>();
+
+        if (!StringUtils.hasText(mensaje)) {
+            return errors;
+        }
+
+        String m = mensaje.toLowerCase(Locale.ROOT);
+        if (m.contains("titulo")) {
+            errors.put("titulo", mensaje);
+        } else if (m.contains("descripcion")) {
+            errors.put("descripcion", mensaje);
+        } else if (m.contains("profesional") || m.contains("instructor")) {
+            errors.put("instructor", mensaje);
+        } else if (m.contains("categor") || m.contains("categoria")) {
+            errors.put("categoriaId", mensaje);
+        } else if (m.contains("url de imagen") || m.contains("imagen debe")) {
+            errors.put("imagenUrl", mensaje);
+        } else if (m.contains("url de video") || m.contains("video debe")) {
+            errors.put("videoUrl", mensaje);
+        }
+
+        return errors;
     }
 
     private String storeFile(MultipartFile file, String uploadDir, String publicPrefix) {
@@ -439,6 +707,52 @@ public class WebController {
         } catch (IOException e) {
             throw new RuntimeException("No se pudo guardar el archivo multimedia", e);
         }
+    }
+
+    private void tryDeleteUnusedManagedMedia(String mediaUrl, Long excludedCursoId) {
+        if (!StringUtils.hasText(mediaUrl) || !isManagedUploadPath(mediaUrl)) {
+            return;
+        }
+
+        boolean inUse = cursoService.obtenerCursosEntidad().stream()
+            .filter(curso -> !Objects.equals(curso.getId(), excludedCursoId))
+            .anyMatch(curso -> Objects.equals(mediaUrl, curso.getImagenUrl()) || Objects.equals(mediaUrl, curso.getVideoUrl()));
+
+        if (inUse) {
+            return;
+        }
+
+        Path localPath = resolveManagedMediaPath(mediaUrl);
+        if (localPath == null) {
+            return;
+        }
+
+        try {
+            Files.deleteIfExists(localPath);
+        } catch (IOException ignored) {
+            // No interrumpir el flujo CRUD por un fallo de limpieza.
+        }
+    }
+
+    private boolean isManagedUploadPath(String mediaUrl) {
+        return mediaUrl.startsWith("/uploads/images/") || mediaUrl.startsWith("/uploads/videos/");
+    }
+
+    private Path resolveManagedMediaPath(String mediaUrl) {
+        String fileName = mediaUrl.substring(mediaUrl.lastIndexOf('/') + 1);
+        if (!StringUtils.hasText(fileName)) {
+            return null;
+        }
+
+        if (mediaUrl.startsWith("/uploads/images/")) {
+            return Paths.get(imageUploadDir).resolve(fileName);
+        }
+
+        if (mediaUrl.startsWith("/uploads/videos/")) {
+            return Paths.get(videoUploadDir).resolve(fileName);
+        }
+
+        return null;
     }
 
     private void validateImageFile(MultipartFile file) {

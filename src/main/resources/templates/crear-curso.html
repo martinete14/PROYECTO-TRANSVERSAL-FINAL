@@ -64,25 +64,32 @@
                 <section class="form-section-grid">
                     <div class="field field-span-2">
                         <label class="field-label">Titulo</label>
-                        <input type="text" name="titulo" class="field-input" required placeholder="Ej. Produccion musical para principiantes">
+                        <input type="text" name="titulo" class="field-input" required minlength="8" maxlength="120" th:value="${formData.titulo}" placeholder="Ej. Produccion musical para principiantes">
+                        <small class="helper-text">Entre 8 y 120 caracteres. Usa un nombre claro y no duplicado.</small>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'titulo')}" th:text="${fieldErrors['titulo']}"></small>
                     </div>
 
                     <div class="field field-span-2">
                         <label class="field-label">Descripcion</label>
-                        <textarea name="descripcion" class="field-input field-textarea" rows="4" required placeholder="Resume en pocas lineas qué aprenderá el alumno y por qué este curso destaca."></textarea>
+                        <textarea name="descripcion" class="field-input field-textarea" rows="4" required minlength="30" maxlength="1800" th:text="${formData.descripcion}" placeholder="Resume en pocas lineas qué aprenderá el alumno y por qué este curso destaca."></textarea>
+                        <small class="helper-text">Entre 30 y 1800 caracteres. Evita frases vacias o demasiado cortas.</small>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'descripcion')}" th:text="${fieldErrors['descripcion']}"></small>
                     </div>
 
                     <div class="field">
                         <label class="field-label">Profesional / Instructor</label>
-                        <input type="text" name="instructor" class="field-input" required placeholder="Nombre del profesional">
+                        <input type="text" name="instructor" class="field-input" required minlength="3" maxlength="120" th:value="${formData.instructor}" placeholder="Nombre del profesional">
+                        <small class="helper-text">Entre 3 y 120 caracteres.</small>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'instructor')}" th:text="${fieldErrors['instructor']}"></small>
                     </div>
 
                     <div class="field">
                         <label class="field-label">Categoria</label>
                         <select name="categoriaId" class="field-input" required>
                             <option value="">Seleccionar categoria</option>
-                            <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"></option>
+                            <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${formData.categoriaId == cat.id}"></option>
                         </select>
+                        <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'categoriaId')}" th:text="${fieldErrors['categoriaId']}"></small>
                     </div>
                 </section>
 
@@ -95,13 +102,16 @@
                     <div class="form-section-grid">
                         <div class="field">
                             <label class="field-label">URL de imagen</label>
-                            <input type="url" name="imagenUrl" class="field-input" placeholder="https://...">
+                            <input type="url" name="imagenUrl" class="field-input" th:value="${formData.imagenUrl}" placeholder="https://...">
+                            <small class="helper-text">Acepta https://, http:// o rutas locales /uploads/images/ con PNG, JPG, JPEG, WEBP o GIF.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'imagenUrl')}" th:text="${fieldErrors['imagenUrl']}"></small>
                         </div>
 
                         <div class="field">
                             <label class="field-label">Archivo de imagen</label>
                             <input type="file" name="imagenFile" class="field-input" accept="image/*">
                             <small class="helper-text">Si subes archivo, tendrá prioridad sobre la URL.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'imagenFile')}" th:text="${fieldErrors['imagenFile']}"></small>
                         </div>
                     </div>
                 </section>
@@ -115,13 +125,16 @@
                     <div class="form-section-grid">
                         <div class="field">
                             <label class="field-label">URL de video MP4</label>
-                            <input type="url" name="videoUrl" class="field-input" placeholder="https://...mp4">
+                            <input type="url" name="videoUrl" class="field-input" th:value="${formData.videoUrl}" placeholder="https://...mp4">
+                            <small class="helper-text">Acepta https://, http:// o rutas locales /uploads/videos/ en formato MP4.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'videoUrl')}" th:text="${fieldErrors['videoUrl']}"></small>
                         </div>
 
                         <div class="field">
                             <label class="field-label">Archivo de video</label>
                             <input type="file" name="videoFile" class="field-input" accept="video/mp4,video/*">
                             <small class="helper-text">Recomendado MP4 y duración corta para una previsualización ligera.</small>
+                            <small class="field-error" th:if="${fieldErrors != null and #maps.containsKey(fieldErrors, 'videoFile')}" th:text="${fieldErrors['videoFile']}"></small>
                         </div>
                     </div>
                 </section>
