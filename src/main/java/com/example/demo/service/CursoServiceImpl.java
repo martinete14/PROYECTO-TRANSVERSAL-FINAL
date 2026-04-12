@@ -2,8 +2,10 @@
 package com.example.demo.service;
 
 import java.text.Normalizer;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -132,10 +134,12 @@ public class CursoServiceImpl implements CursoService {
         String instructorNormalizado = instructor == null ? "" : instructor.trim().toLowerCase(Locale.ROOT);
         String tituloNormalizado = titulo == null ? "" : titulo.trim().toLowerCase(Locale.ROOT);
 
-        return cursoRepository.findAll().stream()
+        List<Curso> filtrados = cursoRepository.findAll().stream()
             .filter(curso -> instructorNormalizado.isBlank() || contieneIgnoreCase(curso.getInstructor(), instructorNormalizado))
             .filter(curso -> tituloNormalizado.isBlank() || contieneIgnoreCase(curso.getTitulo(), tituloNormalizado))
             .collect(Collectors.toList());
+
+        return deduplicarCursosPorContenido(filtrados);
     }
 
     @Override
@@ -386,5 +390,25 @@ public class CursoServiceImpl implements CursoService {
             return false;
         }
         return valor.toLowerCase(Locale.ROOT).contains(filtroNormalizado);
+    }
+
+    private List<Curso> deduplicarCursosPorContenido(List<Curso> cursos) {
+        Map<String, Curso> unicos = new LinkedHashMap<>();
+
+        for (Curso curso : cursos) {
+            String mediaKey = normalizarParaComparacion(curso.getInstructor()) + "|"
+                + normalizarParaComparacion(curso.getImagenUrl()) + "|"
+                + normalizarParaComparacion(curso.getVideoUrl());
+
+            // Si no hay multimedia, incluir titulo para evitar colapsar cursos distintos.
+            if (normalizarParaComparacion(curso.getImagenUrl()).isBlank()
+                && normalizarParaComparacion(curso.getVideoUrl()).isBlank()) {
+                mediaKey += "|" + normalizarParaComparacion(curso.getTitulo());
+            }
+
+            unicos.putIfAbsent(mediaKey, curso);
+        }
+
+        return unicos.values().stream().collect(Collectors.toList());
     }
 }
