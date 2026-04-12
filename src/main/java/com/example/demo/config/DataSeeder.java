@@ -86,7 +86,7 @@ public class DataSeeder implements CommandLineRunner {
         Categoria historia = buscarOCrearCategoria(categorias, "Historia y Sociedad", "Procesos historicos, memoria colectiva y comprension del presente");
         Categoria cineActuacion = buscarOCrearCategoria(categorias, "Cine y Actuacion", "Actuacion, lenguaje audiovisual y construccion de personajes");
         Categoria arquitectura = buscarOCrearCategoria(categorias, "Arquitectura y Urbanismo", "Proyecto, obra y diseno de espacios habitables");
-        buscarOCrearCategoria(categorias, "Cultura Pop y Narrativa", "Universos narrativos, fandom y analisis cultural");
+        Categoria culturaPopNarrativa = buscarOCrearCategoria(categorias, "Cultura Pop y Narrativa", "Universos narrativos, fandom y analisis cultural");
         Categoria comunicacion = buscarOCrearCategoria(categorias, "Comunicacion y Periodismo", "Locucion, periodismo digital y comunicacion audiovisual");
 
         fusionarCategoriasRelacionadas(
@@ -109,6 +109,7 @@ public class DataSeeder implements CommandLineRunner {
         cursos.add(crearCurso("Operaciones IFR y gestion de cabina", "Formacion avanzada en vuelo instrumental, procedimientos IFR y gestion eficiente de cabina en operaciones aereas exigentes.", "Alejo Testa", "/uploads/images/img-016.jpeg", "/uploads/videos/vid-008.mp4", aviacion));
         cursos.add(crearCurso("Actuacion, comedia y construccion de personajes", "La tecnica actoral vista desde la comedia, el cine y el teatro: como crear personajes autenticos y memorables.", "Guillermo Francella", "/uploads/images/img-026.png", "/uploads/videos/vid-022.mp4", cineActuacion));
         cursos.add(crearCurso("Arquitectura, proyecto y direccion de obra", "Diseno arquitectonico, direccion de proyectos y supervision de obra desde la practica profesional real.", "Giuliano Bute", "/uploads/images/img-030.png", "/uploads/videos/vid-029.mp4", arquitectura));
+        cursos.add(crearCurso("Harry Potter: secretos, historia y coleccionismo", "Descubre los secretos del universo de Harry Potter, su historia detras de escenas y la cultura del coleccionismo que mueve a millones de fans.", "Patricio Tarantino", "/uploads/images/img-001.png", "/uploads/videos/vid-018.mp4", culturaPopNarrativa));
 
         Set<String> titulosLegacy = new HashSet<>(Arrays.asList(
             "java spring boot desde cero",
