@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Runtime uploads ###
-uploads/
+# uploads/ tracked in git for backup
