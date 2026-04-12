@@ -103,6 +103,17 @@ class WebControllerMvcCrudTest {
     }
 
     @Test
+    void nuevoCurso_adminPuedeAbrirFormularioSinError500() throws Exception {
+        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+
+        mockMvc.perform(get("/web/cursos/nuevo").session(adminSession))
+            .andExpect(status().isOk())
+            .andExpect(view().name("crear-curso"))
+            .andExpect(model().attributeExists("formData"))
+            .andExpect(model().attributeExists("categorias"));
+    }
+
+    @Test
     void crearCursoConDatosInvalidosMuestraErroresPorCampo() throws Exception {
         MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
 

@@ -316,7 +316,7 @@ public class WebController {
     public String mostrarFormulario(Model model) {
         model.addAttribute("categorias", categoriaRepository.findAll());
         if (!model.containsAttribute("formData")) {
-            model.addAttribute("formData", new LinkedHashMap<String, Object>());
+            model.addAttribute("formData", buildFormData("", "", "", "", "", null));
         }
         return "crear-curso";
     }
