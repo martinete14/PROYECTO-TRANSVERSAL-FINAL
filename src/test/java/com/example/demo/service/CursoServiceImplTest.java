@@ -39,15 +39,18 @@ class CursoServiceImplTest {
         categoria.setNombre("Programacion");
 
         Curso curso = new Curso();
-        curso.setTitulo("Spring");
+        curso.setTitulo("Spring Boot profesional");
+        curso.setDescripcion("Un curso completo para construir aplicaciones reales con Spring Boot y buenas practicas.");
+        curso.setInstructor("Laura Gomez");
         curso.setCategoria(categoria);
 
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
         when(cursoRepository.save(any(Curso.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(cursoRepository.findAll()).thenReturn(java.util.List.of());
 
         Curso resultado = cursoService.crearCurso(curso);
 
-        assertEquals("Spring", resultado.getTitulo());
+        assertEquals("Spring Boot profesional", resultado.getTitulo());
         assertEquals(1L, resultado.getCategoria().getId());
         verify(cursoRepository).save(curso);
     }
@@ -55,7 +58,9 @@ class CursoServiceImplTest {
     @Test
     void crearCurso_deberiaFallarSinCategoria() {
         Curso curso = new Curso();
-        curso.setTitulo("Sin categoria");
+        curso.setTitulo("Curso valido sin categoria");
+        curso.setDescripcion("Descripcion suficientemente larga para validar solo la ausencia de categoria.");
+        curso.setInstructor("Laura Gomez");
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> cursoService.crearCurso(curso));
 
@@ -76,7 +81,7 @@ class CursoServiceImplTest {
 
         Curso actualizado = new Curso();
         actualizado.setTitulo("Titulo nuevo");
-        actualizado.setDescripcion("Desc nueva");
+        actualizado.setDescripcion("Descripcion nueva suficientemente completa para validar la longitud minima requerida.");
         actualizado.setInstructor("Profe");
         actualizado.setImagenUrl("/uploads/images/a.jpg");
         actualizado.setVideoUrl("/uploads/videos/a.mp4");
@@ -85,6 +90,7 @@ class CursoServiceImplTest {
         when(cursoRepository.findById(10L)).thenReturn(Optional.of(existente));
         when(categoriaRepository.findById(2L)).thenReturn(Optional.of(categoriaActualizada));
         when(cursoRepository.save(any(Curso.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(cursoRepository.findAll()).thenReturn(java.util.List.of(existente));
 
         Curso resultado = cursoService.actualizarCurso(10L, actualizado);
 
@@ -92,5 +98,40 @@ class CursoServiceImplTest {
         assertEquals("Profe", resultado.getInstructor());
         assertEquals("/uploads/videos/a.mp4", resultado.getVideoUrl());
         assertEquals(2L, resultado.getCategoria().getId());
+    }
+
+    @Test
+    void crearCurso_deberiaFallarCuandoTituloEsDemasiadoCorto() {
+        Categoria categoria = new Categoria();
+        categoria.setId(1L);
+
+        Curso curso = new Curso();
+        curso.setTitulo("Corto");
+        curso.setDescripcion("Descripcion suficiente para que falle solo por el titulo demasiado corto.");
+        curso.setInstructor("Laura Gomez");
+        curso.setCategoria(categoria);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> cursoService.crearCurso(curso));
+
+        assertEquals("El titulo debe tener al menos 8 caracteres", ex.getMessage());
+        verify(cursoRepository, never()).save(any());
+    }
+
+    @Test
+    void crearCurso_deberiaFallarCuandoVideoUrlNoEsMp4() {
+        Categoria categoria = new Categoria();
+        categoria.setId(1L);
+
+        Curso curso = new Curso();
+        curso.setTitulo("Curso de validacion avanzada");
+        curso.setDescripcion("Descripcion suficiente para que la validacion se centre en el formato del video.");
+        curso.setInstructor("Laura Gomez");
+        curso.setVideoUrl("https://example.com/video.webm");
+        curso.setCategoria(categoria);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> cursoService.crearCurso(curso));
+
+        assertEquals("El video debe estar en formato MP4", ex.getMessage());
+        verify(cursoRepository, never()).save(any());
     }
 }

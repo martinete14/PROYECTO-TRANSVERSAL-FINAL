@@ -63,17 +63,20 @@
                 <section class="form-section-grid">
                     <div class="field field-span-2">
                         <label class="field-label">Titulo</label>
-                        <input type="text" name="titulo" class="field-input" th:value="${curso.titulo}" required>
+                        <input type="text" name="titulo" class="field-input" th:value="${curso.titulo}" required minlength="8" maxlength="120">
+                        <small class="helper-text">Entre 8 y 120 caracteres. Evita repetir el titulo de otro curso.</small>
                     </div>
 
                     <div class="field field-span-2">
                         <label class="field-label">Descripcion</label>
-                        <textarea name="descripcion" class="field-input field-textarea" rows="4" required th:text="${curso.descripcion}"></textarea>
+                        <textarea name="descripcion" class="field-input field-textarea" rows="4" required minlength="30" maxlength="1800" th:text="${curso.descripcion}"></textarea>
+                        <small class="helper-text">Entre 30 y 1800 caracteres para mantener una ficha clara y completa.</small>
                     </div>
 
                     <div class="field">
                         <label class="field-label">Profesional / Instructor</label>
-                        <input type="text" name="instructor" class="field-input" th:value="${curso.instructor}" required>
+                        <input type="text" name="instructor" class="field-input" th:value="${curso.instructor}" required minlength="3" maxlength="120">
+                        <small class="helper-text">Entre 3 y 120 caracteres.</small>
                     </div>
 
                     <div class="field">
@@ -98,6 +101,7 @@
                         <div class="field">
                             <label class="field-label">URL de imagen</label>
                             <input type="url" name="imagenUrl" class="field-input" th:value="${curso.imagenUrl}">
+                            <small class="helper-text">Acepta https://, http:// o /uploads/images/ con PNG, JPG, JPEG, WEBP o GIF.</small>
                         </div>
 
                         <div class="field">
@@ -118,6 +122,7 @@
                         <div class="field">
                             <label class="field-label">URL de video MP4</label>
                             <input type="url" name="videoUrl" class="field-input" th:value="${curso.videoUrl}">
+                            <small class="helper-text">Acepta https://, http:// o /uploads/videos/ en formato MP4.</small>
                         </div>
 
                         <div class="field">

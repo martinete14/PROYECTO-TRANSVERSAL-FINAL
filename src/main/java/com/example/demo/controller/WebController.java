@@ -280,6 +280,9 @@ public class WebController {
     @GetMapping("/nuevo")
     public String mostrarFormulario(Model model) {
         model.addAttribute("categorias", categoriaRepository.findAll());
+        if (!model.containsAttribute("formData")) {
+            model.addAttribute("formData", new LinkedHashMap<String, Object>());
+        }
         return "crear-curso";
     }
 
@@ -294,7 +297,8 @@ public class WebController {
             @RequestParam(required = false) MultipartFile videoFile,
             @RequestParam Long categoriaId,
             HttpSession session,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
         try {
             Usuario usuarioSesion = obtenerUsuarioSesion(session);
@@ -322,8 +326,10 @@ public class WebController {
             redirectAttributes.addFlashAttribute("successMessage", "Curso creado correctamente. Ya puedes verlo en el catalogo.");
             return "redirect:/web/cursos";
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            return "redirect:/web/cursos/nuevo";
+            model.addAttribute("categorias", categoriaRepository.findAll());
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("formData", buildFormData(titulo, descripcion, resolveInstructorPreview(session, instructor), imagenUrl, videoUrl, categoriaId));
+            return "crear-curso";
         }
     }
 
@@ -372,13 +378,15 @@ public class WebController {
             @RequestParam(required = false) MultipartFile videoFile,
             @RequestParam Long categoriaId,
             HttpSession session,
-            RedirectAttributes redirectAttributes
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
+        Curso cursoExistente = null;
         try {
             Usuario usuarioSesion = obtenerUsuarioSesion(session);
             RolUsuario rol = obtenerRolSesion(session);
 
-            Curso cursoExistente = cursoService.obtenerCursoPorId(id);
+            cursoExistente = cursoService.obtenerCursoPorId(id);
             validarPermisoGestionCurso(session, cursoExistente);
 
             String imagenAnterior = cursoExistente.getImagenUrl();
@@ -414,8 +422,15 @@ public class WebController {
             redirectAttributes.addFlashAttribute("successMessage", "Curso actualizado correctamente.");
             return "redirect:/web/cursos";
         } catch (RuntimeException ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
-            return "redirect:/web/cursos/editar/" + id;
+            if (cursoExistente == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+                return "redirect:/web/cursos";
+            }
+
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("categorias", categoriaRepository.findAll());
+            model.addAttribute("curso", buildDraftCurso(id, titulo, descripcion, resolveInstructorPreview(session, instructor), firstNonBlank(imagenUrl, cursoExistente.getImagenUrl()), firstNonBlank(videoUrl, cursoExistente.getVideoUrl()), categoriaId, cursoExistente.getCategoria()));
+            return "editar-curso";
         }
     }
 
@@ -434,6 +449,50 @@ public class WebController {
             return value;
         }
         return fallback;
+    }
+
+    private Map<String, Object> buildFormData(String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId) {
+        Map<String, Object> formData = new LinkedHashMap<>();
+        formData.put("titulo", titulo);
+        formData.put("descripcion", descripcion);
+        formData.put("instructor", instructor);
+        formData.put("imagenUrl", imagenUrl);
+        formData.put("videoUrl", videoUrl);
+        formData.put("categoriaId", categoriaId);
+        return formData;
+    }
+
+    private Curso buildDraftCurso(Long id, String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId, Categoria categoriaFallback) {
+        Curso curso = new Curso();
+        curso.setId(id);
+        curso.setTitulo(titulo);
+        curso.setDescripcion(descripcion);
+        curso.setInstructor(instructor);
+        curso.setImagenUrl(imagenUrl);
+        curso.setVideoUrl(videoUrl);
+
+        Categoria categoria = new Categoria();
+        if (categoriaId != null) {
+            categoria.setId(categoriaId);
+        } else if (categoriaFallback != null) {
+            categoria.setId(categoriaFallback.getId());
+            categoria.setNombre(categoriaFallback.getNombre());
+        }
+        if (categoria.getNombre() == null && categoriaFallback != null && Objects.equals(categoria.getId(), categoriaFallback.getId())) {
+            categoria.setNombre(categoriaFallback.getNombre());
+        }
+        curso.setCategoria(categoria);
+        return curso;
+    }
+
+    private String resolveInstructorPreview(HttpSession session, String instructor) {
+        try {
+            return obtenerRolSesion(session) == RolUsuario.INSTRUCTOR
+                ? obtenerUsuarioSesion(session).getNombre()
+                : instructor;
+        } catch (RuntimeException ex) {
+            return instructor;
+        }
     }
 
     private String storeFile(MultipartFile file, String uploadDir, String publicPrefix) {
