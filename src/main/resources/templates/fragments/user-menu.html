@@ -4,7 +4,7 @@
 <div th:fragment="menu" class="user-menu-shell" th:if="${isAuthenticated}">
   <details class="user-menu">
     <summary class="user-menu-trigger" aria-label="Abrir menu de usuario">
-      <img th:if="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" th:src="${currentUserPhotoUrl}" alt="Foto perfil" class="user-avatar-img">
+      <img th:if="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" th:src="${currentUserPhotoUrl}" alt="Foto perfil" class="user-avatar-img" width="44" height="44">
       <span th:unless="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" class="user-avatar-fallback" th:text="${currentUserInitials}">U</span>
     </summary>
 
