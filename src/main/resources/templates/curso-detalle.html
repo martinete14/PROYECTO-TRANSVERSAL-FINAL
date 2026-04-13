@@ -17,6 +17,7 @@
   <h1 class="brand">Mini Academia</h1>
   <div class="topbar-actions">
     <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:href="@{/web/perfil}" class="btn-outline">Mi perfil</a>
     <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
     <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
     <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>

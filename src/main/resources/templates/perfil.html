@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Academia | Mi perfil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar" role="banner">
+  <h1 class="brand">Mi Perfil</h1>
+  <div class="topbar-actions">
+    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:href="@{/web/cursos}" class="btn-outline">Catalogo</a>
+    <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
+    <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
+    <a th:if="${isCliente}" th:href="@{/web/cursos/adquiridos}" class="btn-outline">Mis cursos</a>
+    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
+      <button type="submit" class="btn-outline">Salir</button>
+    </form>
+  </div>
+</header>
+
+<main class="page-shell form-page" role="main">
+  <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
+    <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
+    <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
+  </section>
+
+  <section class="hero-cinematic">
+    <p class="hero-kicker">PERFIL ACADEMICO</p>
+    <h2>Tarjeta profesional de usuario</h2>
+    <p>Completa tu informacion personal y academica para profesionalizar tu cuenta en la plataforma.</p>
+  </section>
+
+  <section class="form-card form-card-premium">
+    <div class="form-heading-row">
+      <div>
+        <p class="hero-kicker">IDENTIFICACION</p>
+        <h3 class="form-title" th:text="${identificadorEtiqueta + ': ' + identificadorPerfil}">ID de estudiante: MA-EST-000001</h3>
+      </div>
+      <p class="form-heading-note">El identificador academico se asigna automaticamente segun el rol.</p>
+    </div>
+
+    <form th:action="@{/web/perfil/guardar}" method="post" class="editorial-form">
+      <div class="form-block">
+        <div class="form-block-header">
+          <h3>Datos personales</h3>
+          <p>Informacion basica para tu ficha de usuario.</p>
+        </div>
+
+        <div class="form-section-grid">
+          <div class="field">
+            <label class="field-label">Nombre completo</label>
+            <input class="field-input" name="nombre" required minlength="3" maxlength="120" th:value="${usuario.nombre}">
+          </div>
+          <div class="field">
+            <label class="field-label">Email</label>
+            <input class="field-input" th:value="${usuario.email}" readonly>
+          </div>
+          <div class="field">
+            <label class="field-label">Documento</label>
+            <input class="field-input" name="documento" maxlength="30" th:value="${usuario.documento}">
+          </div>
+          <div class="field">
+            <label class="field-label">Telefono</label>
+            <input class="field-input" name="telefono" maxlength="30" th:value="${usuario.telefono}">
+          </div>
+          <div class="field">
+            <label class="field-label">Fecha de nacimiento</label>
+            <input class="field-input" type="date" name="fechaNacimiento" th:value="${usuario.fechaNacimiento}">
+          </div>
+          <div class="field">
+            <label class="field-label">Ciudad / Pais</label>
+            <input class="field-input" name="ciudadPais" maxlength="140" th:value="${usuario.ciudadPais}">
+          </div>
+          <div class="field field-span-2">
+            <label class="field-label">Foto de perfil (URL)</label>
+            <input class="field-input" name="fotoPerfilUrl" maxlength="260" th:value="${usuario.fotoPerfilUrl}" placeholder="https://...">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <div class="form-block-header">
+          <h3>Datos academicos</h3>
+          <p>Tarjeta academica para estudiantes, profesores y administracion.</p>
+        </div>
+
+        <div class="form-section-grid">
+          <div class="field">
+            <label class="field-label">Institucion academica</label>
+            <input class="field-input" name="institucionAcademica" maxlength="160" th:value="${usuario.institucionAcademica}">
+          </div>
+          <div class="field">
+            <label class="field-label">Programa / especialidad</label>
+            <input class="field-input" name="programaAcademico" maxlength="160" th:value="${usuario.programaAcademico}">
+          </div>
+          <div class="field">
+            <label class="field-label">Nivel academico</label>
+            <input class="field-input" name="nivelAcademico" maxlength="80" th:value="${usuario.nivelAcademico}" placeholder="Inicial, Intermedio, Avanzado...">
+          </div>
+          <div class="field field-span-2">
+            <label class="field-label">Biografia breve</label>
+            <textarea class="field-input field-textarea" name="biografia" maxlength="1800" th:text="${usuario.biografia}"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions form-actions-spaced">
+        <button class="btn-primary" type="submit">Guardar perfil</button>
+        <a class="btn-outline" th:href="@{/web/cursos}">Cancelar</a>
+      </div>
+    </form>
+  </section>
+</main>
+</body>
+</html>

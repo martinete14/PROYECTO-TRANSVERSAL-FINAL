@@ -181,6 +181,47 @@ class WebControllerMvcCrudTest {
             .andExpect(model().attributeExists("logs"));
     }
 
+    @Test
+    void usuarioAutenticadoPuedeAbrirPerfil() throws Exception {
+        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+
+        mockMvc.perform(get("/web/perfil").session(adminSession))
+            .andExpect(status().isOk())
+            .andExpect(view().name("perfil"))
+            .andExpect(model().attributeExists("usuario"))
+            .andExpect(model().attributeExists("identificadorPerfil"));
+    }
+
+    @Test
+    void usuarioPuedeActualizarSuPerfil() throws Exception {
+        MockHttpSession alumnoSession = crearSesionPorEmail("alumno.demo@miniacademia.local", "CLIENTE");
+
+        mockMvc.perform(post("/web/perfil/guardar")
+                .session(alumnoSession)
+                .param("nombre", "Alumno Perfil QA")
+                .param("documento", "X1234567")
+                .param("telefono", "+34600111222")
+                .param("fechaNacimiento", "2000-01-15")
+                .param("ciudadPais", "Madrid, Espana")
+                .param("institucionAcademica", "Mini Academia")
+                .param("programaAcademico", "DAW")
+                .param("nivelAcademico", "Intermedio")
+                .param("fotoPerfilUrl", "https://example.com/perfil.jpg")
+                .param("biografia", "Perfil academico de prueba para validar guardado."))
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/web/perfil"));
+
+        Usuario actualizado = usuarioRepository.findByEmailIgnoreCase("alumno.demo@miniacademia.local")
+            .orElseThrow(() -> new AssertionError("Usuario de prueba no encontrado"));
+
+        if (!"Alumno Perfil QA".equals(actualizado.getNombre())) {
+            throw new AssertionError("No se actualizo el nombre del perfil");
+        }
+        if (actualizado.getStudentId() == null || actualizado.getStudentId().isBlank()) {
+            throw new AssertionError("No se asigno ID de estudiante al perfil CLIENTE");
+        }
+    }
+
     private MockHttpSession crearSesionPorEmail(String email, String rol) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
             .orElseThrow(() -> new AssertionError("No existe usuario para test: " + email));

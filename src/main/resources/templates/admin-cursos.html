@@ -14,6 +14,7 @@
   <h1 class="brand">Panel Admin</h1>
   <div class="topbar-actions">
     <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <a th:href="@{/web/perfil}" class="btn-outline">Mi perfil</a>
     <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
     <a th:href="@{/web/cursos/admin/logs}" class="btn-outline">Logs auditoria</a>
     <a th:href="@{/web/cursos/nuevo}" class="btn-outline">+ Crear curso</a>
