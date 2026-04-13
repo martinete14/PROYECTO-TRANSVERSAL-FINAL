@@ -4,9 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+
+import com.example.demo.service.AuditLogService;
 
 class RoleAuthorizationInterceptorTest {
 
@@ -14,7 +17,7 @@ class RoleAuthorizationInterceptorTest {
 
     @BeforeEach
     void setUp() {
-        interceptor = new RoleAuthorizationInterceptor(new RoutePermissionPolicy());
+        interceptor = new RoleAuthorizationInterceptor(new RoutePermissionPolicy(), Mockito.mock(AuditLogService.class));
     }
 
     @Test

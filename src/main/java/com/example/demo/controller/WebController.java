@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.config.AuthSessionKeys;
+import com.example.demo.model.AuditLog;
 import com.example.demo.model.Categoria;
 import com.example.demo.model.Curso;
 import com.example.demo.model.CursoDTO;
@@ -40,6 +41,7 @@ import com.example.demo.model.RolUsuario;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.CategoriaRepository;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.service.AuditLogService;
 import com.example.demo.service.CursoService;
 import com.example.demo.service.InscripcionService;
 
@@ -62,17 +64,20 @@ public class WebController {
     private final CategoriaRepository categoriaRepository;
     private final InscripcionService inscripcionService;
     private final UsuarioRepository usuarioRepository;
+    private final AuditLogService auditLogService;
 
     public WebController(
         CursoService cursoService,
         CategoriaRepository categoriaRepository,
         InscripcionService inscripcionService,
-        UsuarioRepository usuarioRepository
+        UsuarioRepository usuarioRepository,
+        AuditLogService auditLogService
     ) {
         this.cursoService = cursoService;
         this.categoriaRepository = categoriaRepository;
         this.inscripcionService = inscripcionService;
         this.usuarioRepository = usuarioRepository;
+        this.auditLogService = auditLogService;
     }
 
     @GetMapping
@@ -227,16 +232,39 @@ public class WebController {
         return "admin-cursos";
     }
 
+    @GetMapping("/admin/logs")
+    public String panelAdminLogs(
+        @RequestParam(required = false) String actor,
+        @RequestParam(required = false) String accion,
+        @RequestParam(required = false) Integer limit,
+        Model model
+    ) {
+        List<AuditLog> logs = auditLogService.getRecent(actor, accion, limit);
+        model.addAttribute("logs", logs);
+        model.addAttribute("actorFiltro", actor == null ? "" : actor);
+        model.addAttribute("accionFiltro", accion == null ? "" : accion);
+        model.addAttribute("limitFiltro", limit == null ? 80 : Math.max(10, Math.min(300, limit)));
+        return "admin-logs";
+    }
+
     @PostMapping("/admin/destacado/{id}")
     public String cambiarDestacado(
         @PathVariable Long id,
         @RequestParam boolean destacado,
         @RequestParam(required = false) String instructor,
         @RequestParam(required = false) String titulo,
+        HttpSession session,
         RedirectAttributes redirectAttributes
     ) {
         try {
             cursoService.actualizarDestacadoSemana(id, destacado);
+            auditLogService.logFromSession(
+                session,
+                "COURSE_FEATURE_TOGGLED",
+                "Curso ID " + id + " marcado destacado=" + destacado,
+                "/web/cursos/admin/destacado/" + id,
+                null
+            );
             redirectAttributes.addFlashAttribute("successMessage", "Destacado actualizado correctamente.");
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
@@ -368,6 +396,13 @@ public class WebController {
             curso.setCategoria(categoria);
 
             cursoService.crearCurso(curso);
+            auditLogService.logFromSession(
+                session,
+                "COURSE_CREATED",
+                "Curso creado: " + curso.getTitulo(),
+                "/web/cursos/crear",
+                null
+            );
             redirectAttributes.addFlashAttribute("successMessage", "Curso creado correctamente. Ya puedes verlo en el catalogo.");
             return "redirect:/web/cursos";
         } catch (RuntimeException ex) {
@@ -396,6 +431,14 @@ public class WebController {
             cursoService.eliminarCurso(id);
             tryDeleteUnusedManagedMedia(imagenAnterior, id);
             tryDeleteUnusedManagedMedia(videoAnterior, id);
+
+            auditLogService.logFromSession(
+                session,
+                "COURSE_DELETED",
+                "Curso eliminado ID " + id + " titulo=" + curso.getTitulo(),
+                "/web/cursos/eliminar/" + id,
+                null
+            );
 
             redirectAttributes.addFlashAttribute("successMessage", "Curso eliminado correctamente.");
         } catch (RuntimeException ex) {
@@ -474,6 +517,14 @@ public class WebController {
             curso.setCategoria(categoria);
 
             cursoService.actualizarCurso(id, curso);
+
+            auditLogService.logFromSession(
+                session,
+                "COURSE_UPDATED",
+                "Curso actualizado ID " + id + " titulo=" + curso.getTitulo(),
+                "/web/cursos/actualizar/" + id,
+                null
+            );
 
             if (!Objects.equals(imagenAnterior, curso.getImagenUrl())) {
                 tryDeleteUnusedManagedMedia(imagenAnterior, id);

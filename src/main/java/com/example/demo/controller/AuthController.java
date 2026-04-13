@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +14,7 @@ import com.example.demo.config.AuthSessionKeys;
 import com.example.demo.model.RolUsuario;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
+import com.example.demo.service.AuditLogService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -24,10 +25,12 @@ public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuditLogService auditLogService;
 
-    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, AuditLogService auditLogService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.auditLogService = auditLogService;
     }
 
     @GetMapping("/login")
@@ -48,6 +51,7 @@ public class AuthController {
         RedirectAttributes redirectAttributes
     ) {
         if (!StringUtils.hasText(email) || !StringUtils.hasText(password)) {
+            auditLogService.logAnonymous("AUTH_LOGIN_FAILED", "Intento de login con campos vacios.", "/web/auth/login", request.getRemoteAddr());
             redirectAttributes.addFlashAttribute("errorMessage", "Email y contraseña son obligatorios.");
             return "redirect:/web/auth/login";
         }
@@ -59,6 +63,7 @@ public class AuthController {
             .orElse(null);
 
         if (usuario == null || !isPasswordValid(rawPassword, usuario.getPassword())) {
+            auditLogService.logAnonymous("AUTH_LOGIN_FAILED", "Credenciales invalidas para email: " + normalizedEmail, "/web/auth/login", request.getRemoteAddr());
             redirectAttributes.addFlashAttribute("errorMessage", "Credenciales inválidas.");
             return "redirect:/web/auth/login";
         }
@@ -78,6 +83,14 @@ public class AuthController {
         session.setAttribute(AuthSessionKeys.AUTH_NAME, usuario.getNombre());
         session.setAttribute(AuthSessionKeys.AUTH_ROLE, rol.name());
 
+        auditLogService.logForUser(
+            usuario,
+            "AUTH_LOGIN_SUCCESS",
+            "Inicio de sesion correcto.",
+            "/web/auth/login",
+            request.getRemoteAddr()
+        );
+
         redirectAttributes.addFlashAttribute("successMessage", "Bienvenido, " + usuario.getNombre() + ".");
         return switch (rol) {
             case ADMIN -> "redirect:/web/cursos/admin";
@@ -87,7 +100,14 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpServletRequest request, HttpSession session) {
+        auditLogService.logFromSession(
+            session,
+            "AUTH_LOGOUT",
+            "Cierre de sesion manual.",
+            "/web/auth/logout",
+            request.getRemoteAddr()
+        );
         session.invalidate();
         return "redirect:/web/auth/login";
     }

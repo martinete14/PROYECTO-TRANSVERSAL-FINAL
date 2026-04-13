@@ -11,7 +11,7 @@ class AuthControllerTest {
 
     @Test
     void accesoDenegado_usesProvidedContext() {
-        AuthController controller = new AuthController(null, new BCryptPasswordEncoder());
+        AuthController controller = new AuthController(null, new BCryptPasswordEncoder(), null);
         Model model = new ConcurrentModel();
 
         String view = controller.accesoDenegado("ADMIN", "/web/cursos/admin", model);
@@ -23,7 +23,7 @@ class AuthControllerTest {
 
     @Test
     void accesoDenegado_usesSafeDefaults() {
-        AuthController controller = new AuthController(null, new BCryptPasswordEncoder());
+        AuthController controller = new AuthController(null, new BCryptPasswordEncoder(), null);
         Model model = new ConcurrentModel();
 
         String view = controller.accesoDenegado("", null, model);

@@ -171,13 +171,24 @@ class WebControllerMvcCrudTest {
             .andExpect(content().string(containsString(tituloUnico)));
     }
 
+    @Test
+    void adminPuedeAbrirApartadoLogs() throws Exception {
+        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+
+        mockMvc.perform(get("/web/cursos/admin/logs").session(adminSession))
+            .andExpect(status().isOk())
+            .andExpect(view().name("admin-logs"))
+            .andExpect(model().attributeExists("logs"));
+    }
+
     private MockHttpSession crearSesionPorEmail(String email, String rol) {
         Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email)
             .orElseThrow(() -> new AssertionError("No existe usuario para test: " + email));
 
         MockHttpSession session = new MockHttpSession();
         session.setAttribute(AuthSessionKeys.AUTH_USER_ID, usuario.getId());
-        session.setAttribute("AUTH_ROLE", rol);
+        session.setAttribute(AuthSessionKeys.AUTH_ROLE, rol);
+        session.setAttribute(AuthSessionKeys.AUTH_NAME, usuario.getNombre());
         return session;
     }
 
