@@ -13,13 +13,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Contenido del Curso</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:if="${showUserRoleBadge}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
-    <a th:href="@{/web/perfil}" class="btn-outline">Mi perfil</a>
-    <a th:href="@{/web/cursos/aula/{id}(id=${curso.id})}" class="btn-outline">Ver aula</a>
-    <a th:href="@{/web/cursos/{id}(id=${curso.id})}" class="btn-outline">Detalle</a>
-    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
-      <button type="submit" class="btn-outline">Salir</button>
-    </form>
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
 </header>
 

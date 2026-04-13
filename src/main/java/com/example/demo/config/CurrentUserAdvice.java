@@ -60,14 +60,53 @@ public class CurrentUserAdvice {
 
     @ModelAttribute("showUserRoleBadge")
     public boolean showUserRoleBadge(HttpSession session) {
-        Object userIdObj = session.getAttribute(AuthSessionKeys.AUTH_USER_ID);
-        if (!(userIdObj instanceof Long userId)) {
-            return false;
-        }
-
-        return usuarioRepository.findById(userId)
+        return loadCurrentUser(session)
             .map(usuario -> !isProfileCompleted(usuario))
             .orElse(false);
+    }
+
+    @ModelAttribute("currentUserPhotoUrl")
+    public String currentUserPhotoUrl(HttpSession session) {
+        return loadCurrentUser(session)
+            .map(Usuario::getFotoPerfilUrl)
+            .filter(StringUtils::hasText)
+            .orElse(null);
+    }
+
+    @ModelAttribute("currentUserInitials")
+    public String currentUserInitials(HttpSession session) {
+        String name = currentUserName(session);
+        if (!StringUtils.hasText(name)) {
+            return "U";
+        }
+
+        String[] parts = name.trim().split("\\s+");
+        String first = parts[0].substring(0, 1).toUpperCase();
+        String second = parts.length > 1 ? parts[parts.length - 1].substring(0, 1).toUpperCase() : "";
+        return (first + second);
+    }
+
+    @ModelAttribute("myCoursesUrl")
+    public String myCoursesUrl(HttpSession session) {
+        RolUsuario rol = RolUsuario.fromValue((String) session.getAttribute(AuthSessionKeys.AUTH_ROLE));
+        return switch (rol) {
+            case ADMIN -> "/web/cursos/admin";
+            case INSTRUCTOR -> "/web/cursos/instructor";
+            case CLIENTE -> "/web/cursos/adquiridos";
+        };
+    }
+
+    @ModelAttribute("myCoursesLabel")
+    public String myCoursesLabel() {
+        return "Mis cursos";
+    }
+
+    private java.util.Optional<Usuario> loadCurrentUser(HttpSession session) {
+        Object userIdObj = session.getAttribute(AuthSessionKeys.AUTH_USER_ID);
+        if (!(userIdObj instanceof Long userId)) {
+            return java.util.Optional.empty();
+        }
+        return usuarioRepository.findById(userId);
     }
 
     private boolean isProfileCompleted(Usuario usuario) {
