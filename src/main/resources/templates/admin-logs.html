@@ -13,7 +13,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Logs Admin</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <span class="btn-outline" th:if="${showUserRoleBadge}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
     <a th:href="@{/web/perfil}" class="btn-outline">Mi perfil</a>
     <a th:href="@{/web/cursos/admin}" class="btn-outline">Volver al panel</a>
     <a th:href="@{/web/cursos}" class="btn-outline">Catalogo</a>

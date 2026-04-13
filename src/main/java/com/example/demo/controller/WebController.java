@@ -35,11 +35,13 @@ import com.example.demo.config.AuthSessionKeys;
 import com.example.demo.model.AuditLog;
 import com.example.demo.model.Categoria;
 import com.example.demo.model.Curso;
+import com.example.demo.model.CursoContenido;
 import com.example.demo.model.CursoDTO;
 import com.example.demo.model.Inscripcion;
 import com.example.demo.model.RolUsuario;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.CategoriaRepository;
+import com.example.demo.repository.CursoContenidoRepository;
 import com.example.demo.repository.UsuarioRepository;
 import com.example.demo.service.AuditLogService;
 import com.example.demo.service.CursoService;
@@ -53,6 +55,7 @@ public class WebController {
 
     private static final long MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
     private static final long MAX_VIDEO_BYTES = 120 * 1024 * 1024; // 120 MB
+    private static final long MAX_CLASS_RESOURCE_BYTES = 50 * 1024 * 1024; // 50 MB
 
     @Value("${app.upload.images-dir:uploads/images}")
     private String imageUploadDir;
@@ -60,10 +63,14 @@ public class WebController {
     @Value("${app.upload.videos-dir:uploads/videos}")
     private String videoUploadDir;
 
+    @Value("${app.upload.course-content-dir:uploads/course-content}")
+    private String courseContentUploadDir;
+
     private final CursoService cursoService;
     private final CategoriaRepository categoriaRepository;
     private final InscripcionService inscripcionService;
     private final UsuarioRepository usuarioRepository;
+    private final CursoContenidoRepository cursoContenidoRepository;
     private final AuditLogService auditLogService;
 
     public WebController(
@@ -71,12 +78,14 @@ public class WebController {
         CategoriaRepository categoriaRepository,
         InscripcionService inscripcionService,
         UsuarioRepository usuarioRepository,
+        CursoContenidoRepository cursoContenidoRepository,
         AuditLogService auditLogService
     ) {
         this.cursoService = cursoService;
         this.categoriaRepository = categoriaRepository;
         this.inscripcionService = inscripcionService;
         this.usuarioRepository = usuarioRepository;
+        this.cursoContenidoRepository = cursoContenidoRepository;
         this.auditLogService = auditLogService;
     }
 
@@ -307,10 +316,22 @@ public class WebController {
     }
 
     @GetMapping("/{id}")
-    public String verDetalleCurso(@PathVariable Long id, Model model) {
+    public String verDetalleCurso(@PathVariable Long id, Model model, HttpSession session) {
         Curso curso = cursoService.obtenerCursoPorId(id);
+        RolUsuario rol = obtenerRolSesion(session);
+
+        boolean puedeIrAlAula = rol == RolUsuario.ADMIN;
+        if (!puedeIrAlAula && rol == RolUsuario.INSTRUCTOR) {
+            Usuario usuario = obtenerUsuarioSesion(session);
+            puedeIrAlAula = curso.getInstructor() != null && curso.getInstructor().equalsIgnoreCase(usuario.getNombre());
+        }
+        if (!puedeIrAlAula && rol == RolUsuario.CLIENTE) {
+            Usuario usuario = obtenerUsuarioSesion(session);
+            puedeIrAlAula = inscripcionService.estaInscrito(usuario.getId(), id);
+        }
 
         model.addAttribute("curso", curso);
+        model.addAttribute("puedeIrAlAula", puedeIrAlAula);
         return "curso-detalle";
     }
 
@@ -332,12 +353,117 @@ public class WebController {
             validarRolCliente(session);
             Usuario usuario = obtenerUsuarioSesion(session);
             inscripcionService.inscribir(usuario.getId(), cursoId);
-            redirectAttributes.addFlashAttribute("successMessage", "Curso adquirido correctamente. Ya aparece en Mis cursos.");
-            return "redirect:/web/cursos/adquiridos";
+            redirectAttributes.addFlashAttribute("successMessage", "Curso adquirido correctamente. Ya puedes entrar al aula.");
+            return "redirect:/web/cursos/aula/" + cursoId;
         } catch (RuntimeException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
             return "redirect:/web/cursos";
         }
+    }
+
+    @GetMapping("/aula/{cursoId}")
+    public String verAulaCurso(@PathVariable Long cursoId, Model model, HttpSession session) {
+        Curso curso = cursoService.obtenerCursoPorId(cursoId);
+        Usuario usuario = obtenerUsuarioSesion(session);
+        RolUsuario rol = obtenerRolSesion(session);
+
+        if (rol == RolUsuario.CLIENTE && !inscripcionService.estaInscrito(usuario.getId(), cursoId)) {
+            throw new RuntimeException("Debes adquirir el curso para entrar al aula.");
+        }
+
+        if (rol == RolUsuario.INSTRUCTOR) {
+            String instructorCurso = curso.getInstructor() == null ? "" : curso.getInstructor().trim();
+            if (!instructorCurso.equalsIgnoreCase(usuario.getNombre().trim())) {
+                throw new RuntimeException("Solo el instructor del curso puede acceder a esta aula.");
+            }
+        }
+
+        List<CursoContenido> contenidos = cursoContenidoRepository.findByCursoIdOrderByOrdenAscIdAsc(cursoId);
+        model.addAttribute("curso", curso);
+        model.addAttribute("contenidos", contenidos);
+        model.addAttribute("puedeGestionarContenido", rol == RolUsuario.ADMIN || rol == RolUsuario.INSTRUCTOR);
+        return "aula-curso";
+    }
+
+    @GetMapping("/{cursoId}/contenido")
+    public String gestionarContenidoCurso(@PathVariable Long cursoId, Model model, HttpSession session) {
+        Curso curso = cursoService.obtenerCursoPorId(cursoId);
+        validarPermisoGestionCurso(session, curso);
+
+        model.addAttribute("curso", curso);
+        model.addAttribute("contenidos", cursoContenidoRepository.findByCursoIdOrderByOrdenAscIdAsc(cursoId));
+        return "curso-contenido-admin";
+    }
+
+    @PostMapping("/{cursoId}/contenido")
+    public String agregarContenidoCurso(
+            @PathVariable Long cursoId,
+            @RequestParam String titulo,
+            @RequestParam(required = false) String descripcion,
+            @RequestParam(required = false, defaultValue = "VIDEO") String tipo,
+            @RequestParam(required = false) String recursoUrl,
+            @RequestParam(required = false) MultipartFile recursoFile,
+            @RequestParam(required = false) Integer orden,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        Curso curso = cursoService.obtenerCursoPorId(cursoId);
+        try {
+            validarPermisoGestionCurso(session, curso);
+            if (!StringUtils.hasText(titulo) || titulo.trim().length() < 3) {
+                throw new RuntimeException("El titulo del contenido debe tener al menos 3 caracteres.");
+            }
+
+            String recursoFinal = resolveClassResourceUrl(recursoUrl, recursoFile, cursoId);
+            if (!StringUtils.hasText(recursoFinal)) {
+                throw new RuntimeException("Debes indicar una URL o subir un archivo de contenido.");
+            }
+
+            CursoContenido contenido = new CursoContenido();
+            contenido.setCurso(curso);
+            contenido.setTitulo(titulo.trim());
+            contenido.setDescripcion(StringUtils.hasText(descripcion) ? descripcion.trim() : null);
+            contenido.setTipo(StringUtils.hasText(tipo) ? tipo.trim().toUpperCase(Locale.ROOT) : "VIDEO");
+            contenido.setRecursoUrl(recursoFinal);
+            contenido.setOrden(orden == null ? 99 : orden);
+
+            cursoContenidoRepository.save(contenido);
+            auditLogService.logFromSession(session, "CLASS_CONTENT_CREATED", "Contenido agregado al curso ID " + cursoId, "/web/cursos/" + cursoId + "/contenido", null);
+            redirectAttributes.addFlashAttribute("successMessage", "Contenido de clase agregado correctamente.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "redirect:/web/cursos/" + cursoId + "/contenido";
+    }
+
+    @PostMapping("/{cursoId}/contenido/{contenidoId}/eliminar")
+    public String eliminarContenidoCurso(
+            @PathVariable Long cursoId,
+            @PathVariable Long contenidoId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        Curso curso = cursoService.obtenerCursoPorId(cursoId);
+        try {
+            validarPermisoGestionCurso(session, curso);
+            CursoContenido contenido = cursoContenidoRepository.findById(contenidoId)
+                .orElseThrow(() -> new RuntimeException("Contenido no encontrado."));
+
+            if (!Objects.equals(contenido.getCurso().getId(), cursoId)) {
+                throw new RuntimeException("El contenido no pertenece al curso seleccionado.");
+            }
+
+            tryDeleteUnusedManagedClassResource(contenido.getRecursoUrl());
+            cursoContenidoRepository.delete(contenido);
+
+            auditLogService.logFromSession(session, "CLASS_CONTENT_DELETED", "Contenido eliminado del curso ID " + cursoId, "/web/cursos/" + cursoId + "/contenido", null);
+            redirectAttributes.addFlashAttribute("successMessage", "Contenido eliminado correctamente.");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "redirect:/web/cursos/" + cursoId + "/contenido";
     }
 
     @GetMapping("/nuevo")
@@ -569,6 +695,59 @@ public class WebController {
             return value;
         }
         return fallback;
+    }
+
+    private String resolveClassResourceUrl(String url, MultipartFile file, Long cursoId) {
+        if (file != null && !file.isEmpty()) {
+            return storeClassResourceFile(file, cursoId);
+        }
+        if (StringUtils.hasText(url)) {
+            String clean = url.trim();
+            if (!clean.startsWith("http://") && !clean.startsWith("https://") && !clean.startsWith("/uploads/course-content/")) {
+                throw new RuntimeException("La URL de contenido debe empezar por https://, http:// o /uploads/course-content/.");
+            }
+            return clean;
+        }
+        return null;
+    }
+
+    private String storeClassResourceFile(MultipartFile file, Long cursoId) {
+        if (file.getSize() > MAX_CLASS_RESOURCE_BYTES) {
+            throw new RuntimeException("El recurso de clase supera el limite de 50 MB.");
+        }
+
+        try {
+            Path uploadPath = Paths.get(courseContentUploadDir).resolve(String.valueOf(cursoId));
+            Files.createDirectories(uploadPath);
+
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (StringUtils.hasText(originalFilename) && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+            }
+
+            String fileName = "resource-" + UUID.randomUUID() + extension;
+            Path targetPath = uploadPath.resolve(fileName);
+
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/course-content/" + cursoId + "/" + fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("No se pudo guardar el recurso de clase.", ex);
+        }
+    }
+
+    private void tryDeleteUnusedManagedClassResource(String resourceUrl) {
+        if (!StringUtils.hasText(resourceUrl) || !resourceUrl.startsWith("/uploads/course-content/")) {
+            return;
+        }
+
+        String relative = resourceUrl.substring("/uploads/course-content/".length());
+        Path localPath = Paths.get(courseContentUploadDir).resolve(relative);
+        try {
+            Files.deleteIfExists(localPath);
+        } catch (IOException ignored) {
+            // No interrumpir flujo de negocio por limpieza de archivo.
+        }
     }
 
     private Map<String, Object> buildFormData(String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId) {

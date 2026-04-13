@@ -13,7 +13,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Mi Perfil</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <span class="btn-outline" th:if="${showUserRoleBadge}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
     <a th:href="@{/web/cursos}" class="btn-outline">Catalogo</a>
     <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
     <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
@@ -45,7 +45,7 @@
       <p class="form-heading-note">El identificador academico se asigna automaticamente segun el rol.</p>
     </div>
 
-    <form th:action="@{/web/perfil/guardar}" method="post" class="editorial-form">
+    <form th:action="@{/web/perfil/guardar}" method="post" enctype="multipart/form-data" class="editorial-form">
       <div class="form-block">
         <div class="form-block-header">
           <h3>Datos personales</h3>
@@ -78,8 +78,13 @@
             <input class="field-input" name="ciudadPais" maxlength="140" th:value="${usuario.ciudadPais}">
           </div>
           <div class="field field-span-2">
-            <label class="field-label">Foto de perfil (URL)</label>
-            <input class="field-input" name="fotoPerfilUrl" maxlength="260" th:value="${usuario.fotoPerfilUrl}" placeholder="https://...">
+            <label class="field-label">Foto de perfil (archivo)</label>
+            <input class="field-input" type="file" name="fotoPerfilFile" accept="image/*">
+            <small class="helper-text">Formato imagen. Tamano maximo: 1 MB.</small>
+            <div th:if="${usuario.fotoPerfilUrl != null and !#strings.isEmpty(usuario.fotoPerfilUrl)}" style="margin-top:10px;display:flex;align-items:center;gap:12px;">
+              <img th:src="${usuario.fotoPerfilUrl}" alt="Foto de perfil" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid #344157;">
+              <span class="helper-text">Foto actual</span>
+            </div>
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@
 
   <div class="topbar-actions">
     <input id="searchInput" placeholder="Buscar por titulo o palabra clave..." />
-    <span class="btn-outline" th:if="${isAuthenticated}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
+    <span class="btn-outline" th:if="${showUserRoleBadge}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
     <a th:if="${isAuthenticated}" th:href="@{/web/perfil}" class="btn-outline">Mi perfil</a>
     <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
     <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>

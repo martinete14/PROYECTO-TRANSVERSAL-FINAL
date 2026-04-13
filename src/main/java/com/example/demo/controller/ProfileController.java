@@ -1,8 +1,15 @@
 package com.example.demo.controller;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -10,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.config.AuthSessionKeys;
@@ -23,6 +31,11 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/web/perfil")
 public class ProfileController {
+
+    private static final long MAX_PROFILE_IMAGE_BYTES = 1 * 1024 * 1024;
+
+    @Value("${app.upload.profile-images-dir:uploads/profiles}")
+    private String profileImagesDir;
 
     private final UsuarioRepository usuarioRepository;
     private final AuditLogService auditLogService;
@@ -54,7 +67,7 @@ public class ProfileController {
         @RequestParam(required = false) String institucionAcademica,
         @RequestParam(required = false) String programaAcademico,
         @RequestParam(required = false) String nivelAcademico,
-        @RequestParam(required = false) String fotoPerfilUrl,
+        @RequestParam(required = false) MultipartFile fotoPerfilFile,
         @RequestParam(required = false) String biografia,
         HttpSession session,
         RedirectAttributes redirectAttributes
@@ -73,8 +86,19 @@ public class ProfileController {
         usuario.setInstitucionAcademica(trimToNull(institucionAcademica));
         usuario.setProgramaAcademico(trimToNull(programaAcademico));
         usuario.setNivelAcademico(trimToNull(nivelAcademico));
-        usuario.setFotoPerfilUrl(trimToNull(fotoPerfilUrl));
         usuario.setBiografia(trimToNull(biografia));
+
+        try {
+            String oldProfileImage = usuario.getFotoPerfilUrl();
+            String newProfileImage = storeProfileImageIfProvided(fotoPerfilFile);
+            if (StringUtils.hasText(newProfileImage)) {
+                usuario.setFotoPerfilUrl(newProfileImage);
+                tryDeleteUnusedProfileImage(oldProfileImage, newProfileImage);
+            }
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/web/perfil";
+        }
 
         if (StringUtils.hasText(fechaNacimiento)) {
             try {
@@ -153,7 +177,7 @@ public class ProfileController {
         return switch (rol) {
             case CLIENTE -> "ID de estudiante";
             case INSTRUCTOR -> "ID de profesor";
-            case ADMIN -> "ID de administracion";
+            case ADMIN -> "ID de administración";
         };
     }
 
@@ -162,5 +186,57 @@ public class ProfileController {
             return null;
         }
         return value.trim();
+    }
+
+    private String storeProfileImageIfProvided(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        String contentType = file.getContentType();
+        if (!StringUtils.hasText(contentType) || !contentType.startsWith("image/")) {
+            throw new RuntimeException("La foto de perfil debe ser una imagen valida.");
+        }
+
+        if (file.getSize() > MAX_PROFILE_IMAGE_BYTES) {
+            throw new RuntimeException("La foto de perfil supera el limite de 1 MB.");
+        }
+
+        try {
+            Path uploadPath = Paths.get(profileImagesDir);
+            Files.createDirectories(uploadPath);
+
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (StringUtils.hasText(originalFilename) && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+            }
+
+            String fileName = "profile-" + UUID.randomUUID() + extension;
+            Path targetPath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            return "/uploads/profiles/" + fileName;
+        } catch (IOException ex) {
+            throw new RuntimeException("No se pudo guardar la foto de perfil.", ex);
+        }
+    }
+
+    private void tryDeleteUnusedProfileImage(String oldImage, String currentImage) {
+        if (!StringUtils.hasText(oldImage) || Objects.equals(oldImage, currentImage) || !oldImage.startsWith("/uploads/profiles/")) {
+            return;
+        }
+
+        String fileName = oldImage.substring(oldImage.lastIndexOf('/') + 1);
+        if (!StringUtils.hasText(fileName)) {
+            return;
+        }
+
+        Path localPath = Paths.get(profileImagesDir).resolve(fileName);
+        try {
+            Files.deleteIfExists(localPath);
+        } catch (IOException ignored) {
+            // No bloquear guardado de perfil por fallo de limpieza.
+        }
     }
 }
