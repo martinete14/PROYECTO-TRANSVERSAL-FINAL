@@ -792,7 +792,7 @@ public class WebController {
     }
 
     private RolUsuario obtenerRolSesion(HttpSession session) {
-        Object role = session.getAttribute("AUTH_ROLE");
+        Object role = session.getAttribute(AuthSessionKeys.AUTH_ROLE);
         return RolUsuario.fromValue(role == null ? null : role.toString());
     }
 

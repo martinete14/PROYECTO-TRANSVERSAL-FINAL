@@ -53,7 +53,7 @@ class RoleAuthorizationInterceptorTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/web/cursos/admin");
         MockHttpSession session = new MockHttpSession();
         session.setAttribute(AuthSessionKeys.AUTH_USER_ID, 10L);
-        session.setAttribute("AUTH_ROLE", "CLIENTE");
+        session.setAttribute(AuthSessionKeys.AUTH_ROLE, "CLIENTE");
         request.setSession(session);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -71,7 +71,7 @@ class RoleAuthorizationInterceptorTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/web/cursos/instructor");
         MockHttpSession session = new MockHttpSession();
         session.setAttribute(AuthSessionKeys.AUTH_USER_ID, 10L);
-        session.setAttribute("AUTH_ROLE", "INSTRUCTOR");
+        session.setAttribute(AuthSessionKeys.AUTH_ROLE, "INSTRUCTOR");
         request.setSession(session);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -85,7 +85,7 @@ class RoleAuthorizationInterceptorTest {
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/web/cursos/comprar/2");
         MockHttpSession session = new MockHttpSession();
         session.setAttribute(AuthSessionKeys.AUTH_USER_ID, 10L);
-        session.setAttribute("AUTH_ROLE", "INSTRUCTOR");
+        session.setAttribute(AuthSessionKeys.AUTH_ROLE, "INSTRUCTOR");
         request.setSession(session);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -93,5 +93,19 @@ class RoleAuthorizationInterceptorTest {
 
         assertFalse(allowed);
         assertTrue(response.getRedirectedUrl().startsWith("/web/auth/denegado"));
+    }
+
+    @Test
+    void authenticatedWithoutRole_redirectsToLogin() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/web/cursos/admin");
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(AuthSessionKeys.AUTH_USER_ID, 10L);
+        request.setSession(session);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        boolean allowed = interceptor.preHandle(request, response, new Object());
+
+        assertFalse(allowed);
+        assertTrue(response.getRedirectedUrl().startsWith("/web/auth/login"));
     }
 }

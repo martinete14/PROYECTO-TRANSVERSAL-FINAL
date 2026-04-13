@@ -39,7 +39,14 @@ public class RoleAuthorizationInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        RolUsuario rol = RolUsuario.fromValue((String) session.getAttribute("AUTH_ROLE"));
+        String roleValue = (String) session.getAttribute(AuthSessionKeys.AUTH_ROLE);
+        if (roleValue == null || roleValue.isBlank()) {
+            session.invalidate();
+            response.sendRedirect("/web/auth/login");
+            return false;
+        }
+
+        RolUsuario rol = RolUsuario.fromValue(roleValue);
         RoutePermissionPolicy.AuthorizationDecision decision = routePermissionPolicy.evaluate(path, rol);
 
         if (!decision.allowed()) {

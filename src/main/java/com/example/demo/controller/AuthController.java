@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import com.example.demo.model.RolUsuario;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.UsuarioRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -21,9 +23,11 @@ import jakarta.servlet.http.HttpSession;
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UsuarioRepository usuarioRepository) {
+    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/login")
@@ -40,7 +44,7 @@ public class AuthController {
     public String doLogin(
         @RequestParam String email,
         @RequestParam String password,
-        HttpSession session,
+        HttpServletRequest request,
         RedirectAttributes redirectAttributes
     ) {
         if (!StringUtils.hasText(email) || !StringUtils.hasText(password)) {
@@ -48,19 +52,31 @@ public class AuthController {
             return "redirect:/web/auth/login";
         }
 
-        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email.trim())
+        String normalizedEmail = email.trim();
+        String rawPassword = password.trim();
+
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(normalizedEmail)
             .orElse(null);
 
-        if (usuario == null || !password.trim().equals(usuario.getPassword())) {
+        if (usuario == null || !isPasswordValid(rawPassword, usuario.getPassword())) {
             redirectAttributes.addFlashAttribute("errorMessage", "Credenciales inválidas.");
             return "redirect:/web/auth/login";
         }
 
+        upgradeLegacyPasswordIfNeeded(usuario, rawPassword);
+
         RolUsuario rol = RolUsuario.fromValue(usuario.getRol());
 
+        HttpSession previousSession = request.getSession(false);
+        if (previousSession != null) {
+            previousSession.invalidate();
+        }
+
+        HttpSession session = request.getSession(true);
+
         session.setAttribute(AuthSessionKeys.AUTH_USER_ID, usuario.getId());
-        session.setAttribute("AUTH_NAME", usuario.getNombre());
-        session.setAttribute("AUTH_ROLE", rol.name());
+        session.setAttribute(AuthSessionKeys.AUTH_NAME, usuario.getNombre());
+        session.setAttribute(AuthSessionKeys.AUTH_ROLE, rol.name());
 
         redirectAttributes.addFlashAttribute("successMessage", "Bienvenido, " + usuario.getNombre() + ".");
         return switch (rol) {
@@ -74,6 +90,33 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/web/auth/login";
+    }
+
+    private boolean isPasswordValid(String rawPassword, String storedPassword) {
+        if (!StringUtils.hasText(storedPassword)) {
+            return false;
+        }
+
+        String normalizedStoredPassword = storedPassword.trim();
+        if (looksLikeBCryptHash(normalizedStoredPassword)) {
+            return passwordEncoder.matches(rawPassword, normalizedStoredPassword);
+        }
+
+        return rawPassword.equals(normalizedStoredPassword);
+    }
+
+    private void upgradeLegacyPasswordIfNeeded(Usuario usuario, String rawPassword) {
+        String storedPassword = usuario.getPassword();
+        if (!StringUtils.hasText(storedPassword) || looksLikeBCryptHash(storedPassword.trim())) {
+            return;
+        }
+
+        usuario.setPassword(passwordEncoder.encode(rawPassword));
+        usuarioRepository.save(usuario);
+    }
+
+    private boolean looksLikeBCryptHash(String value) {
+        return value.startsWith("$2a$") || value.startsWith("$2b$") || value.startsWith("$2y$");
     }
 
     @GetMapping("/denegado")
