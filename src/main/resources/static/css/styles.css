@@ -8,6 +8,9 @@
   --line: #2b394d;
   --brand: #56b7e8;
   --brand-strong: #8ed9ff;
+  --success: #3a9fd4;
+  --success-bg: #0d2233;
+  --success-txt: #b3dff5;
   --danger: #ea6a5a;
   --radius-lg: 20px;
   --radius-md: 12px;
@@ -883,9 +886,9 @@ body {
 }
 
 .alert-success-custom {
-  border: 1px solid #3c9a67;
-  background: #173d2b;
-  color: #c8f7dc;
+  border: 1px solid var(--success);
+  background: var(--success-bg);
+  color: var(--success-txt);
 }
 
 .alert-error-custom {
