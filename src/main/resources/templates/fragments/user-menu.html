@@ -20,8 +20,8 @@
       <a class="btn-outline" th:if="${isAdmin}" th:href="@{/web/cursos/admin/logs}">Logs auditoria</a>
       <a class="btn-outline" th:href="@{/web/cursos}">Catalogo</a>
 
-      <form th:action="@{/web/auth/logout}" method="post" style="display:block;">
-        <button type="submit" class="btn-danger" style="width:100%;">Salir</button>
+      <form th:action="@{/web/auth/logout}" method="post" class="logout-form">
+        <button type="submit" class="btn-danger btn-full">Salir</button>
       </form>
     </div>
   </details>

@@ -1024,6 +1024,96 @@ body {
   object-fit: cover;
 }
 
+/* Utilities and small reusable blocks */
+.hero-cinematic--spaced-top {
+  margin-top: 26px;
+}
+
+.text-note-muted {
+  margin-top: 8px;
+  color: #a5b7cd;
+}
+
+.inline-row-centered {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.filters-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.inline-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 10px;
+}
+
+.inline-actions-tight {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.inline-actions-center {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.form-card-login {
+  max-width: 640px;
+  margin: 26px auto;
+}
+
+.demo-accounts {
+  margin-top: 18px;
+  color: #9eb0c6;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.input-limit-sm {
+  max-width: 120px;
+}
+
+.acquired-panel-spaced-top {
+  margin-top: 20px;
+}
+
+.profile-photo-preview {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-photo-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #344157;
+}
+
+.logout-form {
+  display: block;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.empty-state-hidden {
+  display: none;
+}
+
 @media (hover: none), (pointer: coarse) {
   .media-video {
     display: none;

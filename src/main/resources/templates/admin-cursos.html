@@ -25,7 +25,7 @@
   </section>
 
   <section class="filters" aria-label="Filtro de instructor">
-    <form th:action="@{/web/cursos/admin}" method="get" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;justify-content:flex-end;">
+    <form th:action="@{/web/cursos/admin}" method="get" class="filters-form">
       <input name="instructor" placeholder="Filtrar por instructor" th:value="${instructorFiltro}" />
       <input name="titulo" placeholder="Filtrar por titulo" th:value="${tituloFiltro}" />
       <button class="btn-outline" type="submit">Filtrar</button>
@@ -58,7 +58,7 @@
             <td th:text="${curso.instructor}">Instructor</td>
             <td th:text="${curso.categoria.nombre}">Categoria</td>
             <td>
-              <form th:action="@{/web/cursos/admin/destacado/{id}(id=${curso.id})}" method="post" style="display:flex;gap:8px;align-items:center;">
+              <form th:action="@{/web/cursos/admin/destacado/{id}(id=${curso.id})}" method="post" class="inline-actions-center">
                 <input type="hidden" name="instructor" th:value="${instructorFiltro}">
                 <input type="hidden" name="titulo" th:value="${tituloFiltro}">
                 <input type="hidden" name="destacado" th:value="${!curso.destacadoSemana}">
@@ -66,7 +66,7 @@
               </form>
             </td>
             <td>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <div class="inline-actions-tight">
                 <a th:href="@{/web/cursos/editar/{id}(id=${curso.id})}" class="btn-outline">Editar</a>
                 <form th:action="@{/web/cursos/eliminar/{id}(id=${curso.id})}" method="post" onsubmit="return confirm('¿Seguro que quieres eliminar este curso?');">
                   <button type="submit" class="btn-danger">Eliminar</button>

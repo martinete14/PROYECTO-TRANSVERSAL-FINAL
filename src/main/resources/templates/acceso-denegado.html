@@ -19,18 +19,18 @@
 </header>
 
 <main class="page-shell" role="main">
-  <section class="hero-cinematic" style="margin-top:26px;">
+  <section class="hero-cinematic hero-cinematic--spaced-top">
     <p class="hero-kicker">PERMISO INSUFICIENTE</p>
     <h2>Acceso denegado</h2>
     <p>Tu rol actual no tiene permiso para abrir esta pantalla. Esta ruta requiere <strong th:text="${requiredRoleMessage}">ADMIN</strong>.</p>
-    <p style="margin-top:8px;color:#a5b7cd;">Ruta solicitada: <strong th:text="${requestedPath}">/web/cursos/admin</strong></p>
+    <p class="text-note-muted">Ruta solicitada: <strong th:text="${requestedPath}">/web/cursos/admin</strong></p>
   </section>
 
   <section class="empty-state">
     <article>
       <h3>Que puedes hacer ahora</h3>
       <p>Vuelve al catalogo o cierra sesion para entrar con otra cuenta.</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <div class="inline-row-centered">
         <a th:href="@{/web/cursos}" class="btn-primary">Ir al catalogo</a>
         <a th:href="@{/web/auth/login}" class="btn-outline">Cambiar de cuenta</a>
       </div>

@@ -74,8 +74,8 @@
             <label class="field-label">Foto de perfil (archivo)</label>
             <input class="field-input" type="file" name="fotoPerfilFile" accept="image/*">
             <small class="helper-text">Formato imagen. Tamano maximo: 1 MB.</small>
-            <div th:if="${usuario.fotoPerfilUrl != null and !#strings.isEmpty(usuario.fotoPerfilUrl)}" style="margin-top:10px;display:flex;align-items:center;gap:12px;">
-              <img th:src="${usuario.fotoPerfilUrl}" alt="Foto de perfil" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:1px solid #344157;">
+            <div th:if="${usuario.fotoPerfilUrl != null and !#strings.isEmpty(usuario.fotoPerfilUrl)}" class="profile-photo-preview">
+              <img th:src="${usuario.fotoPerfilUrl}" alt="Foto de perfil" class="profile-photo-thumb">
               <span class="helper-text">Foto actual</span>
             </div>
           </div>

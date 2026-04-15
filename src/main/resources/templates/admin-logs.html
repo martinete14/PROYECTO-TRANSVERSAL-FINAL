@@ -25,10 +25,10 @@
   </section>
 
   <section class="filters" aria-label="Filtros de auditoria">
-    <form th:action="@{/web/cursos/admin/logs}" method="get" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;justify-content:flex-end;">
+    <form th:action="@{/web/cursos/admin/logs}" method="get" class="filters-form">
       <input name="actor" placeholder="Actor (nombre)" th:value="${actorFiltro}" />
       <input name="accion" placeholder="Accion (ej. COURSE_)" th:value="${accionFiltro}" />
-      <input name="limit" type="number" min="10" max="300" step="10" th:value="${limitFiltro}" style="max-width:120px;" />
+      <input name="limit" type="number" min="10" max="300" step="10" th:value="${limitFiltro}" class="input-limit-sm" />
       <button class="btn-outline" type="submit">Filtrar</button>
       <a class="btn-outline" th:href="@{/web/cursos/admin/logs}">Limpiar</a>
     </form>
