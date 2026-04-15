@@ -10,4 +10,6 @@ public interface InscripcionService {
     Inscripcion inscribir(Long usuarioId, Long cursoId);
 
     List<Inscripcion> obtenerPorUsuario(Long usuarioId);
+
+    boolean estaInscrito(Long usuarioId, Long cursoId);
 }

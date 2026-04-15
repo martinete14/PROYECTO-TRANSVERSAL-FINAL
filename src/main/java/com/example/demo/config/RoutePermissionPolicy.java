@@ -19,8 +19,11 @@ public class RoutePermissionPolicy {
         new RouteRule("/web/cursos/editar", Set.of(RolUsuario.ADMIN, RolUsuario.INSTRUCTOR), "ADMIN o INSTRUCTOR"),
         new RouteRule("/web/cursos/actualizar", Set.of(RolUsuario.ADMIN, RolUsuario.INSTRUCTOR), "ADMIN o INSTRUCTOR"),
         new RouteRule("/web/cursos/eliminar", Set.of(RolUsuario.ADMIN, RolUsuario.INSTRUCTOR), "ADMIN o INSTRUCTOR"),
+        new RouteRule("/web/cursos/aula", Set.of(RolUsuario.ADMIN, RolUsuario.INSTRUCTOR, RolUsuario.CLIENTE), "USUARIO AUTENTICADO"),
+        new RouteRule("/web/cursos/", Set.of(RolUsuario.ADMIN, RolUsuario.INSTRUCTOR, RolUsuario.CLIENTE), "USUARIO AUTENTICADO"),
         new RouteRule("/web/cursos/adquiridos", Set.of(RolUsuario.CLIENTE), "CLIENTE"),
-        new RouteRule("/web/cursos/comprar", Set.of(RolUsuario.CLIENTE), "CLIENTE")
+        new RouteRule("/web/cursos/comprar", Set.of(RolUsuario.CLIENTE), "CLIENTE"),
+        new RouteRule("/web/perfil", Set.of(RolUsuario.ADMIN, RolUsuario.INSTRUCTOR, RolUsuario.CLIENTE), "USUARIO AUTENTICADO")
     );
 
     public AuthorizationDecision evaluate(String path, RolUsuario role) {

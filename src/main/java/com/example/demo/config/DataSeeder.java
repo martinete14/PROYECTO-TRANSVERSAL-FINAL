@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.model.Categoria;
@@ -56,15 +57,18 @@ public class DataSeeder implements CommandLineRunner {
     private final CategoriaRepository categoriaRepository;
     private final CursoRepository cursoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(
         CategoriaRepository categoriaRepository,
         CursoRepository cursoRepository,
-        UsuarioRepository usuarioRepository
+        UsuarioRepository usuarioRepository,
+        PasswordEncoder passwordEncoder
     ) {
         this.categoriaRepository = categoriaRepository;
         this.cursoRepository = cursoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -325,7 +329,7 @@ public class DataSeeder implements CommandLineRunner {
 
         usuario.setNombre(nombre);
         usuario.setEmail(email);
-        usuario.setPassword(password);
+        usuario.setPassword(passwordEncoder.encode(password));
         usuario.setRol(rol);
 
         usuarioRepository.save(usuario);

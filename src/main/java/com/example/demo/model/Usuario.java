@@ -1,6 +1,8 @@
 /* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
 package com.example.demo.model;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +29,41 @@ public class Usuario {
 
     @Column(length = 120)
     private String password;
+
+    @Column(unique = true, length = 24)
+    private String studentId;
+
+    @Column(unique = true, length = 24)
+    private String teacherId;
+
+    @Column(unique = true, length = 24)
+    private String adminId;
+
+    @Column(length = 30)
+    private String documento;
+
+    @Column(length = 30)
+    private String telefono;
+
+    private LocalDate fechaNacimiento;
+
+    @Column(length = 140)
+    private String ciudadPais;
+
+    @Column(length = 160)
+    private String institucionAcademica;
+
+    @Column(length = 160)
+    private String programaAcademico;
+
+    @Column(length = 80)
+    private String nivelAcademico;
+
+    @Column(length = 260)
+    private String fotoPerfilUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String biografia;
 
     // getters y setters
 
@@ -68,5 +105,101 @@ public class Usuario {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getTeacherId() {
+        return teacherId;
+    }
+
+    public void setTeacherId(String teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public String getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(String adminId) {
+        this.adminId = adminId;
+    }
+
+    public String getDocumento() {
+        return documento;
+    }
+
+    public void setDocumento(String documento) {
+        this.documento = documento;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public String getCiudadPais() {
+        return ciudadPais;
+    }
+
+    public void setCiudadPais(String ciudadPais) {
+        this.ciudadPais = ciudadPais;
+    }
+
+    public String getInstitucionAcademica() {
+        return institucionAcademica;
+    }
+
+    public void setInstitucionAcademica(String institucionAcademica) {
+        this.institucionAcademica = institucionAcademica;
+    }
+
+    public String getProgramaAcademico() {
+        return programaAcademico;
+    }
+
+    public void setProgramaAcademico(String programaAcademico) {
+        this.programaAcademico = programaAcademico;
+    }
+
+    public String getNivelAcademico() {
+        return nivelAcademico;
+    }
+
+    public void setNivelAcademico(String nivelAcademico) {
+        this.nivelAcademico = nivelAcademico;
+    }
+
+    public String getFotoPerfilUrl() {
+        return fotoPerfilUrl;
+    }
+
+    public void setFotoPerfilUrl(String fotoPerfilUrl) {
+        this.fotoPerfilUrl = fotoPerfilUrl;
+    }
+
+    public String getBiografia() {
+        return biografia;
+    }
+
+    public void setBiografia(String biografia) {
+        this.biografia = biografia;
     }
 }

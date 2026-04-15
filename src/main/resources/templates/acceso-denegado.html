@@ -14,11 +14,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Mini Academia</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:if="${isAuthenticated}" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
-    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
-    <form th:if="${isAuthenticated}" th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
-      <button type="submit" class="btn-outline">Salir</button>
-    </form>
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
 </header>
 

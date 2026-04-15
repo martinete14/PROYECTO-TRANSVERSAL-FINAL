@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="menu" class="user-menu-shell" th:if="${isAuthenticated}">
+  <details class="user-menu">
+    <summary class="user-menu-trigger" aria-label="Abrir menu de usuario">
+      <img th:if="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" th:src="${currentUserPhotoUrl}" alt="Foto perfil" class="user-avatar-img" width="44" height="44">
+      <span th:unless="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" class="user-avatar-fallback" th:text="${currentUserInitials}">U</span>
+    </summary>
+
+    <div class="user-menu-panel">
+      <p class="user-menu-name" th:text="${currentUserName}">Usuario</p>
+      <p class="user-menu-role" th:if="${showUserRoleBadge}" th:text="${currentRole}">CLIENTE</p>
+
+      <a class="btn-outline" th:href="@{/web/perfil}">Mi perfil</a>
+      <a class="btn-outline" th:if="${isCliente}" th:href="@{/web/cursos/adquiridos}">Mis cursos</a>
+      <a class="btn-outline" th:if="${isInstructor}" th:href="@{/web/cursos/instructor}">Panel instructor</a>
+      <a class="btn-outline" th:if="${isAdmin}" th:href="@{/web/cursos/admin}">Panel admin</a>
+      <a class="btn-outline" th:if="${canManageCourses}" th:href="@{/web/cursos/nuevo}">Crear curso</a>
+      <a class="btn-outline" th:if="${isAdmin}" th:href="@{/web/cursos/admin/logs}">Logs auditoria</a>
+      <a class="btn-outline" th:href="@{/web/cursos}">Catalogo</a>
+
+      <form th:action="@{/web/auth/logout}" method="post" style="display:block;">
+        <button type="submit" class="btn-danger" style="width:100%;">Salir</button>
+      </form>
+    </div>
+  </details>
+</div>
+</body>
+</html>

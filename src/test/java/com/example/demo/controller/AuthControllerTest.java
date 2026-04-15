@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 
@@ -10,7 +11,7 @@ class AuthControllerTest {
 
     @Test
     void accesoDenegado_usesProvidedContext() {
-        AuthController controller = new AuthController(null);
+        AuthController controller = new AuthController(null, new BCryptPasswordEncoder(), null);
         Model model = new ConcurrentModel();
 
         String view = controller.accesoDenegado("ADMIN", "/web/cursos/admin", model);
@@ -22,7 +23,7 @@ class AuthControllerTest {
 
     @Test
     void accesoDenegado_usesSafeDefaults() {
-        AuthController controller = new AuthController(null);
+        AuthController controller = new AuthController(null, new BCryptPasswordEncoder(), null);
         Model model = new ConcurrentModel();
 
         String view = controller.accesoDenegado("", null, model);
