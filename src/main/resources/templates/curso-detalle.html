@@ -16,13 +16,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Mini Academia</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
-    <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
-    <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
-    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
-    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
-      <button type="submit" class="btn-outline">Salir</button>
-    </form>
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
 </header>
 
@@ -35,9 +29,11 @@
       <p class="course-detail-description" th:text="${curso.descripcion}">Descripcion del curso</p>
 
       <div class="course-detail-actions">
-        <form th:if="${isCliente}" th:action="@{/web/cursos/comprar/{id}(id=${curso.id})}" method="post">
+        <a th:if="${puedeIrAlAula}" class="btn-primary" th:href="@{/web/cursos/aula/{id}(id=${curso.id})}">Entrar al aula</a>
+        <form th:if="${isCliente and !puedeIrAlAula}" th:action="@{/web/cursos/comprar/{id}(id=${curso.id})}" method="post">
           <button class="btn-primary" type="submit">Comprar curso</button>
         </form>
+        <a th:if="${canManageCourses}" class="btn-outline" th:href="@{/web/cursos/{id}/contenido(id=${curso.id})}">Gestionar contenido</a>
         <a class="btn-outline" th:href="@{/web/cursos}">Seguir explorando</a>
       </div>
 

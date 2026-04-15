@@ -13,12 +13,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Panel Instructor</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
-    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
-    <a th:href="@{/web/cursos/nuevo}" class="btn-primary">+ Nuevo curso</a>
-    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
-      <button type="submit" class="btn-outline">Salir</button>
-    </form>
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
 </header>
 
@@ -30,7 +25,7 @@
   </section>
 
   <section class="filters" aria-label="Filtro por nombre de instructor">
-    <form th:action="@{/web/cursos/instructor}" method="get" style="display:flex;gap:10px;flex-wrap:wrap;width:100%;justify-content:flex-end;">
+    <form th:action="@{/web/cursos/instructor}" method="get" class="filters-form">
       <input name="nombre" placeholder="Nombre del instructor" th:value="${nombreInstructor}" />
       <input name="titulo" placeholder="Buscar por titulo" th:value="${tituloFiltro}" />
       <button class="btn-outline" type="submit">Buscar</button>
@@ -62,7 +57,7 @@
         </div>
         <h3 class="course-title" th:text="${curso.titulo}">Curso</h3>
         <p class="course-desc" th:text="${curso.descripcion}">Descripcion</p>
-        <div style="margin-top:auto;display:flex;gap:10px;">
+        <div class="inline-actions">
           <a class="btn-outline" th:href="@{/web/cursos/editar/{id}(id=${curso.id})}">Editar</a>
           <a class="btn-primary" th:href="@{/web/cursos/{id}(id=${curso.id})}">Ver detalle</a>
         </div>

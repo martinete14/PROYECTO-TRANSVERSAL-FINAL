@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Academia | Logs de auditoria</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar" role="banner">
+  <h1 class="brand">Logs Admin</h1>
+  <div class="topbar-actions">
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
+  </div>
+</header>
+
+<main class="page-shell" role="main">
+  <section class="hero-cinematic">
+    <p class="hero-kicker">AUDITORIA BASICA</p>
+    <h2>Trazabilidad de acciones</h2>
+    <p>Registro de autenticacion, accesos denegados y cambios relevantes en cursos.</p>
+  </section>
+
+  <section class="filters" aria-label="Filtros de auditoria">
+    <form th:action="@{/web/cursos/admin/logs}" method="get" class="filters-form">
+      <input name="actor" placeholder="Actor (nombre)" th:value="${actorFiltro}" />
+      <input name="accion" placeholder="Accion (ej. COURSE_)" th:value="${accionFiltro}" />
+      <input name="limit" type="number" min="10" max="300" step="10" th:value="${limitFiltro}" class="input-limit-sm" />
+      <button class="btn-outline" type="submit">Filtrar</button>
+      <a class="btn-outline" th:href="@{/web/cursos/admin/logs}">Limpiar</a>
+    </form>
+  </section>
+
+  <section class="acquired-panel">
+    <header class="acquired-head">
+      <h3>Eventos registrados</h3>
+      <p class="acquired-user" th:text="${#lists.size(logs)} + ' logs cargados'">0 logs cargados</p>
+    </header>
+
+    <div class="acquired-table-wrap" th:if="${!#lists.isEmpty(logs)}">
+      <table class="acquired-table" aria-label="Registro de auditoria">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Accion</th>
+            <th>Actor</th>
+            <th>Rol</th>
+            <th>Ruta</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="log : ${logs}">
+            <td th:text="${#temporals.format(log.occurredAt, 'yyyy-MM-dd HH:mm:ss')}">2026-04-13 12:00:00</td>
+            <td th:text="${log.actionType}">ACTION</td>
+            <td th:text="${log.actorName != null ? log.actorName : 'Anonimo'}">Actor</td>
+            <td th:text="${log.actorRole != null ? log.actorRole : '-'}">ROL</td>
+            <td th:text="${log.targetPath != null ? log.targetPath : '-'}">/ruta</td>
+            <td th:text="${log.details}">Detalle</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="acquired-empty" th:if="${#lists.isEmpty(logs)}">No hay eventos para ese filtro.</p>
+  </section>
+</main>
+</body>
+</html>

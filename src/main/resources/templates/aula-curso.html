@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${curso.titulo + ' | Aula'}">Aula del curso</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar" role="banner">
+  <h1 class="brand">Aula Virtual</h1>
+  <div class="topbar-actions">
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
+  </div>
+</header>
+
+<main class="page-shell" role="main">
+  <section class="hero-cinematic">
+    <p class="hero-kicker">CURSO ACTIVO</p>
+    <h2 th:text="${curso.titulo}">Titulo del curso</h2>
+    <p th:text="${curso.descripcion}">Descripcion del curso</p>
+  </section>
+
+  <section class="acquired-panel">
+    <header class="acquired-head">
+      <h3>Contenido de clase</h3>
+      <p class="acquired-user" th:text="${#lists.size(contenidos)} + ' recursos disponibles'">0 recursos disponibles</p>
+    </header>
+
+    <div class="acquired-table-wrap" th:if="${!#lists.isEmpty(contenidos)}">
+      <table class="acquired-table" aria-label="Material del curso">
+        <thead>
+          <tr>
+            <th>Orden</th>
+            <th>Titulo</th>
+            <th>Tipo</th>
+            <th>Descripcion</th>
+            <th>Recurso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="contenido : ${contenidos}">
+            <td th:text="${contenido.orden != null ? contenido.orden : '-'}">1</td>
+            <td th:text="${contenido.titulo}">Titulo</td>
+            <td th:text="${contenido.tipo}">VIDEO</td>
+            <td th:text="${contenido.descripcion != null ? contenido.descripcion : '-'}">Descripcion</td>
+            <td><a class="btn-primary" th:href="${contenido.recursoUrl}" target="_blank" rel="noopener">Abrir</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="acquired-empty" th:if="${#lists.isEmpty(contenidos)}">Todavia no hay contenido de clase subido por el profesor.</p>
+  </section>
+</main>
+</body>
+</html>

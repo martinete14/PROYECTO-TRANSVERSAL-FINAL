@@ -14,13 +14,7 @@
 <header class="topbar" role="banner">
   <h1 class="brand">Mini Academia</h1>
   <div class="topbar-actions">
-    <span class="btn-outline" th:text="${currentUserName + ' · ' + currentRole}">Usuario</span>
-    <a th:if="${isAdmin}" th:href="@{/web/cursos/admin}" class="btn-outline">Panel admin</a>
-    <a th:if="${canManageCourses}" th:href="@{/web/cursos/instructor}" class="btn-outline">Panel instructor</a>
-    <a th:href="@{/web/cursos}" class="btn-outline">Volver al catalogo</a>
-    <form th:action="@{/web/auth/logout}" method="post" style="display:inline-flex;">
-      <button type="submit" class="btn-outline">Salir</button>
-    </form>
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
 </header>
 
@@ -61,7 +55,7 @@
             <td th:text="${inscripcion.curso.categoria.nombre}">Categoria</td>
             <td th:text="${inscripcion.curso.instructor}">Instructor</td>
             <td>
-              <a class="btn-primary" th:href="@{/web/cursos/{id}(id=${inscripcion.curso.id})}">Ver curso</a>
+              <a class="btn-primary" th:href="@{/web/cursos/aula/{id}(id=${inscripcion.curso.id})}">Entrar al aula</a>
             </td>
           </tr>
         </tbody>

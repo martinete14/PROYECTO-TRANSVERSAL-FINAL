@@ -51,4 +51,9 @@ public class InscripcionServiceImpl implements InscripcionService {
     public List<Inscripcion> obtenerPorUsuario(Long usuarioId) {
         return inscripcionRepository.findByUsuarioId(usuarioId);
     }
+
+    @Override
+    public boolean estaInscrito(Long usuarioId, Long cursoId) {
+        return inscripcionRepository.existsByUsuarioIdAndCursoId(usuarioId, cursoId);
+    }
 }

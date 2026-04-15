@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Academia | Gestion de contenido</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="topbar" role="banner">
+  <h1 class="brand">Contenido del Curso</h1>
+  <div class="topbar-actions">
+    <div th:replace="~{fragments/user-menu :: menu}"></div>
+  </div>
+</header>
+
+<main class="page-shell form-page" role="main">
+  <section class="alerts" th:if="${successMessage != null or errorMessage != null}">
+    <article class="alert alert-success-custom" th:if="${successMessage != null}" th:text="${successMessage}"></article>
+    <article class="alert alert-error-custom" th:if="${errorMessage != null}" th:text="${errorMessage}"></article>
+  </section>
+
+  <section class="hero-cinematic">
+    <p class="hero-kicker">GESTION DE AULA</p>
+    <h2 th:text="${curso.titulo}">Curso</h2>
+    <p>Sube recursos para tus alumnos: diapositivas, videos, guias PDF o enlaces externos.</p>
+  </section>
+
+  <section class="form-card form-card-premium">
+    <form th:action="@{/web/cursos/{id}/contenido(id=${curso.id})}" method="post" enctype="multipart/form-data" class="editorial-form">
+      <div class="form-section-grid">
+        <div class="field">
+          <label class="field-label">Titulo del recurso</label>
+          <input class="field-input" name="titulo" minlength="3" maxlength="140" required>
+        </div>
+        <div class="field">
+          <label class="field-label">Tipo</label>
+          <select class="field-input" name="tipo">
+            <option value="VIDEO">VIDEO</option>
+            <option value="DIAPOSITIVA">DIAPOSITIVA</option>
+            <option value="DOCUMENTO">DOCUMENTO</option>
+            <option value="ENLACE">ENLACE</option>
+          </select>
+        </div>
+        <div class="field field-span-2">
+          <label class="field-label">Descripcion</label>
+          <textarea class="field-input field-textarea" name="descripcion" maxlength="1800"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Archivo</label>
+          <input class="field-input" type="file" name="recursoFile">
+          <small class="helper-text">Tamano maximo: 50 MB</small>
+        </div>
+        <div class="field">
+          <label class="field-label">URL del recurso (opcional)</label>
+          <input class="field-input" name="recursoUrl" placeholder="https://...">
+        </div>
+        <div class="field">
+          <label class="field-label">Orden</label>
+          <input class="field-input" type="number" name="orden" min="1" max="999" value="99">
+        </div>
+      </div>
+
+      <div class="form-actions form-actions-spaced">
+        <button class="btn-primary" type="submit">Agregar contenido</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="acquired-panel acquired-panel-spaced-top">
+    <header class="acquired-head">
+      <h3>Recursos cargados</h3>
+      <p class="acquired-user" th:text="${#lists.size(contenidos)} + ' elementos'">0 elementos</p>
+    </header>
+
+    <div class="acquired-table-wrap" th:if="${!#lists.isEmpty(contenidos)}">
+      <table class="acquired-table" aria-label="Recursos del curso">
+        <thead>
+          <tr>
+            <th>Orden</th>
+            <th>Titulo</th>
+            <th>Tipo</th>
+            <th>Recurso</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="contenido : ${contenidos}">
+            <td th:text="${contenido.orden != null ? contenido.orden : '-'}">1</td>
+            <td th:text="${contenido.titulo}">Titulo</td>
+            <td th:text="${contenido.tipo}">TIPO</td>
+            <td><a class="btn-outline" th:href="${contenido.recursoUrl}" target="_blank" rel="noopener">Abrir</a></td>
+            <td>
+              <form th:action="@{/web/cursos/{cursoId}/contenido/{contenidoId}/eliminar(cursoId=${curso.id},contenidoId=${contenido.id})}" method="post" onsubmit="return confirm('¿Eliminar este recurso?');">
+                <button class="btn-danger" type="submit">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="acquired-empty" th:if="${#lists.isEmpty(contenidos)}">Todavia no hay recursos subidos en este curso.</p>
+  </section>
+</main>
+</body>
+</html>
