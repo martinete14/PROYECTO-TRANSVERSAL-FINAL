@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import com.example.demo.model.Categoria;
 import com.example.demo.model.Curso;
 import com.example.demo.model.CursoContenido;
 import com.example.demo.model.CursoDTO;
+import com.example.demo.model.CursoFormDTO;
 import com.example.demo.model.Inscripcion;
 import com.example.demo.model.RolUsuario;
 import com.example.demo.model.Usuario;
@@ -477,14 +479,7 @@ public class WebController {
 
     @PostMapping("/crear")
     public String crearCurso(
-            @RequestParam String titulo,
-            @RequestParam String descripcion,
-            @RequestParam String instructor,
-            @RequestParam(required = false) String imagenUrl,
-            @RequestParam(required = false) String videoUrl,
-            @RequestParam(required = false) MultipartFile imagenFile,
-            @RequestParam(required = false) MultipartFile videoFile,
-            @RequestParam(required = false) Long categoriaId,
+            @ModelAttribute("formData") CursoFormDTO formData,
             HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model
@@ -492,33 +487,44 @@ public class WebController {
         try {
             Usuario usuarioSesion = obtenerUsuarioSesion(session);
             RolUsuario rol = obtenerRolSesion(session);
-            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor;
+            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : formData.getInstructor();
 
-            Map<String, String> fieldErrors = validarFormularioCurso(titulo, descripcion, instructorFinal, imagenUrl, videoUrl, categoriaId, imagenFile, videoFile);
+            formData.setInstructor(instructorFinal);
+
+            Map<String, String> fieldErrors = validarFormularioCurso(
+                formData.getTitulo(),
+                formData.getDescripcion(),
+                instructorFinal,
+                formData.getImagenUrl(),
+                formData.getVideoUrl(),
+                formData.getCategoriaId(),
+                formData.getImagenFile(),
+                formData.getVideoFile()
+            );
             if (!fieldErrors.isEmpty()) {
                 model.addAttribute("categorias", categoriaRepository.findAll());
                 model.addAttribute("errorMessage", "Revisa los campos marcados e intenta de nuevo.");
                 model.addAttribute("fieldErrors", fieldErrors);
-                model.addAttribute("formData", buildFormData(titulo, descripcion, instructorFinal, imagenUrl, videoUrl, categoriaId));
+                model.addAttribute("formData", formData);
                 return "crear-curso";
             }
 
             Curso curso = new Curso();
-            curso.setTitulo(titulo);
-            curso.setDescripcion(descripcion);
+            curso.setTitulo(formData.getTitulo());
+            curso.setDescripcion(formData.getDescripcion());
             curso.setInstructor(instructorFinal);
 
-            validateImageFile(imagenFile);
-            validateVideoFile(videoFile);
+            validateImageFile(formData.getImagenFile());
+            validateVideoFile(formData.getVideoFile());
 
-            String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, imageUploadDir, "/uploads/images/");
-            String videoFinal = resolveMediaUrl(videoUrl, videoFile, videoUploadDir, "/uploads/videos/");
+            String imagenFinal = resolveMediaUrl(formData.getImagenUrl(), formData.getImagenFile(), imageUploadDir, "/uploads/images/");
+            String videoFinal = resolveMediaUrl(formData.getVideoUrl(), formData.getVideoFile(), videoUploadDir, "/uploads/videos/");
 
             curso.setImagenUrl(imagenFinal);
             curso.setVideoUrl(videoFinal);
 
             Categoria categoria = new Categoria();
-            categoria.setId(categoriaId);
+            categoria.setId(formData.getCategoriaId());
             curso.setCategoria(categoria);
 
             cursoService.crearCurso(curso);
@@ -540,7 +546,8 @@ public class WebController {
             } else {
                 model.addAttribute("errorMessage", ex.getMessage());
             }
-            model.addAttribute("formData", buildFormData(titulo, descripcion, resolveInstructorPreview(session, instructor), imagenUrl, videoUrl, categoriaId));
+            formData.setInstructor(resolveInstructorPreview(session, formData.getInstructor()));
+            model.addAttribute("formData", formData);
             return "crear-curso";
         }
     }
@@ -589,14 +596,7 @@ public class WebController {
     @PostMapping("/actualizar/{id}")
     public String actualizarCurso(
             @PathVariable Long id,
-            @RequestParam String titulo,
-            @RequestParam String descripcion,
-            @RequestParam String instructor,
-            @RequestParam(required = false) String imagenUrl,
-            @RequestParam(required = false) String videoUrl,
-            @RequestParam(required = false) MultipartFile imagenFile,
-            @RequestParam(required = false) MultipartFile videoFile,
-            @RequestParam(required = false) Long categoriaId,
+            @ModelAttribute CursoFormDTO formData,
             HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model
@@ -605,16 +605,34 @@ public class WebController {
         try {
             Usuario usuarioSesion = obtenerUsuarioSesion(session);
             RolUsuario rol = obtenerRolSesion(session);
-            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructor;
+            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : formData.getInstructor();
 
-            Map<String, String> fieldErrors = validarFormularioCurso(titulo, descripcion, instructorFinal, imagenUrl, videoUrl, categoriaId, imagenFile, videoFile);
+            Map<String, String> fieldErrors = validarFormularioCurso(
+                formData.getTitulo(),
+                formData.getDescripcion(),
+                instructorFinal,
+                formData.getImagenUrl(),
+                formData.getVideoUrl(),
+                formData.getCategoriaId(),
+                formData.getImagenFile(),
+                formData.getVideoFile()
+            );
             if (!fieldErrors.isEmpty()) {
                 cursoExistente = cursoService.obtenerCursoPorId(id);
                 validarPermisoGestionCurso(session, cursoExistente);
                 model.addAttribute("errorMessage", "Revisa los campos marcados e intenta de nuevo.");
                 model.addAttribute("fieldErrors", fieldErrors);
                 model.addAttribute("categorias", categoriaRepository.findAll());
-                model.addAttribute("curso", buildDraftCurso(id, titulo, descripcion, instructorFinal, firstNonBlank(imagenUrl, cursoExistente.getImagenUrl()), firstNonBlank(videoUrl, cursoExistente.getVideoUrl()), categoriaId, cursoExistente.getCategoria()));
+                model.addAttribute("curso", buildDraftCurso(
+                    id,
+                    formData.getTitulo(),
+                    formData.getDescripcion(),
+                    instructorFinal,
+                    firstNonBlank(formData.getImagenUrl(), cursoExistente.getImagenUrl()),
+                    firstNonBlank(formData.getVideoUrl(), cursoExistente.getVideoUrl()),
+                    formData.getCategoriaId(),
+                    cursoExistente.getCategoria()
+                ));
                 return "editar-curso";
             }
 
@@ -625,21 +643,21 @@ public class WebController {
             String videoAnterior = cursoExistente.getVideoUrl();
 
             Curso curso = new Curso();
-            curso.setTitulo(titulo);
-            curso.setDescripcion(descripcion);
+            curso.setTitulo(formData.getTitulo());
+            curso.setDescripcion(formData.getDescripcion());
             curso.setInstructor(instructorFinal);
 
-            validateImageFile(imagenFile);
-            validateVideoFile(videoFile);
+            validateImageFile(formData.getImagenFile());
+            validateVideoFile(formData.getVideoFile());
 
-            String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, imageUploadDir, "/uploads/images/");
-            String videoFinal = resolveMediaUrl(videoUrl, videoFile, videoUploadDir, "/uploads/videos/");
+            String imagenFinal = resolveMediaUrl(formData.getImagenUrl(), formData.getImagenFile(), imageUploadDir, "/uploads/images/");
+            String videoFinal = resolveMediaUrl(formData.getVideoUrl(), formData.getVideoFile(), videoUploadDir, "/uploads/videos/");
 
             curso.setImagenUrl(firstNonBlank(imagenFinal, cursoExistente.getImagenUrl()));
             curso.setVideoUrl(firstNonBlank(videoFinal, cursoExistente.getVideoUrl()));
 
             Categoria categoria = new Categoria();
-            categoria.setId(categoriaId);
+            categoria.setId(formData.getCategoriaId());
             curso.setCategoria(categoria);
 
             cursoService.actualizarCurso(id, curso);
@@ -675,7 +693,16 @@ public class WebController {
                 model.addAttribute("errorMessage", ex.getMessage());
             }
             model.addAttribute("categorias", categoriaRepository.findAll());
-            model.addAttribute("curso", buildDraftCurso(id, titulo, descripcion, resolveInstructorPreview(session, instructor), firstNonBlank(imagenUrl, cursoExistente.getImagenUrl()), firstNonBlank(videoUrl, cursoExistente.getVideoUrl()), categoriaId, cursoExistente.getCategoria()));
+            model.addAttribute("curso", buildDraftCurso(
+                id,
+                formData.getTitulo(),
+                formData.getDescripcion(),
+                resolveInstructorPreview(session, formData.getInstructor()),
+                firstNonBlank(formData.getImagenUrl(), cursoExistente.getImagenUrl()),
+                firstNonBlank(formData.getVideoUrl(), cursoExistente.getVideoUrl()),
+                formData.getCategoriaId(),
+                cursoExistente.getCategoria()
+            ));
             return "editar-curso";
         }
     }
@@ -750,14 +777,14 @@ public class WebController {
         }
     }
 
-    private Map<String, Object> buildFormData(String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId) {
-        Map<String, Object> formData = new LinkedHashMap<>();
-        formData.put("titulo", titulo);
-        formData.put("descripcion", descripcion);
-        formData.put("instructor", instructor);
-        formData.put("imagenUrl", imagenUrl);
-        formData.put("videoUrl", videoUrl);
-        formData.put("categoriaId", categoriaId);
+    private CursoFormDTO buildFormData(String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId) {
+        CursoFormDTO formData = new CursoFormDTO();
+        formData.setTitulo(titulo);
+        formData.setDescripcion(descripcion);
+        formData.setInstructor(instructor);
+        formData.setImagenUrl(imagenUrl);
+        formData.setVideoUrl(videoUrl);
+        formData.setCategoriaId(categoriaId);
         return formData;
     }
 
