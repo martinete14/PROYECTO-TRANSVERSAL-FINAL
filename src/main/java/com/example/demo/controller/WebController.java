@@ -485,9 +485,7 @@ public class WebController {
             Model model
     ) {
         try {
-            Usuario usuarioSesion = obtenerUsuarioSesion(session);
-            RolUsuario rol = obtenerRolSesion(session);
-            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : formData.getInstructor();
+            String instructorFinal = resolveInstructorFinal(session, formData.getInstructor());
 
             formData.setInstructor(instructorFinal);
 
@@ -509,23 +507,7 @@ public class WebController {
                 return "crear-curso";
             }
 
-            Curso curso = new Curso();
-            curso.setTitulo(formData.getTitulo());
-            curso.setDescripcion(formData.getDescripcion());
-            curso.setInstructor(instructorFinal);
-
-            validateImageFile(formData.getImagenFile());
-            validateVideoFile(formData.getVideoFile());
-
-            String imagenFinal = resolveMediaUrl(formData.getImagenUrl(), formData.getImagenFile(), imageUploadDir, "/uploads/images/");
-            String videoFinal = resolveMediaUrl(formData.getVideoUrl(), formData.getVideoFile(), videoUploadDir, "/uploads/videos/");
-
-            curso.setImagenUrl(imagenFinal);
-            curso.setVideoUrl(videoFinal);
-
-            Categoria categoria = new Categoria();
-            categoria.setId(formData.getCategoriaId());
-            curso.setCategoria(categoria);
+            Curso curso = mapCreateCursoFromForm(formData, instructorFinal);
 
             cursoService.crearCurso(curso);
             auditLogService.logFromSession(
@@ -603,9 +585,7 @@ public class WebController {
     ) {
         Curso cursoExistente = null;
         try {
-            Usuario usuarioSesion = obtenerUsuarioSesion(session);
-            RolUsuario rol = obtenerRolSesion(session);
-            String instructorFinal = rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : formData.getInstructor();
+            String instructorFinal = resolveInstructorFinal(session, formData.getInstructor());
 
             Map<String, String> fieldErrors = validarFormularioCurso(
                 formData.getTitulo(),
@@ -642,23 +622,7 @@ public class WebController {
             String imagenAnterior = cursoExistente.getImagenUrl();
             String videoAnterior = cursoExistente.getVideoUrl();
 
-            Curso curso = new Curso();
-            curso.setTitulo(formData.getTitulo());
-            curso.setDescripcion(formData.getDescripcion());
-            curso.setInstructor(instructorFinal);
-
-            validateImageFile(formData.getImagenFile());
-            validateVideoFile(formData.getVideoFile());
-
-            String imagenFinal = resolveMediaUrl(formData.getImagenUrl(), formData.getImagenFile(), imageUploadDir, "/uploads/images/");
-            String videoFinal = resolveMediaUrl(formData.getVideoUrl(), formData.getVideoFile(), videoUploadDir, "/uploads/videos/");
-
-            curso.setImagenUrl(firstNonBlank(imagenFinal, cursoExistente.getImagenUrl()));
-            curso.setVideoUrl(firstNonBlank(videoFinal, cursoExistente.getVideoUrl()));
-
-            Categoria categoria = new Categoria();
-            categoria.setId(formData.getCategoriaId());
-            curso.setCategoria(categoria);
+            Curso curso = mapUpdateCursoFromForm(formData, instructorFinal, cursoExistente);
 
             cursoService.actualizarCurso(id, curso);
 
@@ -786,6 +750,67 @@ public class WebController {
         formData.setVideoUrl(videoUrl);
         formData.setCategoriaId(categoriaId);
         return formData;
+    }
+
+    private String resolveInstructorFinal(HttpSession session, String instructorRequest) {
+        Usuario usuarioSesion = obtenerUsuarioSesion(session);
+        RolUsuario rol = obtenerRolSesion(session);
+        return rol == RolUsuario.INSTRUCTOR ? usuarioSesion.getNombre() : instructorRequest;
+    }
+
+    private Curso mapCreateCursoFromForm(CursoFormDTO formData, String instructorFinal) {
+        validateImageFile(formData.getImagenFile());
+        validateVideoFile(formData.getVideoFile());
+
+        String imagenFinal = resolveMediaUrl(formData.getImagenUrl(), formData.getImagenFile(), imageUploadDir, "/uploads/images/");
+        String videoFinal = resolveMediaUrl(formData.getVideoUrl(), formData.getVideoFile(), videoUploadDir, "/uploads/videos/");
+
+        return buildCursoEntity(
+            formData.getTitulo(),
+            formData.getDescripcion(),
+            instructorFinal,
+            imagenFinal,
+            videoFinal,
+            formData.getCategoriaId()
+        );
+    }
+
+    private Curso mapUpdateCursoFromForm(CursoFormDTO formData, String instructorFinal, Curso cursoExistente) {
+        validateImageFile(formData.getImagenFile());
+        validateVideoFile(formData.getVideoFile());
+
+        String imagenFinal = resolveMediaUrl(formData.getImagenUrl(), formData.getImagenFile(), imageUploadDir, "/uploads/images/");
+        String videoFinal = resolveMediaUrl(formData.getVideoUrl(), formData.getVideoFile(), videoUploadDir, "/uploads/videos/");
+
+        return buildCursoEntity(
+            formData.getTitulo(),
+            formData.getDescripcion(),
+            instructorFinal,
+            firstNonBlank(imagenFinal, cursoExistente.getImagenUrl()),
+            firstNonBlank(videoFinal, cursoExistente.getVideoUrl()),
+            formData.getCategoriaId()
+        );
+    }
+
+    private Curso buildCursoEntity(
+        String titulo,
+        String descripcion,
+        String instructor,
+        String imagenUrl,
+        String videoUrl,
+        Long categoriaId
+    ) {
+        Curso curso = new Curso();
+        curso.setTitulo(titulo);
+        curso.setDescripcion(descripcion);
+        curso.setInstructor(instructor);
+        curso.setImagenUrl(imagenUrl);
+        curso.setVideoUrl(videoUrl);
+
+        Categoria categoria = new Categoria();
+        categoria.setId(categoriaId);
+        curso.setCategoria(categoria);
+        return curso;
     }
 
     private Curso buildDraftCurso(Long id, String titulo, String descripcion, String instructor, String imagenUrl, String videoUrl, Long categoriaId, Categoria categoriaFallback) {
