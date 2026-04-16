@@ -1,21 +1,33 @@
 classDiagram
-    class Curso {
-      +Long id
-      +String titulo
-      +String descripcion
-      +Categoria categoria
-    }
-
     class Categoria {
       +Long id
       +String nombre
       +String descripcion
     }
 
+    class Curso {
+      +Long id
+      +String titulo
+      +String descripcion
+      +String instructor
+      +String imagenUrl
+      +String videoUrl
+      +boolean destacadoSemana
+      +Categoria categoria
+    }
+
     class Usuario {
       +Long id
       +String nombre
       +String email
+      +String rol
+      +String password
+      +String studentId
+      +String teacherId
+      +String adminId
+      +String telefono
+      +LocalDate fechaNacimiento
+      +String fotoPerfilUrl
     }
 
     class Inscripcion {
@@ -24,8 +36,36 @@ classDiagram
       +Curso curso
     }
 
-    class CursoController
+    class CursoContenido {
+      +Long id
+      +Curso curso
+      +String titulo
+      +String tipo
+      +String recursoUrl
+      +Integer orden
+      +LocalDateTime creadoEn
+    }
+
+    class AuditLog {
+      +Long id
+      +LocalDateTime occurredAt
+      +Long actorUserId
+      +String actorName
+      +String actorRole
+      +String actionType
+      +String targetPath
+      +String details
+      +String ipAddress
+    }
+
+    class CursoDTO
+    class CursoFormDTO
+    class RolUsuario
+
     class WebController
+    class AuthController
+    class ProfileController
+    class CursoController
     class UsuarioController
     class InscripcionController
 
@@ -33,20 +73,39 @@ classDiagram
     class CursoServiceImpl
     class InscripcionService
     class InscripcionServiceImpl
+    class AuditLogService
 
     class CursoRepository
     class CategoriaRepository
     class UsuarioRepository
     class InscripcionRepository
+    class CursoContenidoRepository
+    class AuditLogRepository
+
+    class RoleAuthorizationInterceptor
+    class RoutePermissionPolicy
+    class DataSeeder
 
     Curso "*" --> "1" Categoria
     Inscripcion "*" --> "1" Usuario
     Inscripcion "*" --> "1" Curso
+    CursoContenido "*" --> "1" Curso
+
+    WebController --> CursoService
+    WebController --> InscripcionService
+    WebController --> AuditLogService
+    WebController --> CursoContenidoRepository
+    WebController --> CategoriaRepository
+    WebController --> UsuarioRepository
+
+    AuthController --> UsuarioRepository
+    AuthController --> AuditLogService
+    ProfileController --> UsuarioRepository
+    ProfileController --> AuditLogService
 
     CursoController --> CursoService
     UsuarioController --> CursoService
     InscripcionController --> InscripcionService
-    WebController --> CursoService
 
     CursoServiceImpl ..|> CursoService
     InscripcionServiceImpl ..|> InscripcionService
@@ -56,3 +115,10 @@ classDiagram
     InscripcionServiceImpl --> InscripcionRepository
     InscripcionServiceImpl --> UsuarioRepository
     InscripcionServiceImpl --> CursoRepository
+
+    AuditLogService --> AuditLogRepository
+    RoleAuthorizationInterceptor --> RoutePermissionPolicy
+    RoleAuthorizationInterceptor --> AuditLogService
+    DataSeeder --> CategoriaRepository
+    DataSeeder --> CursoRepository
+    DataSeeder --> UsuarioRepository

@@ -2,6 +2,7 @@ erDiagram
     CATEGORIA ||--o{ CURSO : clasifica
     USUARIO ||--o{ INSCRIPCION : realiza
     CURSO ||--o{ INSCRIPCION : recibe
+    CURSO ||--o{ CURSO_CONTENIDO : contiene
 
     CATEGORIA {
         BIGINT id PK
@@ -12,7 +13,11 @@ erDiagram
     CURSO {
         BIGINT id PK
         VARCHAR titulo
-        VARCHAR descripcion
+        TEXT descripcion
+        VARCHAR instructor
+        VARCHAR imagen_url
+        VARCHAR video_url
+        BOOLEAN destacado_semana
         BIGINT categoria_id FK
     }
 
@@ -20,10 +25,48 @@ erDiagram
         BIGINT id PK
         VARCHAR nombre
         VARCHAR email UNIQUE
+        VARCHAR rol
+        VARCHAR password
+        VARCHAR student_id UNIQUE
+        VARCHAR teacher_id UNIQUE
+        VARCHAR admin_id UNIQUE
+        VARCHAR documento
+        VARCHAR telefono
+        DATE fecha_nacimiento
+        VARCHAR ciudad_pais
+        VARCHAR institucion_academica
+        VARCHAR programa_academico
+        VARCHAR nivel_academico
+        VARCHAR foto_perfil_url
+        TEXT biografia
     }
 
     INSCRIPCION {
         BIGINT id PK
         BIGINT usuario_id FK
         BIGINT curso_id FK
+        UNIQUE usuario_id_curso_id
+    }
+
+    CURSO_CONTENIDO {
+        BIGINT id PK
+        BIGINT curso_id FK
+        VARCHAR titulo
+        VARCHAR tipo
+        TEXT descripcion
+        VARCHAR recurso_url
+        INT orden
+        DATETIME creado_en
+    }
+
+    AUDIT_LOG {
+        BIGINT id PK
+        DATETIME occurred_at
+        BIGINT actor_user_id
+        VARCHAR actor_name
+        VARCHAR actor_role
+        VARCHAR action_type
+        VARCHAR target_path
+        TEXT details
+        VARCHAR ip_address
     }
