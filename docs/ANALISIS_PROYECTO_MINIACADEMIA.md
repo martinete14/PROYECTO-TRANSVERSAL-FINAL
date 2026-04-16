@@ -7,6 +7,15 @@
 **Institución:** Ilerna  
 **Tipo de Documento:** Análisis Arquitectónico + Justificación Empresarial + Perspectiva de Marketing
 
+> Actualizacion de vigencia (2026-04-16)
+>
+> Este documento mantiene el analisis estrategico original. Para el estado tecnico actualizado del proyecto (funcionalidades activas, seguridad por roles, auditoria, perfil academico y scripts SQL actuales), tomar como referencia principal:
+>
+> - `README.md`
+> - `docs/memoria-tecnica.md`
+> - `docs/init.sql`
+> - `docs/data.sql`
+
 ---
 
 ## ÍNDICE

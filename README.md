@@ -1,115 +1,164 @@
 # Mini Academia - Proyecto Transversal DAW/DAM
 
-Aplicacion web monolitica para la gestion de cursos online. Permite administrar cursos y categorias, consultar cursos por usuario e inscribir usuarios en cursos.
+Mini Academia es una plataforma web monolitica para catalogo, compra e imparticion de cursos online, con paneles por rol (ADMIN, INSTRUCTOR, CLIENTE), gestion de perfil academico, contenido de aula y registro de auditoria.
 
-## Stack tecnologico
+## Stack tecnologico actual
 
 - Java 21
-- Spring Boot (MVC + Spring Data JPA + Validation)
-- Thymeleaf
-- Bootstrap 5
-- MySQL
-- Maven
+- Spring Boot 4.0.5
+- Spring MVC + Thymeleaf
+- Spring Data JPA
+- Spring Validation
+- Spring Security Crypto (hash BCrypt)
+- MySQL (runtime)
+- H2 (tests)
+- Maven Wrapper
 
-## Arquitectura
+## Arquitectura y organizacion
 
-Se aplica arquitectura MVC en capas:
+Arquitectura MVC por capas:
 
-- Controladores: exponen endpoints web y REST
-- Servicios: implementan logica de negocio
-- Repositorios: acceso a datos con Spring Data JPA
-- Modelos: entidades persistentes
+- `controller`: flujo web y acciones de usuario
+- `service`: reglas de negocio
+- `repository`: persistencia con JPA
+- `model`: entidades y DTOs
+- `config`: seed, permisos por ruta, seguridad de sesion y recursos estaticos
 
 Estructura principal:
 
-- src/main/java/com/example/demo/controller
-- src/main/java/com/example/demo/service
-- src/main/java/com/example/demo/repository
-- src/main/java/com/example/demo/model
-- src/main/resources/templates
+- `src/main/java/com/example/demo/controller`
+- `src/main/java/com/example/demo/service`
+- `src/main/java/com/example/demo/repository`
+- `src/main/java/com/example/demo/model`
+- `src/main/java/com/example/demo/config`
+- `src/main/resources/templates`
+- `src/main/resources/static`
 
 ## Funcionalidades implementadas
 
-- CRUD de cursos (crear, listar, editar, eliminar)
-- Gestion de categorias asociadas a cursos
-- Inscripcion de usuarios a cursos
-- Consulta de cursos por categoria
-- Consulta de cursos por usuario
-- Carga multimedia por curso (imagen y video por URL o por archivo)
-- Validacion de tipo y tamano de archivos multimedia
-- Validaciones con Bean Validation
-- Manejo basico de errores con GlobalExceptionHandler
+### Catalogo y compra
+
+- Catalogo de cursos con portada destacada semanal
+- Filtro por categoria en catalogo
+- Vista detalle de curso
+- Compra/inscripcion de curso para clientes
+- Vista de cursos adquiridos por el usuario autenticado
+
+### Gestion academica por rol
+
+- Panel ADMIN: listado, filtros, CRUD de cursos y marcado de destacados
+- Panel INSTRUCTOR: gestion de sus cursos
+- Aula por curso (`/web/cursos/aula/{cursoId}`)
+- Gestion de contenido de clase por curso (crear/eliminar recursos)
+
+### Perfil y autenticacion
+
+- Login/logout con sesion HTTP
+- Passwords almacenadas con BCrypt
+- Migracion automatica de password legacy en texto plano al hacer login
+- Perfil editable con datos academicos y foto de perfil
+- Identificador academico por rol (`MA-EST-*`, `MA-PROF-*`, `MA-ADM-*`)
+
+### Seguridad y auditoria
+
+- Interceptor de autorizacion por rutas protegidas
+- Politica de permisos centralizada por prefijo de URL
+- Pantalla de acceso denegado con contexto de ruta y rol requerido
+- Registro de auditoria para login, logout, accesos denegados y acciones de gestion
+- Panel de logs para ADMIN con filtros
+
+### Multimedia y robustez
+
+- Carga de imagen/video de curso por archivo o URL
+- Carga de recursos de clase por archivo o URL
+- Validacion de tipo y tamano de archivos
+- Limpieza de archivos gestionados al actualizar/eliminar contenido
+- Publicacion de archivos en `/uploads/**`
 
 ## Base de datos
 
-Motor: MySQL
+Motor principal: MySQL
 
-Tablas relacionadas:
+Tablas actuales:
 
-- categoria
-- curso
-- usuario
-- inscripcion
+- `categoria`
+- `curso`
+- `usuario`
+- `inscripcion`
+- `curso_contenido`
+- `audit_log`
 
-Script SQL incluido en:
+Scripts SQL:
 
-- database/miniacademy.sql
+- `docs/init.sql` -> creacion de esquema completo
+- `docs/data.sql` -> datos de ejemplo para demo
+- `database/miniacademy.sql` -> script historico de base
 
-## Vistas y SEO basico
+## Seed de datos demo
 
-Plantillas con Thymeleaf y Bootstrap:
+Al arrancar, `DataSeeder` asegura usuarios base y carga catalogo semilla si corresponde.
 
-- cursos.html
-- crear-curso.html
-- editar-curso.html
+Usuarios demo:
 
-Incluyen:
+- `admin@miniacademia.local` / `admin123`
+- `instructor@miniacademia.local` / `instructor123`
+- `alumno.demo@miniacademia.local` / `cliente123`
 
-- Etiquetas semanticas (header, main, section, article, footer)
-- title y meta description
-- Jerarquia de encabezados
-- Diseno responsive
+## Tests y calidad
 
-## Calidad tecnica y pruebas
+Suite actual (7 clases):
 
-- Tests unitarios de servicios para reglas de negocio:
-	- `CursoServiceImplTest`
-	- `InscripcionServiceImplTest`
-- Test de contexto de aplicacion (`DemoApplicationTests`)
-- Configuracion de subida de archivos por propiedades:
-	- `app.upload.base-dir`
-	- `app.upload.images-dir`
-	- `app.upload.videos-dir`
-- Publicacion de multimedia mediante ruta `/uploads/**`
+- `DemoApplicationTests`
+- `controller/AuthControllerTest`
+- `controller/WebControllerMvcCrudTest`
+- `service/CursoServiceImplTest`
+- `service/InscripcionServiceImplTest`
+- `config/RoutePermissionPolicyTest`
+- `config/RoleAuthorizationInterceptorTest`
 
-## Como ejecutar en local
+Ejecucion rapida en Windows:
 
-1. Crear base de datos e inicializar esquema:
+- `mvnw.cmd -q test`
 
-	- Ejecutar `database/miniacademy.sql` en MySQL
+## Configuracion principal
 
-2. Configurar credenciales en `src/main/resources/application.properties`
+Archivo: `src/main/resources/application.properties`
 
-3. Ejecutar la aplicacion:
+Puntos relevantes:
 
-	- En Windows: `mvnw.cmd spring-boot:run`
-	- En Linux/Mac: `./mvnw spring-boot:run`
+- MySQL en `localhost:3307`
+- `spring.jpa.hibernate.ddl-auto=update`
+- Puerto app: `8081`
+- Directorios de upload configurables:
+  - `app.upload.images-dir`
+  - `app.upload.videos-dir`
+  - `app.upload.profile-images-dir`
+  - `app.upload.course-content-dir`
 
-4. Abrir en navegador:
+## Ejecucion local
 
-	- http://localhost:8081/web/cursos
+1. Inicializar BD:
+	- Ejecutar `docs/init.sql`
+	- (Opcional demo) ejecutar `docs/data.sql`
 
-## Documentacion y diagramas
+2. Revisar credenciales en `src/main/resources/application.properties`
 
-- Memoria tecnica: docs/memoria-tecnica.md
-- Diagrama ER: docs/diagrama-er.mmd
-- Diagrama de clases: docs/diagrama-clases.mmd
+3. Ejecutar la app:
+	- Windows: `mvnw.cmd spring-boot:run`
+	- Linux/Mac: `./mvnw spring-boot:run`
 
-## Estado actual
+4. Acceder:
+	- `http://localhost:8081/web/auth/login`
+	- `http://localhost:8081/web/cursos`
 
-Proyecto preparado para la parte de Programacion, Base de Datos, Lenguaje de Marcas/SEO y Entornos de Desarrollo.
+## Documentacion
 
-Alcance acordado para esta entrega:
+- Memoria tecnica: `docs/memoria-tecnica.md`
+- Analisis estrategico: `docs/ANALISIS_PROYECTO_MINIACADEMIA.md`
+- Diagrama ER: `docs/diagrama-er.mmd`
+- Diagrama de clases: `docs/diagrama-clases.mmd`
 
-- Se incluye ejecucion local completa (Spring Boot + MySQL).
-- No se incluye Docker ni docker-compose porque ese contenido no fue impartido en clase en esta fase.
+## Alcance de la entrega
+
+- Incluye despliegue local completo con Spring Boot + MySQL.
+- No incluye Docker ni docker-compose en esta fase academica.
