@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.controller;
 
 import java.io.IOException;
@@ -191,12 +191,12 @@ public class WebController {
         }
 
         return valor.toLowerCase(Locale.ROOT)
-            .replace("á", "a")
-            .replace("é", "e")
-            .replace("í", "i")
-            .replace("ó", "o")
-            .replace("ú", "u")
-            .replace("ñ", "n")
+            .replace("Ã¡", "a")
+            .replace("Ã©", "e")
+            .replace("Ã­", "i")
+            .replace("Ã³", "o")
+            .replace("Ãº", "u")
+            .replace("Ã±", "n")
             .trim();
     }
 
@@ -205,8 +205,8 @@ public class WebController {
             return valor;
         }
 
-        if (valor.contains("Ã") || valor.contains("Â")) {
-            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Â", "");
+        if (valor.contains("Ãƒ") || valor.contains("Ã‚")) {
+            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Ã‚", "");
         }
 
         return valor;
@@ -562,7 +562,7 @@ public class WebController {
         return "redirect:/web/cursos";
     }
 
-    // 🔵 EDITAR
+    // ðŸ”µ EDITAR
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEditar(@PathVariable Long id, Model model, HttpSession session) {
 

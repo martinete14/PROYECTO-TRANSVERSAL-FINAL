@@ -1,11 +1,11 @@
-# MINI ACADEMIA - ANÁLISIS TÉCNICO Y ESTRATÉGICO DEL PROYECTO
-## Documento de Defensa Académica y Análisis Empresarial
+﻿# Lothar Courses - ANÃLISIS TÃ‰CNICO Y ESTRATÃ‰GICO DEL PROYECTO
+## Documento de Defensa AcadÃ©mica y AnÃ¡lisis Empresarial
 
-**Autor:** Martín Villagra Tejerina  
-**Curso:** 1º DAW (Desarrollo de Aplicaciones Web)  
-**Año:** 2026  
-**Institución:** Ilerna  
-**Tipo de Documento:** Análisis Arquitectónico + Justificación Empresarial + Perspectiva de Marketing
+**Autor:** MartÃ­n Villagra Tejerina  
+**Curso:** 1Âº DAW (Desarrollo de Aplicaciones Web)  
+**AÃ±o:** 2026  
+**InstituciÃ³n:** Ilerna  
+**Tipo de Documento:** AnÃ¡lisis ArquitectÃ³nico + JustificaciÃ³n Empresarial + Perspectiva de Marketing
 
 > Actualizacion de vigencia (2026-04-16)
 >
@@ -18,122 +18,122 @@
 
 ---
 
-## ÍNDICE
-1. [Introducción Ejecutiva](#introducción-ejecutiva)
-2. [Visión Empresarial y Contexto](#visión-empresarial-y-contexto)
-3. [Análisis Estructural del Proyecto](#análisis-estructural-del-proyecto)
-4. [Carpetas y Componentes - Análisis Profundo](#carpetas-y-componentes---análisis-profundo)
-5. [Decisiones Arquitectónicas Clave](#decisiones-arquitectónicas-clave)
+## ÃNDICE
+1. [IntroducciÃ³n Ejecutiva](#introducciÃ³n-ejecutiva)
+2. [VisiÃ³n Empresarial y Contexto](#visiÃ³n-empresarial-y-contexto)
+3. [AnÃ¡lisis Estructural del Proyecto](#anÃ¡lisis-estructural-del-proyecto)
+4. [Carpetas y Componentes - AnÃ¡lisis Profundo](#carpetas-y-componentes---anÃ¡lisis-profundo)
+5. [Decisiones ArquitectÃ³nicas Clave](#decisiones-arquitectÃ³nicas-clave)
 6. [Debilidades del Proyecto Actual](#debilidades-del-proyecto-actual)
 7. [Fortalezas y Decisiones Acertadas](#fortalezas-y-decisiones-acertadas)
 8. [Mejoras Futuras - Roadmap Empresarial](#mejoras-futuras---roadmap-empresarial)
 9. [Perspectiva de Marketing](#perspectiva-de-marketing)
-10. [Conclusión y Reflexión Final](#conclusión-y-reflexión-final)
+10. [ConclusiÃ³n y ReflexiÃ³n Final](#conclusiÃ³n-y-reflexiÃ³n-final)
 
 ---
 
-## INTRODUCCIÓN EJECUTIVA
+## INTRODUCCIÃ“N EJECUTIVA
 
-Mini Academia es una plataforma web de gestión y distribución de contenido educativo en línea. En términos técnicos, es una aplicación Spring Boot que permite:
+Lothar Courses es una plataforma web de gestiÃ³n y distribuciÃ³n de contenido educativo en lÃ­nea. En tÃ©rminos tÃ©cnicos, es una aplicaciÃ³n Spring Boot que permite:
 - Crear, editar y eliminar cursos
-- Organizar cursos en categorías temáticas
-- Visualizar contenido con multimedia (imágenes y videos)
+- Organizar cursos en categorÃ­as temÃ¡ticas
+- Visualizar contenido con multimedia (imÃ¡genes y videos)
 - Gestionar inscripciones de usuarios
 
-Desde una perspectiva empresarial, la plataforma intenta resolver el problema de **centralización y democratización del acceso a contenido educativo de calidad**, permitiendo que expertos y profesionales puedan compartir su conocimiento sin necesidad de infraestructura técnica propia.
+Desde una perspectiva empresarial, la plataforma intenta resolver el problema de **centralizaciÃ³n y democratizaciÃ³n del acceso a contenido educativo de calidad**, permitiendo que expertos y profesionales puedan compartir su conocimiento sin necesidad de infraestructura tÃ©cnica propia.
 
 ---
 
-## VISIÓN EMPRESARIAL Y CONTEXTO
+## VISIÃ“N EMPRESARIAL Y CONTEXTO
 
 ### Problema que Resuelve
-En el mercado actual (2026), existen tres segmentos dispuestos a pagar por educación online:
-1. **Usuarios individuales** que buscan formación específica en tiempo real
+En el mercado actual (2026), existen tres segmentos dispuestos a pagar por educaciÃ³n online:
+1. **Usuarios individuales** que buscan formaciÃ³n especÃ­fica en tiempo real
 2. **Empresas** que necesitan entrenar equipos internos
 3. **Instructores independientes** que quieren monetizar su experiencia sin crear su propia plataforma
 
-Mini Academia se posiciona como **solución de punto de entrada bajo** para este último grupo, permitiendo que un instructor con cero conocimiento técnico pueda publicar cursos.
+Lothar Courses se posiciona como **soluciÃ³n de punto de entrada bajo** para este Ãºltimo grupo, permitiendo que un instructor con cero conocimiento tÃ©cnico pueda publicar cursos.
 
-### Modelo de Negocio Implícito
+### Modelo de Negocio ImplÃ­cito
 - **B2C:** Usuarios pagan por acceso a cursos (curre en la app actual con inscripciones)
-- **B2B2C:** Instructores pagan comisión por participación en ingresos
-- **Freemium:** Cursos gratuitos para adquirir masa crítica
+- **B2B2C:** Instructores pagan comisiÃ³n por participaciÃ³n en ingresos
+- **Freemium:** Cursos gratuitos para adquirir masa crÃ­tica
 
-**Estado Actual:** El modelo está presente en código (tabla Inscripción) pero NO monetizado aún.
+**Estado Actual:** El modelo estÃ¡ presente en cÃ³digo (tabla InscripciÃ³n) pero NO monetizado aÃºn.
 
 ---
 
-## ANÁLISIS ESTRUCTURAL DEL PROYECTO
+## ANÃLISIS ESTRUCTURAL DEL PROYECTO
 
-### Árbol de Directorios y Responsabilidades
+### Ãrbol de Directorios y Responsabilidades
 
 ```
 src/main/
-├── java/com/example/demo/
-│   ├── DemoApplication.java           [CORE] Punto de entrada
-│   ├── config/                        [CONFIGURACIÓN] Lógica de arranque
-│   ├── controller/                    [PRESENTACIÓN] Interacción web
-│   ├── model/                         [DOMINIO] Estructuras de datos
-│   ├── repository/                    [ACCESO A DATOS] ORM/JPA
-│   ├── service/                       [LÓGICA EMPRESARIAL] Orquestación
-│   └── exception/                     [MANEJO DE ERRORES] Excepciones custom
-└── resources/
-    ├── application.properties         [CONFIGU EXTERNA] Variables de entorno
-    ├── static/                        [CONTENIDO ESTÁTICO] CSS, JS
-    └── templates/                     [VISTAS] HTML con Thymeleaf
+â”œâ”€â”€ java/com/example/demo/
+â”‚   â”œâ”€â”€ DemoApplication.java           [CORE] Punto de entrada
+â”‚   â”œâ”€â”€ config/                        [CONFIGURACIÃ“N] LÃ³gica de arranque
+â”‚   â”œâ”€â”€ controller/                    [PRESENTACIÃ“N] InteracciÃ³n web
+â”‚   â”œâ”€â”€ model/                         [DOMINIO] Estructuras de datos
+â”‚   â”œâ”€â”€ repository/                    [ACCESO A DATOS] ORM/JPA
+â”‚   â”œâ”€â”€ service/                       [LÃ“GICA EMPRESARIAL] OrquestaciÃ³n
+â”‚   â””â”€â”€ exception/                     [MANEJO DE ERRORES] Excepciones custom
+â””â”€â”€ resources/
+    â”œâ”€â”€ application.properties         [CONFIGU EXTERNA] Variables de entorno
+    â”œâ”€â”€ static/                        [CONTENIDO ESTÃTICO] CSS, JS
+    â””â”€â”€ templates/                     [VISTAS] HTML con Thymeleaf
 
-docs/                                 [DOCUMENTACIÓN] Diagramas y análisis
+docs/                                 [DOCUMENTACIÃ“N] Diagramas y anÃ¡lisis
 target/                               [COMPILADOS] Generados por Maven (ignorar)
 uploads/                              [ALMACENAMIENTO LOCAL] Archivos del usuario
 ```
 
-### Patrón Arquitectónico: Modelo de Capas
+### PatrÃ³n ArquitectÃ³nico: Modelo de Capas
 
-La app sigue el patrón clásico de **3 capas (con extensión)**:
+La app sigue el patrÃ³n clÃ¡sico de **3 capas (con extensiÃ³n)**:
 
 ```
-┌─────────────────────────────────────────────┐
-│        CAPA DE PRESENTACIÓN (VIEW)          │
-│   Templates HTML + CSS (Thymeleaf + BS5)   │
-│        Controllers Web MVC                  │
-└──────────────────┬──────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────┐
-│        CAPA DE LÓGICA EMPRESARIAL           │
-│   Services → Reglas de negocio             │
-│   Validaciones → Coherencia de datos       │
-└──────────────────┬──────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────┐
-│        CAPA DE ACCESO A DATOS (DAO)         │
-│   Repositories (JPA) → BD                  │
-│   Entidades del Dominio (Models)           │
-└──────────────────┬──────────────────────────┘
-                   │
-┌──────────────────▼──────────────────────────┐
-│          CAPA DE PERSISTENCIA               │
-│        Base de Datos (MySQL)               │
-└─────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        CAPA DE PRESENTACIÃ“N (VIEW)          â”‚
+â”‚   Templates HTML + CSS (Thymeleaf + BS5)   â”‚
+â”‚        Controllers Web MVC                  â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                   â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        CAPA DE LÃ“GICA EMPRESARIAL           â”‚
+â”‚   Services â†’ Reglas de negocio             â”‚
+â”‚   Validaciones â†’ Coherencia de datos       â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                   â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚        CAPA DE ACCESO A DATOS (DAO)         â”‚
+â”‚   Repositories (JPA) â†’ BD                  â”‚
+â”‚   Entidades del Dominio (Models)           â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                   â”‚
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚          CAPA DE PERSISTENCIA               â”‚
+â”‚        Base de Datos (MySQL)               â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-**Ventaja:** Separación de responsabilidades clara.  
-**Desventaja:** Más verboso para un proyecto pequeño.
+**Ventaja:** SeparaciÃ³n de responsabilidades clara.  
+**Desventaja:** MÃ¡s verboso para un proyecto pequeÃ±o.
 
 ---
 
-## CARPETAS Y COMPONENTES - ANÁLISIS PROFUNDO
+## CARPETAS Y COMPONENTES - ANÃLISIS PROFUNDO
 
 ### 1. CONFIG/
 
 #### 1.1 DataSeeder.java
 
-**¿Qué hace?**
-Implementa `CommandLineRunner`, una interfaz de Spring que ejecuta código **al arrancar la aplicación**, una sola vez.
-Carga automáticamente:
-- 10 categorías temáticas (Ciencia, Humor, Educación, Aviación, etc.)
+**Â¿QuÃ© hace?**
+Implementa `CommandLineRunner`, una interfaz de Spring que ejecuta cÃ³digo **al arrancar la aplicaciÃ³n**, una sola vez.
+Carga automÃ¡ticamente:
+- 10 categorÃ­as temÃ¡ticas (Ciencia, Humor, EducaciÃ³n, AviaciÃ³n, etc.)
 - 10 cursos semilla con datos de 10 personajes conocidos (Maldacena, Rosa Montero, etc.)
 
-**Código Clave:**
+**CÃ³digo Clave:**
 ```java
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -144,17 +144,17 @@ public class DataSeeder implements CommandLineRunner {
 }
 ```
 
-**¿Es Necesario?**
+**Â¿Es Necesario?**
 
-| Perspectiva | Respuesta | Justificación |
+| Perspectiva | Respuesta | JustificaciÃ³n |
 |---|---|---|
-| **Técnica** | No obligatorio | La app funciona sin datos; se crean por formulario |
-| **Académica** | Sí recomendado | Mejora demostración y experiencia de usuario |
-| **Empresarial** | Depende | En producción: NO. En desarrollo/demo: SÍ |
+| **TÃ©cnica** | No obligatorio | La app funciona sin datos; se crean por formulario |
+| **AcadÃ©mica** | SÃ­ recomendado | Mejora demostraciÃ³n y experiencia de usuario |
+| **Empresarial** | Depende | En producciÃ³n: NO. En desarrollo/demo: SÃ |
 
-**Importancia: ⭐⭐⭐⭐ (ALTA para presentación)**
+**Importancia: â­â­â­â­ (ALTA para presentaciÃ³n)**
 
-**Función Secundaria - Limpieza Inteligente:**
+**FunciÃ³n Secundaria - Limpieza Inteligente:**
 Detecta y elimina cursos "legacy" (versiones antiguas sin acentos) para evitar duplicados.
 ```java
 Set<String> titulosLegacy = new HashSet<>(Arrays.asList(...));
@@ -164,30 +164,30 @@ cursoRepository.deleteAll(cursosLegacy);
 **Alternativas:**
 1. **Base SQL poblada de inicio** (scripts .sql en carpeta database/)
 2. **Fixtures en sistema de tests** (menos visible para usuario)
-3. **Panel manual de "Cargar Demo Data"** (requiere más UI)
+3. **Panel manual de "Cargar Demo Data"** (requiere mÃ¡s UI)
 
-**Por qué se eligió DataSeeder:**
-- Automático: sin intervención manual
-- Visible en código: transparencia académica
-- Fácil de desactivar (if statement por propiedad)
-- Patrón Spring estándar
+**Por quÃ© se eligiÃ³ DataSeeder:**
+- AutomÃ¡tico: sin intervenciÃ³n manual
+- Visible en cÃ³digo: transparencia acadÃ©mica
+- FÃ¡cil de desactivar (if statement por propiedad)
+- PatrÃ³n Spring estÃ¡ndar
 
-**Crítica y Mejora Futura:**
-- **Debilidad:** No es configurable sin modificar código
+**CrÃ­tica y Mejora Futura:**
+- **Debilidad:** No es configurable sin modificar cÃ³digo
 - **Mejora:** Leer datos de archivo JSON/YAML en resources
-- **Empresarial:** En producción, desactivar completamente y alimentar via API
+- **Empresarial:** En producciÃ³n, desactivar completamente y alimentar via API
 
 ---
 
 #### 1.2 StaticResourceConfig.java
 
-**¿Qué hace?**
-Configura Spring para que archivos en `uploads/` (imágenes, videos subidos) sean accesibles por URL web.
+**Â¿QuÃ© hace?**
+Configura Spring para que archivos en `uploads/` (imÃ¡genes, videos subidos) sean accesibles por URL web.
 
 **Problema que Resuelve:**
 Sin esta clase, cuando subes un video a `uploads/videos/mi-video.mp4`, el navegador da 404.
 
-**Código:**
+**CÃ³digo:**
 ```java
 @Configuration
 public class StaticResourceConfig implements WebMvcConfigurer {
@@ -199,39 +199,39 @@ public class StaticResourceConfig implements WebMvcConfigurer {
 }
 ```
 
-**Traducción Conceptual:**
-"Spring, cuando alguien pida /uploads/algo.mp4, ve a la carpeta `uploads/algo.mp4` en disco y sírvelo."
+**TraducciÃ³n Conceptual:**
+"Spring, cuando alguien pida /uploads/algo.mp4, ve a la carpeta `uploads/algo.mp4` en disco y sÃ­rvelo."
 
-**¿Es Necesario?**
+**Â¿Es Necesario?**
 
-| Caso | Necesario | Razón |
+| Caso | Necesario | RazÃ³n |
 |---|---|---|
-| Archivos dentro de `src/main/resources/static/` | NO | Spring los sirve automáticamente |
-| Archivos subidos a `uploads/` (carpeta fuera de código) | **SÍ** | Necesita configuración explícita |
-| Imagen de video en la BD | SÍ | Solo guarda ruta, no el archivo |
+| Archivos dentro de `src/main/resources/static/` | NO | Spring los sirve automÃ¡ticamente |
+| Archivos subidos a `uploads/` (carpeta fuera de cÃ³digo) | **SÃ** | Necesita configuraciÃ³n explÃ­cita |
+| Imagen de video en la BD | SÃ | Solo guarda ruta, no el archivo |
 
-**Importancia: ⭐⭐⭐⭐⭐ (CRÍTICA si tienes uploads)**
+**Importancia: â­â­â­â­â­ (CRÃTICA si tienes uploads)**
 
 **Alternativas:**
-1. **Guardar archivos en `src/main/resources/static/`** → Recompilación necesaria, no escalable
-2. **Servir desde CDN externo** → Sin uploads locales, más costo
-3. **Almacenamiento en nube (AWS S3, Azure Blob)** → Escalable, más complejo (empresa)
+1. **Guardar archivos en `src/main/resources/static/`** â†’ RecompilaciÃ³n necesaria, no escalable
+2. **Servir desde CDN externo** â†’ Sin uploads locales, mÃ¡s costo
+3. **Almacenamiento en nube (AWS S3, Azure Blob)** â†’ Escalable, mÃ¡s complejo (empresa)
 
-**Por qué se eligió esta approach:**
+**Por quÃ© se eligiÃ³ esta approach:**
 - Simplicidad: desarrollo local sin dependencias externas
-- Educativo: aprendes cómo Spring maneja archivos
-- Flexible: cambias ruta en `application.properties` sin tocar código
+- Educativo: aprendes cÃ³mo Spring maneja archivos
+- Flexible: cambias ruta en `application.properties` sin tocar cÃ³digo
 
-**Crítica:**
+**CrÃ­tica:**
 - **Debilidad:** No valida MIME type ni seguridad de archivos
-- **Riesgo:** Sin sanitización, podrías servir archivos peligrosos
+- **Riesgo:** Sin sanitizaciÃ³n, podrÃ­as servir archivos peligrosos
 - **Mejora:** Validar tipo de archivo en upload
 
-**Empresarial - Producción:**
+**Empresarial - ProducciÃ³n:**
 ```properties
 # Cambiar a:
 app.upload.storage-type=s3
-aws.s3.bucket=miniacademia-videos
+aws.s3.bucket=LotharCourses-videos
 ```
 
 ---
@@ -242,13 +242,13 @@ aws.s3.bucket=miniacademia-videos
 
 **Responsabilidad:** Gestionar rutas HTTP, recibir datos del usuario y devolver vistas.
 
-**Métodos Principales:**
-- `GET /web/cursos` → Lista todos los cursos
-- `GET /web/cursos/nuevo` → Formulario crear
-- `POST /web/cursos/crear` → Procesa creación
-- `POST /web/cursos/eliminar/{id}` → Borra curso
-- `GET /web/cursos/editar/{id}` → Formulario editar
-- `POST /web/cursos/actualizar/{id}` → Procesa edición
+**MÃ©todos Principales:**
+- `GET /web/cursos` â†’ Lista todos los cursos
+- `GET /web/cursos/nuevo` â†’ Formulario crear
+- `POST /web/cursos/crear` â†’ Procesa creaciÃ³n
+- `POST /web/cursos/eliminar/{id}` â†’ Borra curso
+- `GET /web/cursos/editar/{id}` â†’ Formulario editar
+- `POST /web/cursos/actualizar/{id}` â†’ Procesa ediciÃ³n
 
 **Aspectos Interesantes:**
 
@@ -257,7 +257,7 @@ aws.s3.bucket=miniacademia-videos
 validateImageFile(imagenFile);
 validateVideoFile(videoFile);
 ```
-Valida tamaño (5 MB imagen, 120 MB video) y tipo MIME.
+Valida tamaÃ±o (5 MB imagen, 120 MB video) y tipo MIME.
 
 2. **UUID para Nombres de Archivo:**
 ```java
@@ -271,42 +271,42 @@ String imagenFinal = resolveMediaUrl(imagenUrl, imagenFile, imageUploadDir, "/up
 ```
 Acepta URL externa O archivo local: flexible.
 
-**Crítica:**
-- **Falta:** Sin autenticación, cualquiera puede crear cursos
-- **Falta:** Sin autorización, puedes editar cursos ajenos
+**CrÃ­tica:**
+- **Falta:** Sin autenticaciÃ³n, cualquiera puede crear cursos
+- **Falta:** Sin autorizaciÃ³n, puedes editar cursos ajenos
 - **Mejora:** Agregar `@PreAuthorize` + roles de usuario
 
 #### CursoController.java
 
-**Responsabilidad:** API REST para operaciones CRUD en cursos (usado por JS, móviles, etc.).
+**Responsabilidad:** API REST para operaciones CRUD en cursos (usado por JS, mÃ³viles, etc.).
 
 **Endpoints:**
-- `GET /api/cursos` → JSON de todos
-- `GET /api/cursos/{id}` → JSON curso específico
-- `GET /api/cursos/categoria/{id}` → JSON por categoría
-- `POST /api/cursos` → Crear
-- `PUT /api/cursos/{id}` → Actualizar
-- `DELETE /api/cursos/{id}` → Eliminar
+- `GET /api/cursos` â†’ JSON de todos
+- `GET /api/cursos/{id}` â†’ JSON curso especÃ­fico
+- `GET /api/cursos/categoria/{id}` â†’ JSON por categorÃ­a
+- `POST /api/cursos` â†’ Crear
+- `PUT /api/cursos/{id}` â†’ Actualizar
+- `DELETE /api/cursos/{id}` â†’ Eliminar
 
-**Importante:** Esta clase es **agnóstica de la presentación** → los datos XML/JSON se generan automáticamente por Spring.
+**Importante:** Esta clase es **agnÃ³stica de la presentaciÃ³n** â†’ los datos XML/JSON se generan automÃ¡ticamente por Spring.
 
 ---
 
 ### 3. SERVICE/
 
-**Patrón:** Una clase `*Service` por entidad principal.
+**PatrÃ³n:** Una clase `*Service` por entidad principal.
 
 #### CursoServiceImpl.java
 
-**¿Por qué no está directamente en el Controller?**
+**Â¿Por quÃ© no estÃ¡ directamente en el Controller?**
 
-**MÁS MALO (sin service):**
+**MÃS MALO (sin service):**
 ```java
 @PostMapping("/crear")
 public String crear(@RequestBody Curso curso) {
     if (curso.getCategoria() == null) 
-        throw new RuntimeException("Categoría obligatoria");
-    // ... 50 líneas más de lógica de negocio...
+        throw new RuntimeException("CategorÃ­a obligatoria");
+    // ... 50 lÃ­neas mÃ¡s de lÃ³gica de negocio...
     cursoRepository.save(curso);
     return "redirect:/web/cursos";
 }
@@ -322,54 +322,54 @@ public String crear(@RequestBody Curso curso) {
 
 // En CursoServiceImpl:
 public Curso crearCurso(Curso curso) {
-    validateCurso(curso);           // Validación
-    Categoria cat = mapearCategoria(curso);  // Transformación
+    validateCurso(curso);           // ValidaciÃ³n
+    Categoria cat = mapearCategoria(curso);  // TransformaciÃ³n
     return cursoRepository.save(curso);      // Persistencia
 }
 ```
 
 **Ventajas:**
-1. **Testeable:** Puedes testear lógica sin HTTP
+1. **Testeable:** Puedes testear lÃ³gica sin HTTP
 2. **Reutilizable:** Usas el mismo servicio desde Controller y API REST
-3. **Mantenible:** Cambios lógica en un lugar
+3. **Mantenible:** Cambios lÃ³gica en un lugar
 
 ---
 
 ### 4. MODEL/
 
-**Definición:** Entidades del dominio (Curso, Usuario, Inscripción, Categoría).
+**DefiniciÃ³n:** Entidades del dominio (Curso, Usuario, InscripciÃ³n, CategorÃ­a).
 
 Cada una es una tabla en BD con validaciones JPA:
 ```java
-@NotBlank(message = "El título es obligatorio")
+@NotBlank(message = "El tÃ­tulo es obligatorio")
 private String titulo;
 ```
 
-**Nota de Diseño:**
+**Nota de DiseÃ±o:**
 Hay un DTO `CursoDTO` separado de la entidad `Curso`.
 
-**¿Por qué?**
-- **Entidad:** Lo que está en BD (con relaciones complejas)
-- **DTO:** Lo que envías al cliente (solo campos necesarios)
+**Â¿Por quÃ©?**
+- **Entidad:** Lo que estÃ¡ en BD (con relaciones complejas)
+- **DTO:** Lo que envÃ­as al cliente (solo campos necesarios)
 
 ```java
 // Entidad (BD):
 Curso {
     Long id
     String titulo
-    Categoria categoria  ← Relación, carga la categoría entera
+    Categoria categoria  â† RelaciÃ³n, carga la categorÃ­a entera
 }
 
 // DTO (API):
 CursoDTO {
     Long id
     String titulo
-    Long categoriaId     ← Solo ID, más ligero
+    Long categoriaId     â† Solo ID, mÃ¡s ligero
     String categoriaNombre
 }
 ```
 
-**Importancia:** ⭐⭐⭐⭐ (buena práctica, no obligatorio)
+**Importancia:** â­â­â­â­ (buena prÃ¡ctica, no obligatorio)
 
 ---
 
@@ -383,14 +383,14 @@ public interface CursoRepository extends JpaRepository<Curso, Long> {
 }
 ```
 
-**¿Magia?** Spring genera automáticamente:
+**Â¿Magia?** Spring genera automÃ¡ticamente:
 - `findAll()`
 - `findById()`
 - `save()`
 - `delete()`
 - Consultas personalizadas como `findByCategoriaId()`
 
-**Alternativa:** Escribir SQL puro en clases DAO (más control, menos automatización).
+**Alternativa:** Escribir SQL puro en clases DAO (mÃ¡s control, menos automatizaciÃ³n).
 
 ---
 
@@ -408,7 +408,7 @@ public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
 }
 ```
 
-**Importancia:** ⭐⭐⭐ (mejora UX, no crítico)
+**Importancia:** â­â­â­ (mejora UX, no crÃ­tico)
 
 ---
 
@@ -416,7 +416,7 @@ public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
 
 #### application.properties
 
-**Qué es:** Variables de entorno de la app.
+**QuÃ© es:** Variables de entorno de la app.
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3307/miniacademy
@@ -424,66 +424,66 @@ app.upload.base-dir=uploads
 spring.servlet.multipart.max-file-size=120MB
 ```
 
-**Por qué separado del código:**
+**Por quÃ© separado del cÃ³digo:**
 - Cambias BD sin recompilar
-- Valores distintos por entorno (dev vs. producción)
+- Valores distintos por entorno (dev vs. producciÃ³n)
 - Seguridad: no hardcodear credenciales
 
 #### static/ y templates/
 
-- **static/:** Archivos que nunca cambian (CSS, JS, imágenes de bootstrap)
-- **templates/:** HTML dinámico (Thymeleaf procesa `${variables}`)
+- **static/:** Archivos que nunca cambian (CSS, JS, imÃ¡genes de bootstrap)
+- **templates/:** HTML dinÃ¡mico (Thymeleaf procesa `${variables}`)
 
 ---
 
-## DECISIONES ARQUITECTÓNICAS CLAVE
+## DECISIONES ARQUITECTÃ“NICAS CLAVE
 
 ### 1. Uso de Spring Boot (Framework Completo)
 
 **Pro:**
-- Todo incluido (web, BD, validación, etc.)
+- Todo incluido (web, BD, validaciÃ³n, etc.)
 - Comunidad enorme
 - Curva de aprendizaje bien documentada
 
 **Contra:**
-- "Overkill" para un proyecto pequeño
+- "Overkill" para un proyecto pequeÃ±o
 - Consume recursos (memoria)
-- Asume estructura específica
+- Asume estructura especÃ­fica
 
-**Alternativa:** Flask (Python), Express (Node.js) → más livianos, menos convención.
+**Alternativa:** Flask (Python), Express (Node.js) â†’ mÃ¡s livianos, menos convenciÃ³n.
 
-**Decisión:** **ACERTADA** para proyecto académico (industria estándar).
+**DecisiÃ³n:** **ACERTADA** para proyecto acadÃ©mico (industria estÃ¡ndar).
 
 ---
 
 ### 2. Uso de JPA/Hibernate (ORM)
 
-**Qué es:** Mapeo automático BD ↔ Objetos Java.
+**QuÃ© es:** Mapeo automÃ¡tico BD â†” Objetos Java.
 
 **Pro:**
 - Cambias BD sin reescribir consultas (portabilidad)
 - Menos SQL memorizado
-- Validaciones automáticas
+- Validaciones automÃ¡ticas
 
 **Contra:**
 - Queries N+1 (carga relaciones innecesariamente)
 - Menos control fino sobre BD
-- Debug más difícil
+- Debug mÃ¡s difÃ­cil
 
-**Alternativa:** JDBC puro → más control, más código.
+**Alternativa:** JDBC puro â†’ mÃ¡s control, mÃ¡s cÃ³digo.
 
-**Decisión:** **PARCIALMENTE ACERTADA** → JPA es estándar, pero el DataSeeder con normalizadores es over-engineered.
+**DecisiÃ³n:** **PARCIALMENTE ACERTADA** â†’ JPA es estÃ¡ndar, pero el DataSeeder con normalizadores es over-engineered.
 
 ---
 
-### 3. Patrón MVC con Thymeleaf
+### 3. PatrÃ³n MVC con Thymeleaf
 
-**Qué es:** Renderizar HTML en servidor, enviar HTML completo al cliente.
+**QuÃ© es:** Renderizar HTML en servidor, enviar HTML completo al cliente.
 
 **Pro:**
 - SEO nativo (HTML en respuesta HTTP)
 - Menos JS necesario
-- Más rápido para conexiones lentas
+- MÃ¡s rÃ¡pido para conexiones lentas
 
 **Contra:**
 - No es SPA (Single Page Application)
@@ -492,56 +492,56 @@ spring.servlet.multipart.max-file-size=120MB
 
 **Alternativa:** React/Vue.js + API REST pura.
 
-**Decisión:** **ACERTADA para 1º DAW** → enseña fundamentos web, no abstrae complejidad en JS.
+**DecisiÃ³n:** **ACERTADA para 1Âº DAW** â†’ enseÃ±a fundamentos web, no abstrae complejidad en JS.
 
 ---
 
 ## DEBILIDADES DEL PROYECTO ACTUAL
 
-### Crítica Sincera y Constructiva
+### CrÃ­tica Sincera y Constructiva
 
-#### 1. **Seguridad: Falta de Autenticación**
+#### 1. **Seguridad: Falta de AutenticaciÃ³n**
 - Cualquiera accede a `/web/cursos/crear` y puede crear cursos.
 - Cualquiera puede eliminar cursos de otros.
-- **Impacto:** Alto (proyecto demo, baja para producción).
-- **Solución:** Agregar Spring Security con roles de usuario.
+- **Impacto:** Alto (proyecto demo, baja para producciÃ³n).
+- **SoluciÃ³n:** Agregar Spring Security con roles de usuario.
 
-#### 2. **Modelo de Inscripción Incompleto**
+#### 2. **Modelo de InscripciÃ³n Incompleto**
 - Tabla `Inscripcion` existe pero no se usa en vistas ni API.
 - No hay forma de inscribirse desde UI.
 - **Impacto:** Medio (funcionalidad fantasma).
-- **Solución:** Implementar formulario de inscripción y dashboard de usuario.
+- **SoluciÃ³n:** Implementar formulario de inscripciÃ³n y dashboard de usuario.
 
-#### 3. **Normalización de Categorías Over-Engineered**
+#### 3. **NormalizaciÃ³n de CategorÃ­as Over-Engineered**
 ```java
 private String normalizarTexto(String valor) {
-    // 15 líneas para evitar duplicados "Educacion" vs "Educación"
+    // 15 lÃ­neas para evitar duplicados "Educacion" vs "EducaciÃ³n"
 }
 ```
 - Soluciona problema real (acentos) pero es complejo.
-- Alternativa más simple: constraint UNIQUE en BD con collation case-insensitive.
+- Alternativa mÃ¡s simple: constraint UNIQUE en BD con collation case-insensitive.
 - **Impacto:** Bajo (funciona bien, pero code smell).
 
-#### 4. **Sin Paginación**
+#### 4. **Sin PaginaciÃ³n**
 - Si hay 1.000 cursos, carga todos en memoria.
-- **Impacto:** Bajo hoy, crítico en escala.
-- **Solución:** `Pageable` de Spring Data.
+- **Impacto:** Bajo hoy, crÃ­tico en escala.
+- **SoluciÃ³n:** `Pageable` de Spring Data.
 
-#### 5. **Validación de Video/Imagen Solo en Controller**
+#### 5. **ValidaciÃ³n de Video/Imagen Solo en Controller**
 - Si modificas BD directamente, no valida.
-- **Solución:** Validadores en modelo (anotaciones JPA).
+- **SoluciÃ³n:** Validadores en modelo (anotaciones JPA).
 
 #### 6. **Test Coverage Bajo**
-- Solo test básico que app arranca.
-- **Impacto:** Riesgo en refactorización.
+- Solo test bÃ¡sico que app arranca.
+- **Impacto:** Riesgo en refactorizaciÃ³n.
 
-#### 7. **Sin Caché**
-- Cada solicitud lee categorías de BD.
-- **Solución:** `@Cacheable` de Spring.
+#### 7. **Sin CachÃ©**
+- Cada solicitud lee categorÃ­as de BD.
+- **SoluciÃ³n:** `@Cacheable` de Spring.
 
-#### 8. **Manejo de Errores Genérico**
-- Excepciones técnicas muestran al usuario.
-- **Mejora:** Mensajes amigables específicos.
+#### 8. **Manejo de Errores GenÃ©rico**
+- Excepciones tÃ©cnicas muestran al usuario.
+- **Mejora:** Mensajes amigables especÃ­ficos.
 
 ---
 
@@ -549,44 +549,44 @@ private String normalizarTexto(String valor) {
 
 ### Aspectos Positivos
 
-#### 1. **Separación de Capas Clara**
+#### 1. **SeparaciÃ³n de Capas Clara**
 - Controller, Service, Repository, Model muy bien diferenciados.
-- Fácil de mantener y entender.
-- ⭐ **Patrón profesional.**
+- FÃ¡cil de mantener y entender.
+- â­ **PatrÃ³n profesional.**
 
 #### 2. **Almacenamiento de Archivos Inteligente**
 - UUID para evitar colisiones.
 - Soporte para URL externa O archivo local.
-- Validación de tamaño y MIME type.
-- ⭐ **Práctico y escalable.**
+- ValidaciÃ³n de tamaÃ±o y MIME type.
+- â­ **PrÃ¡ctico y escalable.**
 
-#### 3. **Data Seeding Automático**
+#### 3. **Data Seeding AutomÃ¡tico**
 - Demo lista para usar sin datos manuales.
-- Mejora experiencia académica.
-- ⭐ **Buena decisión para presentación.**
+- Mejora experiencia acadÃ©mica.
+- â­ **Buena decisiÃ³n para presentaciÃ³n.**
 
 #### 4. **DTO vs Entidad**
-- Separa modelo interno de modelo de presentación.
-- Evita exposición innecesaria de datos.
-- ⭐ **Buena práctica.**
+- Separa modelo interno de modelo de presentaciÃ³n.
+- Evita exposiciÃ³n innecesaria de datos.
+- â­ **Buena prÃ¡ctica.**
 
-#### 5. **Configuración Externa**
-- `application.properties` permite cambios sin recompilación.
-- Fácil adaptar por entorno.
-- ⭐ **Escalable.**
+#### 5. **ConfiguraciÃ³n Externa**
+- `application.properties` permite cambios sin recompilaciÃ³n.
+- FÃ¡cil adaptar por entorno.
+- â­ **Escalable.**
 
 #### 6. **Multimedia: Preload None**
 ```html
-<video preload="none">  ← No carga video hasta hover
+<video preload="none">  â† No carga video hasta hover
 ```
 - Optimiza carga inicial.
 - Buena UX.
-- ⭐ **Performance consciente.**
+- â­ **Performance consciente.**
 
 #### 7. **Acentos Correctos**
-- Todas las descripciones con tildes (Juan Martín, Educación, etc.).
+- Todas las descripciones con tildes (Juan MartÃ­n, EducaciÃ³n, etc.).
 - Genera confianza en calidad.
-- ⭐ **Detalle que importa.**
+- â­ **Detalle que importa.**
 
 ---
 
@@ -603,15 +603,15 @@ OBJETIVO: Hacer app segura y multiusuario
    - Admin: control total
    Esfuerzo: 1-2 semanas
 
-2. Autenticación OAuth2
+2. AutenticaciÃ³n OAuth2
    - Login con Google/GitHub
-   - No guardar contraseñas en BD
+   - No guardar contraseÃ±as en BD
    Esfuerzo: 1 semana
 
-3. Auditoría
-   - Logs de quién hizo qué y cuándo
+3. AuditorÃ­a
+   - Logs de quiÃ©n hizo quÃ© y cuÃ¡ndo
    - Cumplimiento legal
-   Esfuerzo: 3 días
+   Esfuerzo: 3 dÃ­as
 ```
 
 ### Fase 2: Experiencia de Usuario (Trimestre 2)
@@ -619,15 +619,15 @@ OBJETIVO: Hacer app segura y multiusuario
 ```
 1. Dashboard de Alumno
    - Ver mis cursos inscritos
-   - Progreso: qué videos he visto
+   - Progreso: quÃ© videos he visto
    - Certificados
 
 2. Dashboard de Instructor
-   - Analytics: cuántos alumnos, cuántos vieron cada video
+   - Analytics: cuÃ¡ntos alumnos, cuÃ¡ntos vieron cada video
    - Ingresos por curso
 
 3. Search + Filtros Avanzados
-   - Buscar por título, categoría, nivel
+   - Buscar por tÃ­tulo, categorÃ­a, nivel
    - Ratings de cursos
 ```
 
@@ -635,41 +635,41 @@ OBJETIVO: Hacer app segura y multiusuario
 
 ```
 1. Backend Async
-   - Conversión de videos a background job
+   - ConversiÃ³n de videos a background job
    - Env emails sin bloquear request
 
 2. BD Distribuida
-   - Replicación para redundancia
+   - ReplicaciÃ³n para redundancia
    - Read replicas para analytics
 
 3. CDN para Multimedia
    - Videos en Cloudflare/Akamai
-   - Imágenes optimizadas automáticamente
-   Impacto: 10x más rápido globally
+   - ImÃ¡genes optimizadas automÃ¡ticamente
+   Impacto: 10x mÃ¡s rÃ¡pido globally
 
 4. Microservicios (largo plazo)
-   - Videos → servicio dedicado
-   - Pagos → Stripe API service
-   - Emails → SendGrid service
+   - Videos â†’ servicio dedicado
+   - Pagos â†’ Stripe API service
+   - Emails â†’ SendGrid service
 ```
 
-### Fase 4: Monetización (Continuo)
+### Fase 4: MonetizaciÃ³n (Continuo)
 
 ```
-1. Integración Stripe/PayPal
-   - Pago al crear inscripción
-   - Comisión automática a instructor
+1. IntegraciÃ³n Stripe/PayPal
+   - Pago al crear inscripciÃ³n
+   - ComisiÃ³n automÃ¡tica a instructor
 
-2. Suscripción Mensual
+2. SuscripciÃ³n Mensual
    - Acceso ilimitado a cursos
    - Costo recurrente bajo
 
 3. Certificados Verificables
    - Blockchain (verificabilidad futura)
-   - Validación por universidades
+   - ValidaciÃ³n por universidades
 
-4. API Pública
-   - Otros sitios integran cursos de Mini Academia
+4. API PÃºblica
+   - Otros sitios integran cursos de Lothar Courses
    - Modelo SaaS B2B2C
 ```
 
@@ -680,41 +680,41 @@ OBJETIVO: Hacer app segura y multiusuario
 ### Propuesta de Valor
 
 **Para Usuario Final:**
-> "Aprende de los mejores sin salir de casa. Desde Juan Martín Maldacena explicando el universo hasta Rosa Montero desglosando literatura. 10 cursos, 0 esperas."
+> "Aprende de los mejores sin salir de casa. Desde Juan MartÃ­n Maldacena explicando el universo hasta Rosa Montero desglosando literatura. 10 cursos, 0 esperas."
 
 **Para Instructor:**
-> "Publica tus cursos en 5 minutos. Sin código, sin hosting, sin gestión. Gana dinero mientras duermes."
+> "Publica tus cursos en 5 minutos. Sin cÃ³digo, sin hosting, sin gestiÃ³n. Gana dinero mientras duermes."
 
 **Para Empresa:**
-> "Plataforma de capacitación interna. Cero fricción: subes video, genera enlace, equipo accede. Tracking de progreso incluido."
+> "Plataforma de capacitaciÃ³n interna. Cero fricciÃ³n: subes video, genera enlace, equipo accede. Tracking de progreso incluido."
 
 ### Diferencial vs. Competencia
 
-| Aspecto | Mini Academia | Udemy | MiCurso Propio | Teachable |
+| Aspecto | Lothar Courses | Udemy | MiCurso Propio | Teachable |
 |---|---|---|---|---|
-| **Setup Time** | 5 min | 30 min | 2-3 días | 1 día |
-| **Precio** | Gratuito hoy | Comisión 50% | Licencia $300/mes | Desde $29/mes |
-| **Contenido Especializado** | Sí (personajes famosos) | Masivo genérico | Limitado | Neutral |
+| **Setup Time** | 5 min | 30 min | 2-3 dÃ­as | 1 dÃ­a |
+| **Precio** | Gratuito hoy | ComisiÃ³n 50% | Licencia $300/mes | Desde $29/mes |
+| **Contenido Especializado** | SÃ­ (personajes famosos) | Masivo genÃ©rico | Limitado | Neutral |
 | **Curva Aprendizaje** | Nula | Media | Alta | Media |
 
 **Ventaja:** Posicionamiento como **plataforma de especialistas colaborativa.**
 
 ### Estrategia Go-to-Market
 
-**MVP (Producto Mínimo Viable) - Ya existe:**
-- Cursos, categorías, inscripciones
+**MVP (Producto MÃ­nimo Viable) - Ya existe:**
+- Cursos, categorÃ­as, inscripciones
 - Multimedia embebida
 - Interfaz limpia
 
 **Fase 1 - Adquirir Usuarios Iniciales:**
 1. Convencer a 10 expertos conocidos para publicar cursos (ej: personajes del dataset)
-2. Social proof: "Juan Martín Maldacena enseña física en Mini Academia"
+2. Social proof: "Juan MartÃ­n Maldacena enseÃ±a fÃ­sica en Lothar Courses"
 3. Press release en medios educativos
 4. Estrategia viral: cada instructor invita 5 personas
 
 **Fase 2 - Monetizar:**
-1. Comisión 30% por suscripciones (70% para instructor)
-2. Plan Pro para instructores ($9/mes) → analytics avanzados
+1. ComisiÃ³n 30% por suscripciones (70% para instructor)
+2. Plan Pro para instructores ($9/mes) â†’ analytics avanzados
 3. B2B: acceso empresarial por equipos
 
 **KPIs a Seguir:**
@@ -723,38 +723,38 @@ OBJETIVO: Hacer app segura y multiusuario
 - Revenue per course
 - Instructor lifetime value
 
-### Mensajería
+### MensajerÃ­a
 
 **Hero Message:**
-"La academia está en tu bolsillo. Del espacio a la cocina, aprende con pasión."
+"La academia estÃ¡ en tu bolsillo. Del espacio a la cocina, aprende con pasiÃ³n."
 
 **Para Press:**
-"Mini Academia democratiza educación premium: Maldacena, Montero, Villagra comparten expertise en plataforma de acceso libre."
+"Lothar Courses democratiza educaciÃ³n premium: Maldacena, Montero, Villagra comparten expertise en plataforma de acceso libre."
 
 ---
 
-## CONCLUSIÓN Y REFLEXIÓN FINAL
+## CONCLUSIÃ“N Y REFLEXIÃ“N FINAL
 
-### Evaluación Global
+### EvaluaciÃ³n Global
 
-Mini Academia es un **prototipo funcional y bien arquitecturado** para un proyecto de 1º DAW. Demuestra conocimieto de:
+Lothar Courses es un **prototipo funcional y bien arquitecturado** para un proyecto de 1Âº DAW. Demuestra conocimieto de:
 
-✅ **Técnico:**
+âœ… **TÃ©cnico:**
 - Arquitectura en capas
 - ORM (Hibernate/JPA)
 - Framework moderno (Spring Boot)
 - CSS/HTML responsivo
-- Gestión de archivos
+- GestiÃ³n de archivos
 - Validaciones
 
-✅ **Académico:**
-- Separación de responsabilidades
-- Patrones de diseño reales
+âœ… **AcadÃ©mico:**
+- SeparaciÃ³n de responsabilidades
+- Patrones de diseÃ±o reales
 - Convenciones de la industria
 
-⚠️ **Mejorables:**
-- Falta seguridad (auth, autorización)
-- Modelo incompleto (Inscripción sin usar)
+âš ï¸ **Mejorables:**
+- Falta seguridad (auth, autorizaciÃ³n)
+- Modelo incompleto (InscripciÃ³n sin usar)
 - Test coverage bajo
 - Over-engineering en algunos puntos
 
@@ -762,36 +762,36 @@ Mini Academia es un **prototipo funcional y bien arquitecturado** para un proyec
 
 **Framing Recomendado:**
 
-> "Mini Academia es una plataforma educativa que demuestra la arquitectura moderna de aplicaciones web. Implementé una separación clara de responsabilidades usando Spring Boot, JPA y Thymeleaf. El proyecto es escalable por diseño: soporta agregación de usuarios, gesión de multimedia, y está pensado para monetización futura. Las decisiones de arquitectura prioritizan mantenibilidad sobre simplicidad, porque un sistema educativo requiere robustez. Soy consciente de las limitaciones actuales de seguridad y experiencia, que son roadmap claro para la siguiente fase."
+> "Lothar Courses es una plataforma educativa que demuestra la arquitectura moderna de aplicaciones web. ImplementÃ© una separaciÃ³n clara de responsabilidades usando Spring Boot, JPA y Thymeleaf. El proyecto es escalable por diseÃ±o: soporta agregaciÃ³n de usuarios, gesiÃ³n de multimedia, y estÃ¡ pensado para monetizaciÃ³n futura. Las decisiones de arquitectura prioritizan mantenibilidad sobre simplicidad, porque un sistema educativo requiere robustez. Soy consciente de las limitaciones actuales de seguridad y experiencia, que son roadmap claro para la siguiente fase."
 
 **Preguntas Posibles y Respuestas:**
 
-**P: ¿Por qué tanto código si podrías hacerlo más simple?**  
-R: "Porque la complejidad está contenida por arquitectura. Agregar usuarios, pagos, o reportes es ahora cuestión de agregar una capa, no reescribir todo."
+**P: Â¿Por quÃ© tanto cÃ³digo si podrÃ­as hacerlo mÃ¡s simple?**  
+R: "Porque la complejidad estÃ¡ contenida por arquitectura. Agregar usuarios, pagos, o reportes es ahora cuestiÃ³n de agregar una capa, no reescribir todo."
 
-**P: ¿DataSeeder no es over-engineering?**  
-R: "Es un trade-off. Complica 50 líneas de código para mejorar 100% la experiencia de demostración. Es decisión deliberada."
+**P: Â¿DataSeeder no es over-engineering?**  
+R: "Es un trade-off. Complica 50 lÃ­neas de cÃ³digo para mejorar 100% la experiencia de demostraciÃ³n. Es decisiÃ³n deliberada."
 
-**P: ¿Por qué Spring Boot y no algo más ligero?**  
-R: "Porque Spring es industria estándar. Mi objetivo es aprender lo que usa el mercado laboral, no inventar."
+**P: Â¿Por quÃ© Spring Boot y no algo mÃ¡s ligero?**  
+R: "Porque Spring es industria estÃ¡ndar. Mi objetivo es aprender lo que usa el mercado laboral, no inventar."
 
-**P: ¿Seguridad real?**  
-R: "Es la debilidad conocida. Un MVP educativo necesita seguridad antes de producción. Está en roadmap de Fase 1."
+**P: Â¿Seguridad real?**  
+R: "Es la debilidad conocida. Un MVP educativo necesita seguridad antes de producciÃ³n. EstÃ¡ en roadmap de Fase 1."
 
 ---
 
-## APÉNDICES
+## APÃ‰NDICES
 
-### A. Stack Tecnológico Detallado
+### A. Stack TecnolÃ³gico Detallado
 
-| Capa | Tecnología | Versión | Justificación |
+| Capa | TecnologÃ­a | VersiÃ³n | JustificaciÃ³n |
 |---|---|---|---|
-| **Backend** | Spring Boot | 4.0.5 | Framework estándar |
-| **ORM** | Hibernate/JPA | Integrado | Abstracción BD |
+| **Backend** | Spring Boot | 4.0.5 | Framework estÃ¡ndar |
+| **ORM** | Hibernate/JPA | Integrado | AbstracciÃ³n BD |
 | **BD** | MySQL | 8.0+ | Relacional, industria |
-| **Frontend** | Thymeleaf | Spring estándar | Server-side rendering |
-| **CSS** | Bootstrap 5 | 5.3.3 | Responsive rápido |
-| **Build** | Maven | 3.8+ | Gestión dependencias |
+| **Frontend** | Thymeleaf | Spring estÃ¡ndar | Server-side rendering |
+| **CSS** | Bootstrap 5 | 5.3.3 | Responsive rÃ¡pido |
+| **Build** | Maven | 3.8+ | GestiÃ³n dependencias |
 | **Java** | OpenJDK | 21 | LTS vigente |
 
 ### B. Comandos Clave para Desarrollador
@@ -813,86 +813,86 @@ mysql -u root -p miniacademy
 ### C. Estructura de BD (Diagrama)
 
 ```
-┌─────────────────┐         ┌──────────────────┐
-│   CATEGORIA     │         │      CURSO       │
-├─────────────────┤         ├──────────────────┤
-│ id (PK)         │◄────────│ categoria_id (FK)│
-│ nombre          │1      N │ id (PK)          │
-│ descripcion     │         │ titulo           │
-│                 │         │ descripcion      │
-└─────────────────┘         │ instructor       │
-                            │ imagenUrl        │
-                            │ videoUrl         │
-                            └──────────────────┘
-                                    ▲
-                                    │ 1
-                                    │
-                                    │ N
-                            ┌──────────────────┐
-                            │   INSCRIPCION    │
-                            ├──────────────────┤
-                            │ id (PK)          │
-                            │ usuario_id (FK)  │
-                            │ curso_id (FK)    │
-                            │ fecha_inscr      │
-                            │ estado           │
-                            └──────────────────┘
-                                    ▲
-                                    │ 1
-                                    │
-                                    │ N
-                            ┌──────────────────┐
-                            │      USUARIO     │
-                            ├──────────────────┤
-                            │ id (PK)          │
-                            │ email            │
-                            │ nombre           │
-                            │ password_hash    │
-                            └──────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚   CATEGORIA     â”‚         â”‚      CURSO       â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤         â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ id (PK)         â”‚â—„â”€â”€â”€â”€â”€â”€â”€â”€â”‚ categoria_id (FK)â”‚
+â”‚ nombre          â”‚1      N â”‚ id (PK)          â”‚
+â”‚ descripcion     â”‚         â”‚ titulo           â”‚
+â”‚                 â”‚         â”‚ descripcion      â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜         â”‚ instructor       â”‚
+                            â”‚ imagenUrl        â”‚
+                            â”‚ videoUrl         â”‚
+                            â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                    â–²
+                                    â”‚ 1
+                                    â”‚
+                                    â”‚ N
+                            â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                            â”‚   INSCRIPCION    â”‚
+                            â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+                            â”‚ id (PK)          â”‚
+                            â”‚ usuario_id (FK)  â”‚
+                            â”‚ curso_id (FK)    â”‚
+                            â”‚ fecha_inscr      â”‚
+                            â”‚ estado           â”‚
+                            â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                                    â–²
+                                    â”‚ 1
+                                    â”‚
+                                    â”‚ N
+                            â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                            â”‚      USUARIO     â”‚
+                            â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+                            â”‚ id (PK)          â”‚
+                            â”‚ email            â”‚
+                            â”‚ nombre           â”‚
+                            â”‚ password_hash    â”‚
+                            â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
-### D. Cálculo de Complejidad Algorítmica
+### D. CÃ¡lculo de Complejidad AlgorÃ­tmica
 
-| Operación | Complejidad | Notas |
+| OperaciÃ³n | Complejidad | Notas |
 |---|---|---|
-| Listar todos cursos | O(n) | Sin índices, carga lineal |
+| Listar todos cursos | O(n) | Sin Ã­ndices, carga lineal |
 | Buscar por ID | O(1) | BD indexada por PK |
 | Crear curso | O(1) | Insert simple |
-| Listar por categoría | O(n) | Índice en categoria_id mejora a O(log n) |
-| Buscar por full-text | O(n) | Sin búsqueda Elasticsearch |
+| Listar por categorÃ­a | O(n) | Ãndice en categoria_id mejora a O(log n) |
+| Buscar por full-text | O(n) | Sin bÃºsqueda Elasticsearch |
 
-**Mejora futura:** Agregar índice full-text para búsqueda rápida.
+**Mejora futura:** Agregar Ã­ndice full-text para bÃºsqueda rÃ¡pida.
 
-### E. Glosario Técnico
+### E. Glosario TÃ©cnico
 
-- **JPA:** Java Persistence API → Estándar para mapear objetos a BD
-- **DTO:** Data Transfer Object → Versión simplificada de entidad para cliente
-- **ORM:** Object-Relational Mapping → Traducción automática SQL ↔ Objetos
-- **CommandLineRunner:** Interfaz que ejecuta código al arrancar Spring
+- **JPA:** Java Persistence API â†’ EstÃ¡ndar para mapear objetos a BD
+- **DTO:** Data Transfer Object â†’ VersiÃ³n simplificada de entidad para cliente
+- **ORM:** Object-Relational Mapping â†’ TraducciÃ³n automÃ¡tica SQL â†” Objetos
+- **CommandLineRunner:** Interfaz que ejecuta cÃ³digo al arrancar Spring
 - **Repository:** Interfaz para operaciones CRUD en BD
-- **Service:** Lógica de negocio, orquestación
+- **Service:** LÃ³gica de negocio, orquestaciÃ³n
 - **Controller:** Maneja HTTP, delega a Service
-- **Thymeleaf:** Template engine para generar HTML dinámico
-- **UUID:** Identificador único universal (evita colisiones)
+- **Thymeleaf:** Template engine para generar HTML dinÃ¡mico
+- **UUID:** Identificador Ãºnico universal (evita colisiones)
 
 ---
 
-## REFLEXIÓN FINAL PARA TU DEFENSA
+## REFLEXIÃ“N FINAL PARA TU DEFENSA
 
 Cuando presentes, no esperes que el tribunal entienda todo. **Tu objetivo es demostrar:**
 
-1. **Que conoces qué hiciste y por qué**
+1. **Que conoces quÃ© hiciste y por quÃ©**
 2. **Que eres consciente de limitaciones y mejoras**
 3. **Que pensaste en escalabilidad, no solo en hacer funcionar**
 
-Un proyecto "simple pero bien hecho" vale más que uno "complejo y frágil".
+Un proyecto "simple pero bien hecho" vale mÃ¡s que uno "complejo y frÃ¡gil".
 
-Mini Academia está en la primera categoría.
+Lothar Courses estÃ¡ en la primera categorÃ­a.
 
-**Buena suerte en tu defensa. 🚀**
+**Buena suerte en tu defensa. ðŸš€**
 
 ---
 
-**Documento Preparado por:** Sistema de Análisis de Proyectos académicos  
+**Documento Preparado por:** Sistema de AnÃ¡lisis de Proyectos acadÃ©micos  
 **Fecha:** 8 de abril de 2026  
-**Para:** Defensa de Proyecto Final - 1º DAW
+**Para:** Defensa de Proyecto Final - 1Âº DAW

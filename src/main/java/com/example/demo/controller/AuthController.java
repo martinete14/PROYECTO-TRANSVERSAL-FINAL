@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+﻿package com.example.demo.controller;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -39,7 +39,7 @@ public class AuthController {
             return "redirect:/web/cursos";
         }
 
-        model.addAttribute("defaultEmail", "alumno.demo@miniacademia.local");
+        model.addAttribute("defaultEmail", "alumno.demo@lotharcourses.local");
         return "login";
     }
 
@@ -52,7 +52,7 @@ public class AuthController {
     ) {
         if (!StringUtils.hasText(email) || !StringUtils.hasText(password)) {
             auditLogService.logAnonymous("AUTH_LOGIN_FAILED", "Intento de login con campos vacios.", "/web/auth/login", request.getRemoteAddr());
-            redirectAttributes.addFlashAttribute("errorMessage", "Email y contraseña son obligatorios.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Email y contraseÃ±a son obligatorios.");
             return "redirect:/web/auth/login";
         }
 
@@ -64,7 +64,7 @@ public class AuthController {
 
         if (usuario == null || !isPasswordValid(rawPassword, usuario.getPassword())) {
             auditLogService.logAnonymous("AUTH_LOGIN_FAILED", "Credenciales invalidas para email: " + normalizedEmail, "/web/auth/login", request.getRemoteAddr());
-            redirectAttributes.addFlashAttribute("errorMessage", "Credenciales inválidas.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Credenciales invÃ¡lidas.");
             return "redirect:/web/auth/login";
         }
 

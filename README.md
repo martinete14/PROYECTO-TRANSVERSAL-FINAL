@@ -1,6 +1,6 @@
-# Mini Academia - Proyecto Transversal DAW/DAM
+﻿# Lothar Courses - Proyecto Transversal DAW/DAM
 
-Mini Academia es una plataforma web monolitica para catalogo, compra e imparticion de cursos online, con paneles por rol (ADMIN, INSTRUCTOR, CLIENTE), gestion de perfil academico, contenido de aula y registro de auditoria.
+Lothar Courses es una plataforma web monolitica para catalogo, compra e imparticion de cursos online, con paneles por rol (ADMIN, INSTRUCTOR, CLIENTE), gestion de perfil academico, contenido de aula y registro de auditoria.
 
 ## Stack tecnologico actual
 
@@ -100,9 +100,9 @@ Al arrancar, `DataSeeder` asegura usuarios base y carga catalogo semilla si corr
 
 Usuarios demo:
 
-- `admin@miniacademia.local` / `admin123`
-- `instructor@miniacademia.local` / `instructor123`
-- `alumno.demo@miniacademia.local` / `cliente123`
+- `admin@LotharCourses.local` / `admin123`
+- `instructor@LotharCourses.local` / `instructor123`
+- `alumno.demo@LotharCourses.local` / `cliente123`
 
 ## Tests y calidad
 
@@ -154,7 +154,7 @@ Puntos relevantes:
 ## Documentacion
 
 - Memoria tecnica: `docs/memoria-tecnica.md`
-- Analisis estrategico: `docs/ANALISIS_PROYECTO_MINIACADEMIA.md`
+- Analisis estrategico: `docs/ANALISIS_PROYECTO_LotharCourses.md`
 - Diagrama ER: `docs/diagrama-er.mmd`
 - Diagrama de clases: `docs/diagrama-clases.mmd`
 

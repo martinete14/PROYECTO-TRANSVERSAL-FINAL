@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+﻿package com.example.demo.controller;
 
 import java.util.Optional;
 
@@ -56,7 +56,7 @@ class WebControllerMvcCrudTest {
 
     @Test
     void crudCompletoDesdeWeb_adminPuedeCrearEditarYEliminarCurso() throws Exception {
-        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+        MockHttpSession adminSession = crearSesionPorEmail("admin@lotharcourses.local", "ADMIN");
         Long categoriaId = obtenerCategoriaIdValida();
         String seed = String.valueOf(System.currentTimeMillis());
         String tituloInicial = "Curso MVC " + seed;
@@ -104,7 +104,7 @@ class WebControllerMvcCrudTest {
 
     @Test
     void nuevoCurso_adminPuedeAbrirFormularioSinError500() throws Exception {
-        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+        MockHttpSession adminSession = crearSesionPorEmail("admin@lotharcourses.local", "ADMIN");
 
         mockMvc.perform(get("/web/cursos/nuevo").session(adminSession))
             .andExpect(status().isOk())
@@ -115,7 +115,7 @@ class WebControllerMvcCrudTest {
 
     @Test
     void crearCursoConDatosInvalidosMuestraErroresPorCampo() throws Exception {
-        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+        MockHttpSession adminSession = crearSesionPorEmail("admin@lotharcourses.local", "ADMIN");
 
         mockMvc.perform(multipart("/web/cursos/crear")
                 .session(adminSession)
@@ -153,7 +153,7 @@ class WebControllerMvcCrudTest {
 
         cursoRepository.save(curso);
 
-        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+        MockHttpSession adminSession = crearSesionPorEmail("admin@lotharcourses.local", "ADMIN");
         mockMvc.perform(get("/web/cursos/admin")
                 .session(adminSession)
                 .param("instructor", "Alejo")
@@ -162,7 +162,7 @@ class WebControllerMvcCrudTest {
             .andExpect(view().name("admin-cursos"))
             .andExpect(content().string(containsString(tituloUnico)));
 
-        MockHttpSession instructorSession = crearSesionPorEmail("instructor@miniacademia.local", "INSTRUCTOR");
+        MockHttpSession instructorSession = crearSesionPorEmail("instructor@lotharcourses.local", "INSTRUCTOR");
         mockMvc.perform(get("/web/cursos/instructor")
                 .session(instructorSession)
                 .param("titulo", tituloUnico))
@@ -173,7 +173,7 @@ class WebControllerMvcCrudTest {
 
     @Test
     void adminPuedeAbrirApartadoLogs() throws Exception {
-        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+        MockHttpSession adminSession = crearSesionPorEmail("admin@lotharcourses.local", "ADMIN");
 
         mockMvc.perform(get("/web/cursos/admin/logs").session(adminSession))
             .andExpect(status().isOk())
@@ -183,7 +183,7 @@ class WebControllerMvcCrudTest {
 
     @Test
     void usuarioAutenticadoPuedeAbrirPerfil() throws Exception {
-        MockHttpSession adminSession = crearSesionPorEmail("admin@miniacademia.local", "ADMIN");
+        MockHttpSession adminSession = crearSesionPorEmail("admin@lotharcourses.local", "ADMIN");
 
         mockMvc.perform(get("/web/perfil").session(adminSession))
             .andExpect(status().isOk())
@@ -194,7 +194,7 @@ class WebControllerMvcCrudTest {
 
     @Test
     void usuarioPuedeActualizarSuPerfil() throws Exception {
-        MockHttpSession alumnoSession = crearSesionPorEmail("alumno.demo@miniacademia.local", "CLIENTE");
+        MockHttpSession alumnoSession = crearSesionPorEmail("alumno.demo@lotharcourses.local", "CLIENTE");
 
         mockMvc.perform(post("/web/perfil/guardar")
                 .session(alumnoSession)
@@ -203,7 +203,7 @@ class WebControllerMvcCrudTest {
                 .param("telefono", "+34600111222")
                 .param("fechaNacimiento", "2000-01-15")
                 .param("ciudadPais", "Madrid, Espana")
-                .param("institucionAcademica", "Mini Academia")
+                .param("institucionAcademica", "Lothar Courses")
                 .param("programaAcademico", "DAW")
                 .param("nivelAcademico", "Intermedio")
                 .param("fotoPerfilUrl", "https://example.com/perfil.jpg")
@@ -211,7 +211,7 @@ class WebControllerMvcCrudTest {
             .andExpect(status().is3xxRedirection())
             .andExpect(redirectedUrl("/web/perfil"));
 
-        Usuario actualizado = usuarioRepository.findByEmailIgnoreCase("alumno.demo@miniacademia.local")
+        Usuario actualizado = usuarioRepository.findByEmailIgnoreCase("alumno.demo@lotharcourses.local")
             .orElseThrow(() -> new AssertionError("Usuario de prueba no encontrado"));
 
         if (!"Alumno Perfil QA".equals(actualizado.getNombre())) {

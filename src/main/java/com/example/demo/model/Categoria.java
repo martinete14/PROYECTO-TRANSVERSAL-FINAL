@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.model;
 
 import jakarta.persistence.Entity;

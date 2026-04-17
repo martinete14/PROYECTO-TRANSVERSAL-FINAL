@@ -1,11 +1,11 @@
-# Memoria tecnica - Mini Academia
+﻿# Memoria tecnica - Lothar Courses
 
 ## 1. Descripcion del proyecto
 
-Mini Academia es una aplicacion web monolitica para catalogo, compra e imparticion de cursos online.
+Lothar Courses es una aplicacion web monolitica para catalogo, compra e imparticion de cursos online.
 El sistema contempla flujos para tres roles (`ADMIN`, `INSTRUCTOR`, `CLIENTE`), con autenticacion por sesion, gestion de perfil academico, aula por curso y trazabilidad de acciones mediante auditoria.
 
-Tematica asignada: plataforma de cursos online (mini academia).
+Tematica asignada: plataforma de cursos online (Lothar Courses).
 
 ## 2. Objetivos del desarrollo
 
@@ -121,9 +121,9 @@ Entregables de BD:
 
 Usuarios demo:
 
-- `admin@miniacademia.local` / `admin123`
-- `instructor@miniacademia.local` / `instructor123`
-- `alumno.demo@miniacademia.local` / `cliente123`
+- `admin@LotharCourses.local` / `admin123`
+- `instructor@LotharCourses.local` / `instructor123`
+- `alumno.demo@LotharCourses.local` / `cliente123`
 
 Comportamientos relevantes del seed:
 
@@ -191,7 +191,7 @@ Aspectos UX implementados:
 
 - `docs/diagrama-clases.mmd`
 - `docs/diagrama-er.mmd`
-- `docs/ANALISIS_PROYECTO_MINIACADEMIA.md`
+- `docs/ANALISIS_PROYECTO_LotharCourses.md`
 
 ## 13. Conclusiones
 

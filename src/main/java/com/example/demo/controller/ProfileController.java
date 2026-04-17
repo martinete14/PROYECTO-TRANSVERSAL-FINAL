@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+﻿package com.example.demo.controller;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -177,7 +177,7 @@ public class ProfileController {
         return switch (rol) {
             case CLIENTE -> "ID de estudiante";
             case INSTRUCTOR -> "ID de profesor";
-            case ADMIN -> "ID de administración";
+            case ADMIN -> "ID de administraciÃ³n";
         };
     }
 

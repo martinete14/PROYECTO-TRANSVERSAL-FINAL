@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.service;
 
 import java.util.Optional;
@@ -64,7 +64,7 @@ class CursoServiceImplTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> cursoService.crearCurso(curso));
 
-        assertEquals("La categoría es obligatoria", ex.getMessage());
+        assertEquals("La categorÃ­a es obligatoria", ex.getMessage());
         verify(cursoRepository, never()).save(any());
     }
 

@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,10 +21,10 @@ public class Curso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El título es obligatorio")
+    @NotBlank(message = "El tÃ­tulo es obligatorio")
     private String titulo;
 
-    @NotBlank(message = "La descripción es obligatoria")
+    @NotBlank(message = "La descripciÃ³n es obligatoria")
     @Lob
     @Column(columnDefinition = "TEXT")
     private String descripcion;
@@ -38,7 +38,7 @@ public class Curso {
 
     private boolean destacadoSemana;
 
-    @NotNull(message = "La categoría es obligatoria")
+    @NotNull(message = "La categorÃ­a es obligatoria")
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     @JsonIgnoreProperties("cursos")
