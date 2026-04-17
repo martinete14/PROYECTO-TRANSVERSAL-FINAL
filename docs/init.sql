@@ -1,5 +1,5 @@
 -- =============================================================
---  MiniAcademia  — Esquema de base de datos
+--  Lothar Courses  — Esquema de base de datos
 --  Autor : Martín Villagra Tejerina · 1°DAW Ilerna 2026
 --  Motor : MySQL 8+ / MariaDB 10.6+
 --  Uso   : Ejecutar como root antes de arrancar la aplicación

@@ -1,11 +1,11 @@
 -- =============================================================
---  MiniAcademia  — Datos de ejemplo (demo)
+--  Lothar Courses  — Datos de ejemplo (demo)
 --  Autor : Martín Villagra Tejerina · 1°DAW Ilerna 2026
 --  Requisito previo : haber ejecutado init.sql
 --  Contraseñas en texto plano (solo referencia):
---    admin@miniacademia.local      → admin123
---    instructor@miniacademia.local → instructor123
---    alumno.demo@miniacademia.local → cliente123
+--    admin@lotharcourses.local      → admin123
+--    instructor@lotharcourses.local → instructor123
+--    alumno.demo@lotharcourses.local → cliente123
 --  Las columnas `password` almacenan el hash BCrypt generado
 --  por Spring Security PasswordEncoder (BCryptPasswordEncoder).
 -- =============================================================
@@ -39,7 +39,7 @@ VALUES
   (
     'Desarrollo web con Spring Boot',
     'Construye aplicaciones MVC profesionales con Java, Spring Boot y Thymeleaf.',
-    'Admin MiniAcademia',
+    'Admin Lothar Courses',
     '/uploads/images/img-019.jpg',
     '/uploads/videos/vid-009.mp4',
     0,
@@ -79,8 +79,8 @@ VALUES
 INSERT INTO usuario (nombre, email, rol, password, admin_id, teacher_id, student_id)
 VALUES
   (
-    'Admin MiniAcademia',
-    'admin@miniacademia.local',
+    'Admin Lothar Courses',
+    'admin@lotharcourses.local',
     'ADMIN',
     -- admin123
     '$2a$10$7EqJtq98hPqEX7fNZaFWoOhBQ6vgRGJoKi1/CgOwDRbLpRHdB3e6y',
@@ -90,7 +90,7 @@ VALUES
   ),
   (
     'Alejo Testa',
-    'instructor@miniacademia.local',
+    'instructor@lotharcourses.local',
     'INSTRUCTOR',
     -- instructor123
     '$2a$10$ixAKp7rMtmjhE6AGMznnhOUSa5/S7qmLV1s4Tf2fTYkDYJBGz./3.',
@@ -100,8 +100,7 @@ VALUES
   ),
   (
     'Alumno Demo',
-    'alumno.demo@miniacademia.local',
-    'CLIENTE',
+    'alumno.demo@lotharcourses.local',
     -- cliente123
     '$2a$10$Dow/A8Q2FJl2IJm.0bYinO/YKrE0P3GCIV6XMb6J4FmMI4Q1PLqv6',
     NULL,
@@ -115,7 +114,7 @@ VALUES
 INSERT INTO inscripcion (usuario_id, curso_id)
 SELECT u.id, c.id
 FROM   usuario u, curso c
-WHERE  u.email  = 'alumno.demo@miniacademia.local'
+WHERE  u.email  = 'alumno.demo@lotharcourses.local'
   AND  c.titulo IN (
          'Grandes preguntas del universo',
          'El pasado que explica todo'
@@ -151,12 +150,12 @@ WHERE  c.titulo = 'Grandes preguntas del universo';
 -- ------------------------------------------------------------
 INSERT INTO audit_log (occurred_at, actor_user_id, actor_name, actor_role, action_type, target_path, details, ip_address)
 SELECT NOW(), u.id, u.nombre, u.rol, 'LOGIN', '/auth/login', 'Inicio de sesion exitoso', '127.0.0.1'
-FROM   usuario u WHERE u.email = 'admin@miniacademia.local';
+FROM   usuario u WHERE u.email = 'admin@lotharcourses.local';
 
 INSERT INTO audit_log (occurred_at, actor_user_id, actor_name, actor_role, action_type, target_path, details, ip_address)
 SELECT NOW(), u.id, u.nombre, u.rol, 'CURSO_CREAR', '/admin/cursos/crear',
        'Curso creado: Desarrollo web con Spring Boot', '127.0.0.1'
-FROM   usuario u WHERE u.email = 'admin@miniacademia.local';
+FROM   usuario u WHERE u.email = 'admin@lotharcourses.local';
 
 -- ------------------------------------------------------------
 -- Fin de datos de ejemplo

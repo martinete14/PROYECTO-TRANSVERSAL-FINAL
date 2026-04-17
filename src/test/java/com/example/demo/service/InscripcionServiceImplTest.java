@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,7 +67,7 @@ class InscripcionServiceImplTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> inscripcionService.inscribir(1L, 2L));
 
-        assertEquals("El usuario ya está inscrito en este curso", ex.getMessage());
+        assertEquals("El usuario ya estÃ¡ inscrito en este curso", ex.getMessage());
         verify(inscripcionRepository, never()).save(any());
     }
 }

@@ -1076,10 +1076,67 @@ body {
 }
 
 .demo-accounts {
-  margin-top: 18px;
-  color: #9eb0c6;
-  font-size: 13px;
-  line-height: 1.5;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.demo-accounts-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--txt-muted);
+  margin-bottom: 12px;
+}
+
+.demo-accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.demo-role-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+}
+
+.demo-role-badge {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(86,183,232,0.12);
+  color: var(--brand);
+  margin-bottom: 8px;
+}
+
+.demo-role-badge--instructor {
+  background: rgba(255,216,117,0.1);
+  color: #ffd875;
+}
+
+.demo-role-badge--admin {
+  background: rgba(234,106,90,0.12);
+  color: var(--danger);
+}
+
+.demo-role-email {
+  font-size: 12px;
+  color: var(--txt-soft);
+  margin-bottom: 3px;
+  word-break: break-all;
+}
+
+.demo-role-pass {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--txt-main);
+  font-family: 'Courier New', monospace;
 }
 
 .input-limit-sm {

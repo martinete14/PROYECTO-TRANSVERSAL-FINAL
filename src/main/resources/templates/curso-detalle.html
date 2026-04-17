@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title th:text="${curso.titulo + ' | Mini Academia'}">Detalle curso | Mini Academia</title>
+  <title th:text="${curso.titulo + ' | Lothar Courses'}">Detalle curso | Lothar Courses</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,7 @@
 <body>
 
 <header class="topbar" role="banner">
-  <h1 class="brand">Mini Academia</h1>
+  <h1 class="brand">Lothar Courses</h1>
   <div class="topbar-actions">
     <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
@@ -37,7 +37,6 @@
         <a class="btn-outline" th:href="@{/web/cursos}">Seguir explorando</a>
       </div>
 
-      <p class="course-detail-note">Demo actual: este espacio esta preparado para usar un video corto y optimizado como preview del curso.</p>
     </article>
 
     <aside class="course-detail-media">
@@ -57,7 +56,7 @@
 
 <footer class="page-footer">
   <section>
-    <p>Mini Academia - Experiencia de compra en construccion</p>
+    <p>© 2026 Lothar Courses</p>
   </section>
 </footer>
 

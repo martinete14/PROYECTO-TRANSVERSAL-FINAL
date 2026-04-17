@@ -1,4 +1,4 @@
-/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.service;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class InscripcionServiceImpl implements InscripcionService {
     public Inscripcion inscribir(Long usuarioId, Long cursoId) {
 
         if (inscripcionRepository.existsByUsuarioIdAndCursoId(usuarioId, cursoId)) {
-            throw new RuntimeException("El usuario ya está inscrito en este curso");
+            throw new RuntimeException("El usuario ya estÃ¡ inscrito en este curso");
         }
 
         Usuario usuario = usuarioRepository.findById(usuarioId)

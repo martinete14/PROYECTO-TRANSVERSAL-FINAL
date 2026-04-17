@@ -1,4 +1,4 @@
-/* Martin Villagra Tejerina - 1 DAW Ilerna 2026 - Proyecto Transversal - Mini Academia */
+﻿/* Martin Villagra Tejerina - 1 DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.config;
 
 import java.nio.charset.StandardCharsets;
@@ -30,13 +30,13 @@ import com.example.demo.repository.UsuarioRepository;
 public class DataSeeder implements CommandLineRunner {
 
     private static final String CLIENTE_NAME = "Alumno Demo";
-    private static final String CLIENTE_EMAIL = "alumno.demo@miniacademia.local";
+    private static final String CLIENTE_EMAIL = "alumno.demo@lotharcourses.local";
     private static final String CLIENTE_PASSWORD = "cliente123";
     private static final String INSTRUCTOR_NAME = "Alejo Testa";
-    private static final String INSTRUCTOR_EMAIL = "instructor@miniacademia.local";
+    private static final String INSTRUCTOR_EMAIL = "instructor@lotharcourses.local";
     private static final String INSTRUCTOR_PASSWORD = "instructor123";
-    private static final String ADMIN_NAME = "Admin MiniAcademia";
-    private static final String ADMIN_EMAIL = "admin@miniacademia.local";
+    private static final String ADMIN_NAME = "Admin Lothar Courses";
+    private static final String ADMIN_EMAIL = "admin@lotharcourses.local";
     private static final String ADMIN_PASSWORD = "admin123";
     private static final String INSTRUCTOR_RECUPERADO = "Pendiente de reasignar";
 
@@ -243,8 +243,8 @@ public class DataSeeder implements CommandLineRunner {
             return valor;
         }
 
-        if (valor.contains("Ã") || valor.contains("Â")) {
-            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Â", "");
+        if (valor.contains("Ãƒ") || valor.contains("Ã‚")) {
+            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Ã‚", "");
         }
 
         return valor;
