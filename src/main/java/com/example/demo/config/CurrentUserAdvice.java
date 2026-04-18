@@ -1,4 +1,4 @@
-﻿package com.example.demo.config;
+package com.example.demo.config;
 
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;

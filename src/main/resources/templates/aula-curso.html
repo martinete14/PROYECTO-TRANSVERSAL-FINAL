@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title th:text="${curso.titulo + ' | Aula'}">Aula del curso</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" th:href="@{/images/favicon.ico}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,27 +31,31 @@
       <p class="acquired-user" th:text="${#lists.size(contenidos)} + ' recursos disponibles'">0 recursos disponibles</p>
     </header>
 
-    <div class="acquired-table-wrap" th:if="${!#lists.isEmpty(contenidos)}">
-      <table class="acquired-table" aria-label="Material del curso">
-        <thead>
-          <tr>
-            <th>Orden</th>
-            <th>Titulo</th>
-            <th>Tipo</th>
-            <th>Descripcion</th>
-            <th>Recurso</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr th:each="contenido : ${contenidos}">
-            <td th:text="${contenido.orden != null ? contenido.orden : '-'}">1</td>
-            <td th:text="${contenido.titulo}">Titulo</td>
-            <td th:text="${contenido.tipo}">VIDEO</td>
-            <td th:text="${contenido.descripcion != null ? contenido.descripcion : '-'}">Descripcion</td>
-            <td><a class="btn-primary" th:href="${contenido.recursoUrl}" target="_blank" rel="noopener">Abrir</a></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="aula-content-grid" th:if="${!#lists.isEmpty(contenidos)}">
+      <article class="aula-content-card" th:each="contenido : ${contenidos}">
+        <header class="aula-content-top">
+          <span class="aula-order" th:text="${contenido.orden != null ? 'Bloque ' + contenido.orden : 'Bloque sin orden'}">Bloque 1</span>
+          <span class="aula-type"
+                th:classappend="${contenido.tipo != null and #strings.equalsIgnoreCase(contenido.tipo, 'VIDEO')} ? ' aula-type--video' : (${contenido.tipo != null and #strings.equalsIgnoreCase(contenido.tipo, 'PDF')} ? ' aula-type--pdf' : ' aula-type--other')"
+                th:text="${contenido.tipo != null ? contenido.tipo : 'RECURSO'}">VIDEO</span>
+        </header>
+
+        <h4 class="aula-content-title" th:text="${contenido.titulo}">Titulo del contenido</h4>
+        <p class="aula-content-description"
+           th:text="${contenido.descripcion != null and !#strings.isEmpty(contenido.descripcion) ? contenido.descripcion : 'Sin descripcion disponible.'}">
+          Descripcion del contenido.
+        </p>
+
+        <footer class="aula-content-actions">
+          <a class="btn-primary"
+             th:if="${contenido.recursoUrl != null and !#strings.isEmpty(contenido.recursoUrl)}"
+             th:href="${contenido.recursoUrl}"
+             target="_blank"
+             rel="noopener">Abrir recurso</a>
+          <span class="aula-resource-missing"
+                th:if="${contenido.recursoUrl == null or #strings.isEmpty(contenido.recursoUrl)}">Recurso pendiente de publicar</span>
+        </footer>
+      </article>
     </div>
 
     <p class="acquired-empty" th:if="${#lists.isEmpty(contenidos)}">Todavia no hay contenido de clase subido por el profesor.</p>
@@ -58,3 +63,4 @@
 </main>
 </body>
 </html>
+

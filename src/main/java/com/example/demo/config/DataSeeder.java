@@ -1,4 +1,4 @@
-﻿/* Martin Villagra Tejerina - 1 DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
+/* Martin Villagra Tejerina - 1 DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.config;
 
 import java.nio.charset.StandardCharsets;
