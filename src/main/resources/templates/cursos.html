@@ -203,6 +203,13 @@ const warmVideo = (video) => {
 };
 
 const mediaFrames = Array.from(document.querySelectorAll(".media-frame"));
+const featuredFrames = Array.from(document.querySelectorAll(".featured-row .media-frame"));
+
+if (isHoverDevice) {
+  featuredFrames.forEach((frame) => {
+    warmVideo(frame.querySelector("video"));
+  });
+}
 
 if (isHoverDevice && "IntersectionObserver" in window) {
   const observer = new IntersectionObserver((entries) => {
@@ -257,14 +264,17 @@ mediaFrames.forEach(container => {
 
     playIntentTimer = setTimeout(() => {
       warmVideo(video);
-      video.style.opacity = 1;
 
       if (video.readyState >= 2) {
+        video.style.opacity = 1;
         playVideo();
         return;
       }
 
-      video.addEventListener("canplay", playVideo, { once: true });
+      video.addEventListener("canplay", () => {
+        video.style.opacity = 1;
+        playVideo();
+      }, { once: true });
     }, hoverIntentDelay);
   });
 
