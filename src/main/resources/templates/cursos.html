@@ -189,6 +189,8 @@
 
 <script>
 const isHoverDevice = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+const hoverIntentDelay = 120;
+const hoverOutDelay = 90;
 
 const warmVideo = (video) => {
   if (!video || video.dataset.warmed === "1") {
@@ -224,6 +226,9 @@ mediaFrames.forEach(container => {
     return;
   }
 
+  let playIntentTimer = null;
+  let stopIntentTimer = null;
+
   if (!isHoverDevice) {
     video.pause();
     video.currentTime = 0;
@@ -236,25 +241,44 @@ mediaFrames.forEach(container => {
     return;
   }
 
+  const playVideo = () => {
+    video.play().catch(() => {});
+  };
+
   parentCard.addEventListener("mouseenter", () => {
-    warmVideo(video);
-    video.style.opacity = 1;
-
-    const playVideo = () => {
-      video.play().catch(() => {});
-    };
-
-    if (video.readyState >= 2) {
-      playVideo();
-      return;
+    if (stopIntentTimer) {
+      clearTimeout(stopIntentTimer);
+      stopIntentTimer = null;
     }
 
-    video.addEventListener("canplay", playVideo, { once: true });
+    if (playIntentTimer) {
+      clearTimeout(playIntentTimer);
+    }
+
+    playIntentTimer = setTimeout(() => {
+      warmVideo(video);
+      video.style.opacity = 1;
+
+      if (video.readyState >= 2) {
+        playVideo();
+        return;
+      }
+
+      video.addEventListener("canplay", playVideo, { once: true });
+    }, hoverIntentDelay);
   });
 
   parentCard.addEventListener("mouseleave", () => {
-    video.pause();
+    if (playIntentTimer) {
+      clearTimeout(playIntentTimer);
+      playIntentTimer = null;
+    }
+
     video.style.opacity = 0;
+
+    stopIntentTimer = setTimeout(() => {
+      video.pause();
+    }, hoverOutDelay);
   });
 });
 
