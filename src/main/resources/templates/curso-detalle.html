@@ -25,18 +25,33 @@
   <section class="course-detail-layout">
     <article class="course-detail-main">
       <p class="hero-kicker" th:text="${curso.categoria != null ? curso.categoria.nombre : 'Categoria'}">Categoria</p>
+      <div class="course-detail-pill-row">
+        <span class="course-detail-pill">Programa online</span>
+        <span class="course-detail-pill" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">Incluye preview en video</span>
+      </div>
       <h2 th:text="${curso.titulo}">Titulo del curso</h2>
       <p class="course-detail-instructor">Dictado por <strong th:text="${curso.instructor}">Instructor</strong></p>
       <p class="course-detail-description" th:text="${curso.descripcion}">Descripcion del curso</p>
 
+      <section class="course-detail-value">
+        <h3>Lo que te llevas de este programa</h3>
+        <ul>
+          <li>Una ruta clara para avanzar sin perder tiempo en contenido disperso.</li>
+          <li>Aplicaciones practicas con enfoque real de trabajo.</li>
+          <li>Acceso desde cualquier dispositivo, a tu ritmo.</li>
+        </ul>
+      </section>
+
       <div class="course-detail-actions">
         <a th:if="${puedeIrAlAula}" class="btn-primary" th:href="@{/web/cursos/aula/{id}(id=${curso.id})}">Entrar al aula</a>
         <form th:if="${isCliente and !puedeIrAlAula}" th:action="@{/web/cursos/comprar/{id}(id=${curso.id})}" method="post">
-          <button class="btn-primary" type="submit">Comprar curso</button>
+          <button class="btn-primary" type="submit">Acceder al programa</button>
         </form>
         <a th:if="${canManageCourses}" class="btn-outline" th:href="@{/web/cursos/{id}/contenido(id=${curso.id})}">Gestionar contenido</a>
         <a class="btn-outline" th:href="@{/web/cursos}">Seguir explorando</a>
       </div>
+
+      <p class="course-detail-note">Si ya estas inscrito, entraras directamente al aula con todo tu progreso.</p>
 
     </article>
 
@@ -51,6 +66,11 @@
            alt="Vista del curso"
            loading="lazy"
            decoding="async">
+
+      <article class="course-detail-trust">
+        <h3>Compromiso Lothar Courses</h3>
+        <p>Contenido orientado a resultados, con una experiencia de aprendizaje clara y profesional de principio a fin.</p>
+      </article>
     </aside>
   </section>
 </main>
