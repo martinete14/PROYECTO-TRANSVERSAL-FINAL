@@ -34,27 +34,13 @@
     <p class="hero-kicker">LOTHAR COURSES EXPERIENCE</p>
     <h2>Formacion visualmente impecable para perfiles digitales</h2>
     <p>Explora programas curados por expertos, con fichas de curso optimizadas para descubrimiento rapido y decisiones de compra claras.</p>
+    <p class="hero-mantra">A veces menos es mas.</p>
 
     <div class="hero-actions">
       <a class="btn-primary" th:href="@{/web/cursos}" th:if="${!isAuthenticated}">Explorar catalogo</a>
       <a class="btn-outline" th:if="${canManageCourses}" th:href="@{/web/cursos/nuevo}">Publicar nuevo curso</a>
       <a class="btn-outline" th:if="${isCliente}" th:href="@{/web/cursos/adquiridos}">Ver mis cursos</a>
     </div>
-  </section>
-
-  <section class="hero-stats" aria-label="Resumen de catalogo">
-    <article class="hero-stat-card">
-      <p class="hero-stat-label">Cursos visibles</p>
-      <p class="hero-stat-value" th:text="${#lists.size(cursos)}">0</p>
-    </article>
-    <article class="hero-stat-card">
-      <p class="hero-stat-label">Categorias activas</p>
-      <p class="hero-stat-value" th:text="${#lists.size(categorias)}">0</p>
-    </article>
-    <article class="hero-stat-card">
-      <p class="hero-stat-label">Destacados de la semana</p>
-      <p class="hero-stat-value" th:text="${#lists.size(cursosDestacados)}">0</p>
-    </article>
   </section>
 
   <section class="featured-banner" th:if="${esPortada and !#lists.isEmpty(cursosDestacados)}">
@@ -123,7 +109,6 @@
              th:attr="data-title=${curso.titulo},data-category=${curso.categoriaNombre},data-category-id=${curso.categoriaId},data-instructor=${curso.instructor},data-href=@{/web/cursos/{id}(id=${curso.id})}">
 
       <div class="media-frame">
-        <div class="course-badge-preview" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">Preview</div>
         <div class="course-badge-new" th:if="${esPortada and iterStat.first}">Nuevo</div>
         <img th:if="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
              th:src="${curso.imagenUrl}"
@@ -157,11 +142,6 @@
         <p class="course-desc" th:text="${curso.descripcion}">
           Descripcion del curso
         </p>
-
-        <div class="card-footer-row">
-          <span class="card-footer-meta" th:text="${curso.categoriaNombre}">Categoria</span>
-          <a class="btn-outline btn-card-cta" th:href="@{/web/cursos/{id}(id=${curso.id})}">Ver detalle</a>
-        </div>
       </div>
 
     </article>
@@ -180,6 +160,21 @@
     <article>
       <h3>No hay coincidencias para tu busqueda</h3>
       <p>Prueba con otra palabra clave o cambia la categoria para ampliar resultados.</p>
+    </article>
+  </section>
+
+  <section class="hero-stats hero-stats--footer" aria-label="Resumen de catalogo">
+    <article class="hero-stat-card">
+      <p class="hero-stat-label">Cursos visibles</p>
+      <p class="hero-stat-value" th:text="${#lists.size(cursos)}">0</p>
+    </article>
+    <article class="hero-stat-card">
+      <p class="hero-stat-label">Categorias activas</p>
+      <p class="hero-stat-value" th:text="${#lists.size(categorias)}">0</p>
+    </article>
+    <article class="hero-stat-card">
+      <p class="hero-stat-label">Destacados de la semana</p>
+      <p class="hero-stat-value" th:text="${#lists.size(cursosDestacados)}">0</p>
     </article>
   </section>
 

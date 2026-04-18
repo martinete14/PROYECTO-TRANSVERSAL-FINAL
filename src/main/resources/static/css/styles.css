@@ -213,6 +213,13 @@ body {
   font-size: clamp(15px, 2vw, 18px);
 }
 
+.hero-mantra {
+  margin-top: 8px;
+  color: #c8d6ea;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
 .hero-actions {
   margin-top: 18px;
   display: flex;
@@ -224,28 +231,32 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin: -2px 0 24px;
+  margin: 18px 0 10px;
+}
+
+.hero-stats--footer {
+  margin: 28px 0 4px;
 }
 
 .hero-stat-card {
   border: 1px solid rgba(180, 198, 235, 0.16);
-  border-radius: 16px;
-  padding: 14px 16px;
+  border-radius: 12px;
+  padding: 10px 12px;
   background: linear-gradient(150deg, rgba(17, 25, 38, 0.94), rgba(11, 17, 28, 0.98));
 }
 
 .hero-stat-label {
   color: var(--txt-muted);
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  font-size: 11px;
+  letter-spacing: 0.4px;
 }
 
 .hero-stat-value {
-  margin-top: 4px;
+  margin-top: 2px;
   font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(34px, 5vw, 52px);
+  font-size: clamp(24px, 3.2vw, 34px);
   line-height: 0.95;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   color: #edf5ff;
 }
 
@@ -501,22 +512,6 @@ body {
   box-shadow: 0 10px 18px rgba(255, 191, 60, 0.28);
 }
 
-.course-badge-preview {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 5;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(11, 29, 42, 0.82);
-  border: 1px solid rgba(86, 183, 232, 0.62);
-  color: #b8e6ff;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.7px;
-  text-transform: uppercase;
-}
-
 .card-body {
   display: flex;
   flex-direction: column;
@@ -560,26 +555,6 @@ body {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.card-footer-row {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.card-footer-meta {
-  color: var(--txt-muted);
-  font-size: 12px;
-  letter-spacing: 0.3px;
-}
-
-.btn-card-cta {
-  padding: 6px 12px;
-  font-size: 12px;
-  border-radius: 999px;
 }
 
 .actions {
@@ -1451,11 +1426,6 @@ body {
 
   .course-title {
     font-size: 21px;
-  }
-
-  .card-footer-row {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .actions {
