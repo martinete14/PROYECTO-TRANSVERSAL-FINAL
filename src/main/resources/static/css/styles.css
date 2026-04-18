@@ -668,6 +668,92 @@ body {
   color: var(--txt-soft);
 }
 
+.aula-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  padding: 16px;
+}
+
+.aula-content-card {
+  border: 1px solid rgba(180, 198, 235, 0.16);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 86% 10%, rgba(86, 183, 232, 0.15), transparent 42%),
+    linear-gradient(160deg, rgba(20, 29, 43, 0.96), rgba(13, 20, 32, 0.97));
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 220px;
+}
+
+.aula-content-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.aula-order {
+  font-size: 11px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--txt-muted);
+}
+
+.aula-type {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+}
+
+.aula-type--video {
+  color: #9fe2ff;
+  background: rgba(58, 159, 212, 0.22);
+  border-color: rgba(86, 183, 232, 0.42);
+}
+
+.aula-type--pdf {
+  color: #ffd875;
+  background: rgba(255, 216, 117, 0.14);
+  border-color: rgba(255, 216, 117, 0.35);
+}
+
+.aula-type--other {
+  color: #f2c6be;
+  background: rgba(234, 106, 90, 0.14);
+  border-color: rgba(234, 106, 90, 0.34);
+}
+
+.aula-content-title {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.aula-content-description {
+  color: var(--txt-soft);
+  font-size: 14px;
+  line-height: 1.55;
+  flex: 1;
+}
+
+.aula-content-actions {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.aula-resource-missing {
+  color: var(--txt-muted);
+  font-size: 13px;
+}
+
 .form-page {
   padding: 24px 0 40px;
 }
