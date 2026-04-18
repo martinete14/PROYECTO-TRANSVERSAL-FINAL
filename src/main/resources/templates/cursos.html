@@ -18,7 +18,7 @@
   <h1 class="brand">Lothar Courses</h1>
 
   <div class="topbar-actions">
-    <input id="searchInput" placeholder="Buscar por titulo o palabra clave..." />
+    <input id="searchInput" placeholder="Buscar por titulo, categoria o instructor..." />
     <div th:replace="~{fragments/user-menu :: menu}"></div>
   </div>
 </header>
@@ -31,9 +31,30 @@
   </section>
 
   <section class="hero-cinematic">
-    <p class="hero-kicker">CURSOS DESTACADOS</p>
-    <h2>Aprende con una experiencia visual premium</h2>
-    <p>Descubre cuatro cursos destacados y una seleccion reducida de cursos aleatorios para navegar sin agobio y con foco.</p>
+    <p class="hero-kicker">LOTHAR COURSES EXPERIENCE</p>
+    <h2>Formacion visualmente impecable para perfiles digitales</h2>
+    <p>Explora programas curados por expertos, con fichas de curso optimizadas para descubrimiento rapido y decisiones de compra claras.</p>
+
+    <div class="hero-actions">
+      <a class="btn-primary" th:href="@{/web/cursos}" th:if="${!isAuthenticated}">Explorar catalogo</a>
+      <a class="btn-outline" th:if="${canManageCourses}" th:href="@{/web/cursos/nuevo}">Publicar nuevo curso</a>
+      <a class="btn-outline" th:if="${isCliente}" th:href="@{/web/cursos/adquiridos}">Ver mis cursos</a>
+    </div>
+  </section>
+
+  <section class="hero-stats" aria-label="Resumen de catalogo">
+    <article class="hero-stat-card">
+      <p class="hero-stat-label">Cursos visibles</p>
+      <p class="hero-stat-value" th:text="${#lists.size(cursos)}">0</p>
+    </article>
+    <article class="hero-stat-card">
+      <p class="hero-stat-label">Categorias activas</p>
+      <p class="hero-stat-value" th:text="${#lists.size(categorias)}">0</p>
+    </article>
+    <article class="hero-stat-card">
+      <p class="hero-stat-label">Destacados de la semana</p>
+      <p class="hero-stat-value" th:text="${#lists.size(cursosDestacados)}">0</p>
+    </article>
   </section>
 
   <section class="featured-banner" th:if="${esPortada and !#lists.isEmpty(cursosDestacados)}">
@@ -79,9 +100,12 @@
   </section>
 
   <section th:if="${!#lists.isEmpty(cursos)}">
-    <p class="hero-kicker section-heading-kicker">SELECCION ALEATORIA</p>
+    <p class="hero-kicker section-heading-kicker">EXPLORAR PROGRAMAS</p>
     <div class="section-heading">
-      <h2 th:text="${#lists.size(cursos)} + ' cursos para descubrir hoy'">Ocho cursos para descubrir hoy</h2>
+      <h2>
+        <span id="visibleCounter" th:text="${#lists.size(cursos)}">0</span>
+        <span>cursos para descubrir hoy</span>
+      </h2>
       <div class="section-heading-filter">
         <select id="categorySelect" class="filter-select" aria-label="Filtrar por categoria">
           <option value="">Todas las categorias</option>
@@ -99,7 +123,8 @@
              th:attr="data-title=${curso.titulo},data-category=${curso.categoriaNombre},data-category-id=${curso.categoriaId},data-instructor=${curso.instructor},data-href=@{/web/cursos/{id}(id=${curso.id})}">
 
       <div class="media-frame">
-      <div class="course-badge-new" th:if="${esPortada and iterStat.first}">NUEVO</div>
+        <div class="course-badge-preview" th:if="${curso.videoUrl != null and !#strings.isEmpty(curso.videoUrl)}">Preview</div>
+        <div class="course-badge-new" th:if="${esPortada and iterStat.first}">Nuevo</div>
         <img th:if="${curso.imagenUrl != null and !#strings.isEmpty(curso.imagenUrl)}"
              th:src="${curso.imagenUrl}"
              class="media-img"
@@ -132,6 +157,11 @@
         <p class="course-desc" th:text="${curso.descripcion}">
           Descripcion del curso
         </p>
+
+        <div class="card-footer-row">
+          <span class="card-footer-meta" th:text="${curso.categoriaNombre}">Categoria</span>
+          <a class="btn-outline btn-card-cta" th:href="@{/web/cursos/{id}(id=${curso.id})}">Ver detalle</a>
+        </div>
       </div>
 
     </article>
@@ -140,16 +170,16 @@
 
   <section class="empty-state" th:if="${#lists.isEmpty(cursos)}">
     <article>
-      <h3>Aun no hay cursos cargados</h3>
-      <p>Empieza creando tu primer curso para que los alumnos puedan explorar el catalogo.</p>
+      <h3>El catalogo todavia no tiene cursos publicados</h3>
+      <p>Empieza con una oferta inicial de alto valor para activar el ecosistema de aprendizaje de Lothar Courses.</p>
       <a th:if="${canManageCourses}" th:href="@{/web/cursos/nuevo}" class="btn-primary">Crear primer curso</a>
     </article>
   </section>
 
   <section id="searchNoResults" class="empty-state empty-state-hidden">
     <article>
-      <h3>No encontramos cursos con ese texto</h3>
-      <p>Prueba con otra palabra, cambia los filtros o limpia la busqueda para ver todo el catalogo.</p>
+      <h3>No hay coincidencias para tu busqueda</h3>
+      <p>Prueba con otra palabra clave o cambia la categoria para ampliar resultados.</p>
     </article>
   </section>
 
@@ -239,6 +269,7 @@ const courseGrid = document.querySelector(".course-grid");
 const searchInput = document.getElementById("searchInput");
 const noResults = document.getElementById("searchNoResults");
 const categorySelect = document.getElementById("categorySelect");
+const visibleCounter = document.getElementById("visibleCounter");
 
 const normalize = (value) => (value || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
 
@@ -280,8 +311,10 @@ const applyFilters = () => {
   cards.forEach(card => {
     const title = normalize(card.dataset.title);
     const description = normalize(card.querySelector(".course-desc")?.textContent || "");
+    const category = normalize(card.dataset.category);
+    const instructor = normalize(card.dataset.instructor);
 
-    const visible = !searchValue || title.includes(searchValue) || description.includes(searchValue);
+    const visible = !searchValue || title.includes(searchValue) || description.includes(searchValue) || category.includes(searchValue) || instructor.includes(searchValue);
     card.style.display = visible ? "flex" : "none";
 
     if (visible) {
@@ -307,22 +340,33 @@ const applyFilters = () => {
     courseGrid.style.display = visibleGrid === 0 ? "none" : "grid";
   }
 
-  noResults.style.display = visibleCount === 0 ? "block" : "none";
-};
-
-searchInput.addEventListener("input", applyFilters);
-categorySelect.addEventListener("change", () => {
-  const url = new URL(window.location.href);
-  const selectedValue = categorySelect.value;
-
-  if (selectedValue) {
-    url.searchParams.set("categoriaId", selectedValue);
-  } else {
-    url.searchParams.delete("categoriaId");
+  if (visibleCounter) {
+    visibleCounter.textContent = String(visibleGrid);
   }
 
-  window.location.href = url.toString();
-});
+  if (noResults) {
+    noResults.style.display = visibleCount === 0 ? "block" : "none";
+  }
+};
+
+if (searchInput) {
+  searchInput.addEventListener("input", applyFilters);
+}
+
+if (categorySelect) {
+  categorySelect.addEventListener("change", () => {
+    const url = new URL(window.location.href);
+    const selectedValue = categorySelect.value;
+
+    if (selectedValue) {
+      url.searchParams.set("categoriaId", selectedValue);
+    } else {
+      url.searchParams.delete("categoriaId");
+    }
+
+    window.location.href = url.toString();
+  });
+}
 applyFilters();
 </script>
 
