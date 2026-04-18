@@ -15,6 +15,29 @@
   --radius-lg: 20px;
   --radius-md: 12px;
   --shadow-card: 0 24px 46px rgba(0, 0, 0, 0.3);
+  --motion-fast: 240ms;
+  --motion-base: 420ms;
+  --motion-slow: 620ms;
+}
+
+@keyframes fade-up-soft {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-soft {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 * {
@@ -41,6 +64,7 @@ body {
   justify-content: space-between;
   gap: 18px;
   padding: 24px 0 14px;
+  animation: fade-up-soft var(--motion-base) ease-out both;
 }
 
 .brand {
@@ -180,6 +204,7 @@ body {
     radial-gradient(circle at 8% 85%, rgba(62, 140, 215, 0.24), transparent 42%),
     linear-gradient(130deg, rgba(14, 20, 30, 0.92), rgba(20, 31, 45, 0.72));
   overflow: hidden;
+  animation: fade-up-soft var(--motion-slow) ease-out both;
 }
 
 .hero-cinematic::before {
@@ -319,6 +344,7 @@ body {
   text-transform: uppercase;
   text-align: center;
   box-shadow: 0 0 20px rgba(255, 216, 117, 0.15), inset 0 0 20px rgba(255, 216, 117, 0.05);
+  animation: fade-in-soft var(--motion-slow) ease-out both;
 }
 
 .featured-row {
@@ -400,7 +426,26 @@ body {
   box-shadow: var(--shadow-card);
   transition: transform 0.32s ease, border-color 0.3s ease;
   cursor: pointer;
+  opacity: 0;
+  animation: fade-up-soft var(--motion-slow) ease-out forwards;
 }
+
+.featured-row .course-card:nth-child(1),
+.course-grid .course-card:nth-child(1) { animation-delay: 60ms; }
+.featured-row .course-card:nth-child(2),
+.course-grid .course-card:nth-child(2) { animation-delay: 110ms; }
+.featured-row .course-card:nth-child(3),
+.course-grid .course-card:nth-child(3) { animation-delay: 160ms; }
+.featured-row .course-card:nth-child(4),
+.course-grid .course-card:nth-child(4) { animation-delay: 210ms; }
+.featured-row .course-card:nth-child(5),
+.course-grid .course-card:nth-child(5) { animation-delay: 260ms; }
+.featured-row .course-card:nth-child(6),
+.course-grid .course-card:nth-child(6) { animation-delay: 310ms; }
+.featured-row .course-card:nth-child(7),
+.course-grid .course-card:nth-child(7) { animation-delay: 360ms; }
+.featured-row .course-card:nth-child(8),
+.course-grid .course-card:nth-child(8) { animation-delay: 410ms; }
 
 .course-card.course-card--featured {
   background: linear-gradient(140deg, rgba(58, 45, 14, 0.96), rgba(35, 27, 8, 0.98));
@@ -586,6 +631,12 @@ body {
   transition: all 0.22s ease;
 }
 
+.btn-primary:hover,
+.btn-outline:hover,
+.btn-danger:hover {
+  transform: translateY(-1px);
+}
+
 .btn-primary {
   border: 1px solid transparent;
   background: linear-gradient(130deg, #2d8dcb, #5ec4f1);
@@ -661,6 +712,7 @@ body {
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(17, 24, 36, 0.94), rgba(11, 16, 25, 0.98));
   overflow: hidden;
+  animation: fade-up-soft var(--motion-base) ease-out both;
 }
 
 .acquired-head {
@@ -803,6 +855,7 @@ body {
 
 .form-page {
   padding: 24px 0 40px;
+  animation: fade-in-soft var(--motion-base) ease-out both;
 }
 
 .form-hero {
@@ -1102,6 +1155,7 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
   gap: 20px;
+  animation: fade-up-soft var(--motion-base) ease-out both;
 }
 
 .course-detail-main,
@@ -1444,5 +1498,17 @@ body {
 
   .form-actions {
     flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  .course-card {
+    opacity: 1;
   }
 }
