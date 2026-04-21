@@ -177,7 +177,7 @@ public class ProfileController {
         return switch (rol) {
             case CLIENTE -> "ID de estudiante";
             case INSTRUCTOR -> "ID de profesor";
-            case ADMIN -> "ID de administraciÃ³n";
+            case ADMIN -> "ID de administración";
         };
     }
 

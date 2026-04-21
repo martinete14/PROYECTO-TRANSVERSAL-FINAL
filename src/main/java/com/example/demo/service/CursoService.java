@@ -1,4 +1,4 @@
-/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
+/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.service;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public interface CursoService {
 
     void eliminarCurso(Long id);
 
-    // ðŸ”µ NUEVO (PARA EDITAR) mejora completa
+    // 🔵 NUEVO (PARA EDITAR) mejora completa
     Curso obtenerCursoPorId(Long id);
 
     List<Curso> obtenerCursosEntidad();

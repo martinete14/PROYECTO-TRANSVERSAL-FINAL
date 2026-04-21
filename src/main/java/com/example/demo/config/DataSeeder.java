@@ -243,8 +243,10 @@ public class DataSeeder implements CommandLineRunner {
             return valor;
         }
 
-        if (valor.contains("Ãƒ") || valor.contains("Ã‚")) {
-            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace("Ã‚", "");
+        String marcadorA = "\u00C3";
+        String marcadorB = "\u00C2";
+        if (valor.contains(marcadorA) || valor.contains(marcadorB)) {
+            return new String(valor.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8).replace(marcadorB, "");
         }
 
         return valor;

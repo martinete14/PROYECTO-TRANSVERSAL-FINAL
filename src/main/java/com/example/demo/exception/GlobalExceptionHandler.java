@@ -1,4 +1,4 @@
-/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
+/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.exception;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // ðŸ”´ VALIDACIONES (@Valid)
+    // 🔴 VALIDACIONES (@Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationErrors(MethodArgumentNotValidException ex) {
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         return errores;
     }
 
-    // ðŸ”´ ERRORES DE NEGOCIO (RuntimeException)
+    // 🔴 ERRORES DE NEGOCIO (RuntimeException)
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleRuntimeException(RuntimeException ex) {
