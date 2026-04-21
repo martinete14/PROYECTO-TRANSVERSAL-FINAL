@@ -52,7 +52,7 @@ public class AuthController {
     ) {
         if (!StringUtils.hasText(email) || !StringUtils.hasText(password)) {
             auditLogService.logAnonymous("AUTH_LOGIN_FAILED", "Intento de login con campos vacios.", "/web/auth/login", request.getRemoteAddr());
-            redirectAttributes.addFlashAttribute("errorMessage", "Email y contraseÃ±a son obligatorios.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Email y contraseña son obligatorios.");
             return "redirect:/web/auth/login";
         }
 
@@ -64,7 +64,7 @@ public class AuthController {
 
         if (usuario == null || !isPasswordValid(rawPassword, usuario.getPassword())) {
             auditLogService.logAnonymous("AUTH_LOGIN_FAILED", "Credenciales invalidas para email: " + normalizedEmail, "/web/auth/login", request.getRemoteAddr());
-            redirectAttributes.addFlashAttribute("errorMessage", "Credenciales invÃ¡lidas.");
+            redirectAttributes.addFlashAttribute("errorMessage", "Credenciales inválidas.");
             return "redirect:/web/auth/login";
         }
 

@@ -1,4 +1,4 @@
-﻿/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
+/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo;
 
 import org.springframework.boot.SpringApplication;

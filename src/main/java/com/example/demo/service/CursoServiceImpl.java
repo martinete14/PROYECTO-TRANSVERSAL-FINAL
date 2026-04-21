@@ -1,4 +1,4 @@
-/* MartÃ­n Villagra Tejerina - 1Â°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
+/* Martín Villagra Tejerina - 1°DAW Ilerna 2026 - Proyecto Transversal - Lothar Courses */
 package com.example.demo.service;
 
 import java.text.Normalizer;
@@ -70,13 +70,13 @@ public class CursoServiceImpl implements CursoService {
         validarYPrepararCurso(curso, null);
 
         if (curso.getCategoria() == null || curso.getCategoria().getId() == null) {
-            throw new RuntimeException("La categorÃ­a es obligatoria");
+            throw new RuntimeException("La categoría es obligatoria");
         }
 
         Long categoriaId = curso.getCategoria().getId();
 
         Categoria categoria = categoriaRepository.findById(categoriaId)
-                .orElseThrow(() -> new RuntimeException("CategorÃ­a no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
         curso.setCategoria(categoria);
 
@@ -98,13 +98,13 @@ public class CursoServiceImpl implements CursoService {
         curso.setVideoUrl(cursoActualizado.getVideoUrl());
 
         if (cursoActualizado.getCategoria() == null || cursoActualizado.getCategoria().getId() == null) {
-            throw new RuntimeException("La categorÃ­a es obligatoria");
+            throw new RuntimeException("La categoría es obligatoria");
         }
 
         Long categoriaId = cursoActualizado.getCategoria().getId();
 
         Categoria categoria = categoriaRepository.findById(categoriaId)
-                .orElseThrow(() -> new RuntimeException("CategorÃ­a no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
         curso.setCategoria(categoria);
 
@@ -172,19 +172,19 @@ public class CursoServiceImpl implements CursoService {
         if (titulo.contains("grandes preguntas del universo")) {
             return "Si alguna vez miraste al cielo con curiosidad, aqui vas a encontrar ideas enormes contadas de forma clara y fascinante.";
         }
-        if (titulo.contains("humor con mirada crÃ­tica") || titulo.contains("humor con mirada critica")) {
+        if (titulo.contains("humor con mirada crítica") || titulo.contains("humor con mirada critica")) {
             return "Un curso con humor inteligente, observacion afilada y ejemplos que te hacen reir mientras te dejan pensando un buen rato.";
         }
         if (titulo.contains("idiomas y compromiso social global")) {
             return "Ideal para abrir la cabeza: idiomas, mirada internacional y aprendizaje util para moverte mejor en un mundo conectado.";
         }
-        if (titulo.contains("tecnologÃ­a en la educaciÃ³n superior") || titulo.contains("tecnologia en la educacion superior")) {
+        if (titulo.contains("tecnología en la educación superior") || titulo.contains("tecnologia en la educacion superior")) {
             return "Una guia directa para entender como la tecnologia cambia aulas, equipos y decisiones en la educacion de hoy.";
         }
         if (titulo.contains("escritura para entender el presente")) {
             return "Lecturas, ideas y ejercicios para mirar el presente con mas profundidad y escribir con una voz mucho mas consciente.";
         }
-        if (titulo.contains("gestiÃ³n hotelera con excelencia") || titulo.contains("gestion hotelera con excelencia")) {
+        if (titulo.contains("gestión hotelera con excelencia") || titulo.contains("gestion hotelera con excelencia")) {
             return "Detras del servicio impecable hay estrategia, ritmo y criterio: aqui se aprende como se sostiene de verdad.";
         }
         if (titulo.contains("liderazgo, empresa y derecho")) {
@@ -202,7 +202,7 @@ public class CursoServiceImpl implements CursoService {
         if (titulo.contains("fisioterapia funcional para la vida diaria")) {
             return "Un enfoque claro y util para moverte mejor, prevenir molestias y entender tu cuerpo sin rodeos ni tecnicismos innecesarios.";
         }
-        if (titulo.contains("gestiÃ³n de proyectos de inicio a cierre") || titulo.contains("gestion de proyectos de inicio a cierre")) {
+        if (titulo.contains("gestión de proyectos de inicio a cierre") || titulo.contains("gestion de proyectos de inicio a cierre")) {
             return "Si quieres ordenar proyectos sin perderte entre metodologias, aqui tienes una base clara para planificar, coordinar y cerrar bien.";
         }
 
@@ -237,7 +237,7 @@ public class CursoServiceImpl implements CursoService {
         if (categoria.contains("idioma") || categoria.contains("educa")) {
             return "comunicacion global, aprendizaje practico";
         }
-        if (categoria.contains("tecnolog") || categoria.contains("programaci") || categoria.contains("diseÃ±o") || categoria.contains("diseno")) {
+        if (categoria.contains("tecnolog") || categoria.contains("programaci") || categoria.contains("diseño") || categoria.contains("diseno")) {
             return "vision digital, resolucion practica";
         }
         if (categoria.contains("literatura") || categoria.contains("escritura")) {
