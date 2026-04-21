@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="menu" class="user-menu-shell" th:if="${isAuthenticated}">
-  <details class="user-menu">
+<div th:fragment="menu" class="user-menu-shell">
+  <details class="user-menu" th:if="${isAuthenticated}">
     <summary class="user-menu-trigger" aria-label="Abrir menu de usuario">
       <img th:if="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" th:src="${currentUserPhotoUrl}" alt="Foto perfil" class="user-avatar-img" width="44" height="44">
       <span th:unless="${currentUserPhotoUrl != null and !#strings.isEmpty(currentUserPhotoUrl)}" class="user-avatar-fallback" th:text="${currentUserInitials}">U</span>
@@ -19,6 +19,10 @@
       <a class="btn-outline" th:if="${canManageCourses}" th:href="@{/web/cursos/nuevo}">Crear curso</a>
       <a class="btn-outline" th:if="${isAdmin}" th:href="@{/web/cursos/admin/logs}">Logs auditoria</a>
       <a class="btn-outline" th:href="@{/web/cursos}">Catalogo</a>
+
+      <button type="button" class="btn-outline" data-theme-toggle title="Cambiar tema">
+        Cambiar tema
+      </button>
 
       <form th:action="@{/web/auth/logout}" method="post" class="logout-form">
         <button type="submit" class="btn-danger btn-full">Salir</button>

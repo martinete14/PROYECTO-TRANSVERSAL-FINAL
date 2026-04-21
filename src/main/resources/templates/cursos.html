@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <script th:src="@{/js/theme-toggle.js}" defer></script>
 </head>
 
 <body>
@@ -189,6 +190,8 @@
 
 <script>
 const isHoverDevice = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+const hoverIntentDelay = 0;
+const hoverOutDelay = 90;
 
 const warmVideo = (video) => {
   if (!video || video.dataset.warmed === "1") {
@@ -201,6 +204,13 @@ const warmVideo = (video) => {
 };
 
 const mediaFrames = Array.from(document.querySelectorAll(".media-frame"));
+const featuredFrames = Array.from(document.querySelectorAll(".featured-row .media-frame"));
+
+if (isHoverDevice) {
+  featuredFrames.forEach((frame) => {
+    warmVideo(frame.querySelector("video"));
+  });
+}
 
 if (isHoverDevice && "IntersectionObserver" in window) {
   const observer = new IntersectionObserver((entries) => {
@@ -224,6 +234,9 @@ mediaFrames.forEach(container => {
     return;
   }
 
+  let playIntentTimer = null;
+  let stopIntentTimer = null;
+
   if (!isHoverDevice) {
     video.pause();
     video.currentTime = 0;
@@ -236,25 +249,47 @@ mediaFrames.forEach(container => {
     return;
   }
 
+  const playVideo = () => {
+    video.play().catch(() => {});
+  };
+
   parentCard.addEventListener("mouseenter", () => {
-    warmVideo(video);
-    video.style.opacity = 1;
-
-    const playVideo = () => {
-      video.play().catch(() => {});
-    };
-
-    if (video.readyState >= 2) {
-      playVideo();
-      return;
+    if (stopIntentTimer) {
+      clearTimeout(stopIntentTimer);
+      stopIntentTimer = null;
     }
 
-    video.addEventListener("canplay", playVideo, { once: true });
+    if (playIntentTimer) {
+      clearTimeout(playIntentTimer);
+    }
+
+    playIntentTimer = setTimeout(() => {
+      warmVideo(video);
+
+      if (video.readyState >= 2) {
+        video.style.opacity = 1;
+        playVideo();
+        return;
+      }
+
+      video.addEventListener("canplay", () => {
+        video.style.opacity = 1;
+        playVideo();
+      }, { once: true });
+    }, hoverIntentDelay);
   });
 
   parentCard.addEventListener("mouseleave", () => {
-    video.pause();
+    if (playIntentTimer) {
+      clearTimeout(playIntentTimer);
+      playIntentTimer = null;
+    }
+
     video.style.opacity = 0;
+
+    stopIntentTimer = setTimeout(() => {
+      video.pause();
+    }, hoverOutDelay);
   });
 });
 
