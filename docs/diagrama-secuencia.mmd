@@ -1,0 +1,54 @@
+sequenceDiagram
+    actor Usuario
+    participant Navegador
+    participant AuthController
+    participant UsuarioRepository
+    participant AuditLogService
+    participant RoleAuthorizationInterceptor
+    participant RoutePermissionPolicy
+    participant WebController
+
+    %% --- LOGIN ---
+    Usuario->>Navegador: Abre /web/auth/login
+    Navegador->>AuthController: GET /web/auth/login
+    AuthController-->>Navegador: Devuelve login.html
+
+    Usuario->>Navegador: Rellena email + contraseña y envía
+    Navegador->>AuthController: POST /web/auth/login
+
+    AuthController->>UsuarioRepository: findByEmailIgnoreCase(email)
+    UsuarioRepository-->>AuthController: Usuario encontrado (o null)
+
+    alt Credenciales inválidas
+        AuthController->>AuditLogService: log AUTH_LOGIN_FAILED
+        AuthController-->>Navegador: Redirect → login con error
+    else Credenciales válidas
+        AuthController->>AuthController: Comprueba contraseña con BCrypt
+        AuthController->>AuthController: Migra contraseña legacy si hace falta
+        AuthController->>AuditLogService: log AUTH_LOGIN_SUCCESS
+        AuthController->>Navegador: Guarda userId + nombre + rol en sesión HTTP
+        note right of AuthController: rol puede ser ADMIN, INSTRUCTOR o CLIENTE
+        AuthController-->>Navegador: Redirect según rol
+    end
+
+    %% --- ACCESO A RUTA PROTEGIDA ---
+    Usuario->>Navegador: Navega a /web/cursos (o cualquier ruta protegida)
+    Navegador->>RoleAuthorizationInterceptor: Intercepta la petición antes del Controller
+
+    RoleAuthorizationInterceptor->>RoleAuthorizationInterceptor: ¿Hay sesión activa?
+
+    alt Sin sesión
+        RoleAuthorizationInterceptor->>AuditLogService: log ACCESS_REQUIRES_AUTH
+        RoleAuthorizationInterceptor-->>Navegador: Redirect → /web/auth/login
+    else Sesión activa
+        RoleAuthorizationInterceptor->>RoutePermissionPolicy: evaluate(ruta, rol)
+        RoutePermissionPolicy-->>RoleAuthorizationInterceptor: allowed = true/false
+
+        alt Acceso denegado (rol insuficiente)
+            RoleAuthorizationInterceptor->>AuditLogService: log ACCESS_DENIED
+            RoleAuthorizationInterceptor-->>Navegador: Redirect → /web/auth/denegado
+        else Acceso permitido
+            RoleAuthorizationInterceptor-->>WebController: Continúa la petición
+            WebController-->>Navegador: Devuelve la vista correspondiente
+        end
+    end
