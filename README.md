@@ -1,38 +1,29 @@
-﻿# Lothar Courses - Proyecto Transversal DAW/DAM
+﻿# Lothar Courses
 
-Lothar Courses es una plataforma web monolitica para catalogo, compra e imparticion de cursos online, con paneles por rol (ADMIN, INSTRUCTOR, CLIENTE), gestion de perfil academico, contenido de aula y registro de auditoria.
+Una plataforma donde instructores pueden vender cursos y alumnos pueden aprenderlos. Sin complicaciones técnicas.
 
-## Stack tecnologico actual
+Tiene tres tipos de usuario: alumnos (compran y aprenden), instructores (crean y venden), y admins (controlan todo).
 
-- Java 21
-- Spring Boot 4.0.5
-- Spring MVC + Thymeleaf
-- Spring Data JPA
-- Spring Validation
-- Spring Security Crypto (hash BCrypt)
-- MySQL (runtime)
-- H2 (tests)
-- Maven Wrapper
+## Tecnología
 
-## Arquitectura y organizacion
+**Lenguaje:** Java 21  
+**Framework:** Spring Boot 4.0.5  
+**Base de datos:** MySQL (y H2 para tests)  
+**Interfaz:** Thymeleaf + Bootstrap 5  
+**Autenticación:** Sesión HTTP + BCrypt  
+**Herramienta de build:** Maven
 
-Arquitectura MVC por capas:
+## Cómo está organizado
 
-- `controller`: flujo web y acciones de usuario
-- `service`: reglas de negocio
-- `repository`: persistencia con JPA
-- `model`: entidades y DTOs
-- `config`: seed, permisos por ruta, seguridad de sesion y recursos estaticos
+Separación clásica por capas:
 
-Estructura principal:
-
-- `src/main/java/com/example/demo/controller`
-- `src/main/java/com/example/demo/service`
-- `src/main/java/com/example/demo/repository`
-- `src/main/java/com/example/demo/model`
-- `src/main/java/com/example/demo/config`
-- `src/main/resources/templates`
-- `src/main/resources/static`
+- **controller/** - Las rutas y páginas web
+- **service/** - La lógica real
+- **repository/** - Acceso a base de datos
+- **model/** - Las entidades
+- **config/** - Configuración global
+- **resources/templates/** - Las páginas HTML
+- **resources/static/** - CSS, JS, imágenes
 
 ## Funcionalidades implementadas
 

@@ -1,20 +1,20 @@
-# Lothar Courses - ANÁLISIS TÉCNICO Y ESTRATÉGICO DEL PROYECTO
-## Documento de Defensa Académica y Análisis Empresarial
+# Lothar Courses - Análisis y reflexión del proyecto
+## Mi visión de cómo debería funcionar una plataforma de cursos
 
 **Autor:** Martín Villagra Tejerina  
 **Curso:** 1º DAW (Desarrollo de Aplicaciones Web)  
 **Año:** 2026  
-**Institución:** Ilerna  
-**Tipo de Documento:** Análisis Arquitectónico + Justificación Empresarial + Perspectiva de Marketing
+**Centro:** Ilerna  
+**Tipo de Documento:** Reflexión técnica + decisiónes de diseño
 
-> Actualizacion de vigencia (2026-04-16)
+> **Nota importante (2026-04-16)**
 >
-> Este documento mantiene el analisis estrategico original. Para el estado tecnico actualizado del proyecto (funcionalidades activas, seguridad por roles, auditoria, perfil academico y scripts SQL actuales), tomar como referencia principal:
+> Este documento explica el *por qué* detrás de cada decisión.
+> Para saber qué funcionalidades están activas ahora mismo, mira:
 >
 > - `README.md`
 > - `docs/memoria-tecnica.md`
-> - `docs/init.sql`
-> - `docs/data.sql`
+> - Los scripts en `docs/`
 
 ---
 
@@ -32,64 +32,81 @@
 
 ---
 
-## INTRODUCCIÓN EJECUTIVA
+## INTRODUCCIÓN
 
-Lothar Courses es una plataforma web de gestión y distribución de contenido educativo en línea. En términos técnicos, es una aplicación Spring Boot que permite:
-- Crear, editar y eliminar cursos
-- Organizar cursos en categorías temáticas
-- Visualizar contenido con multimedia (imágenes y videos)
-- Gestionar inscripciones de usuarios
+Lothar Courses es una plataforma para vender cursos online. Simple: alguien que sabe de algo puede venderlo, y otros pueden comprarlo y aprender.
 
-Desde una perspectiva empresarial, la plataforma intenta resolver el problema de **centralización y democratización del acceso a contenido educativo de calidad**, permitiendo que expertos y profesionales puedan compartir su conocimiento sin necesidad de infraestructura técnica propia.
+Es monolítica, hecha en Spring Boot, corre en un servidor y cualquiera la puede usar sin necesidad de tener su propia infraestructura técnica.
 
----
-
-## VISIÓN EMPRESARIAL Y CONTEXTO
-
-### Problema que Resuelve
-En el mercado actual (2026), existen tres segmentos dispuestos a pagar por educación online:
-1. **Usuarios individuales** que buscan formación específica en tiempo real
-2. **Empresas** que necesitan entrenar equipos internos
-3. **Instructores independientes** que quieren monetizar su experiencia sin crear su propia plataforma
-
-Lothar Courses se posiciona como **solución de punto de entrada bajo** para este último grupo, permitiendo que un instructor con cero conocimiento técnico pueda publicar cursos.
-
-### Modelo de Negocio Implícito
-- **B2C:** Usuarios pagan por acceso a cursos (curre en la app actual con inscripciones)
-- **B2B2C:** Instructores pagan comisión por participación en ingresos
-- **Freemium:** Cursos gratuitos para adquirir masa crítica
-
-**Estado Actual:** El modelo está presente en código (tabla Inscripción) pero NO monetizado aún.
+**Lo que hace:**
+- Los usuarios pueden crear, editar y borrar cursos
+- Agrupar cursos en categorías
+- Subir imágenes y videos a los cursos
+- Otros usuarios compran inscripciones
+- Una vez dentro, acceden a un aula con el contenido
 
 ---
 
-## ANÁLISIS ESTRUCTURAL DEL PROYECTO
+## LA IDEA - POR QUÉ ESTO
 
-### Árbol de Directorios y Responsabilidades
+### El problema real
+Hay un montón de gente con conocimiento valioso (profesores, expertos, especialistas) que no puede venderlo porque:
+- No tiene su propia plataforma
+- No sabe cómo hacer una página web
+- No quiere pagar miles en infraestructura
+
+Al mismo tiempo, hay gente que quiere aprender cosas pero no sabe dónde buscar o tiene que pagar a grandes academias.
+
+### La solución
+Lothar es el intermediario. Tú creas un curso, cuelgas el contenido, le pones precio, y listo. Otros lo compran. Sin técnica, sin servidores, sin complicaciones.
+
+### El modelo de negocio (en teoría)
+- **Para instructores:** Suben cursos, Lothar les toma un porcentaje
+- **Para alumnos:** Pagan el precio del curso, acceden para siempre
+- **Para Lothar:** Gana con volumen
+
+**Nota:** En esta versión es más una prueba de concepto. El dinero no se mueve de verdad.
+
+---
+
+## CÓMO ESTÁ ESTRUCTURADO TODO
+
+### Las carpetas principales
 
 ```
 src/main/
 ├── java/com/example/demo/
-│   ├── DemoApplication.java           [CORE] Punto de entrada
-│   ├── config/                        [CONFIGURACIÓN] Lógica de arranque
-│   ├── controller/                    [PRESENTACIÓN] Interacción web
-│   ├── model/                         [DOMINIO] Estructuras de datos
-│   ├── repository/                    [ACCESO A DATOS] ORM/JPA
-│   ├── service/                       [LÓGICA EMPRESARIAL] Orquestación
-│   └── exception/                     [MANEJO DE ERRORES] Excepciones custom
+│   ├── config/                ← Configuración inicial
+│   ├── controller/            ← Páginas y rutas web
+│   ├── model/                 ← Entidades (tablas como clases)
+│   ├── repository/            ← Acceso a base de datos
+│   ├── service/               ← Lógica de negocio
+│   └── exception/             ← Errores propios
 └── resources/
-    ├── application.properties         [CONFIGU EXTERNA] Variables de entorno
-    ├── static/                        [CONTENIDO ESTÁTICO] CSS, JS
-    └── templates/                     [VISTAS] HTML con Thymeleaf
+    ├── application.properties  ← Configuración (puerto, BD, etc)
+    ├── static/                ← CSS, JavaScript, imágenes
+    └── templates/             ← Páginas HTML
 
-docs/                                 [DOCUMENTACIÓN] Diagramas y análisis
-target/                               [COMPILADOS] Generados por Maven (ignorar)
-uploads/                              [ALMACENAMIENTO LOCAL] Archivos del usuario
+docs/                          ← Documentación
+uploads/                       ← Archivos subidos por usuarios
 ```
 
-### Patrón Arquitectónico: Modelo de Capas
+### La arquitectura en niveles
 
-La app sigue el patrón clásico de **3 capas (con extensión)**:
+Es el clásico: separar todo en pisos
+
+```
+┌─────────────────────────────┐
+│  LO QUE VE EL USUARIO       │  ← Templates HTML, CSS
+├─────────────────────────────┤
+│  LÓGICA DE LA APP          │  ← Services (reglas, validaciones)
+├─────────────────────────────┤
+│  BASE DE DATOS              │  ← MySQL
+└─────────────────────────────┘
+```
+
+**Ventaja:** Cada cosa en su sitio, fácil de mantener.  
+**Desventaja:** Más archivos para cambios simples.
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -118,8 +135,6 @@ La app sigue el patrón clásico de **3 capas (con extensión)**:
 
 **Ventaja:** Separación de responsabilidades clara.  
 **Desventaja:** Más verboso para un proyecto pequeño.
-
----
 
 ## CARPETAS Y COMPONENTES - ANÁLISIS PROFUNDO
 
